@@ -1,0 +1,25 @@
+name: "Feature Request"
+description: "Suggest an idea to improve PyreWire"
+title: "[FEATURE] "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: "Problem You're Trying to Solve"
+      placeholder: "Describe the problem..."
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: "Proposed Solution"
+      placeholder: "How should this be implemented?"
+  - type: textarea
+    id: alternatives_considered
+    attributes:
+      label: "Alternatives Considered"
+      placeholder: "What other approaches did you consider?"
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "Additional Context"
+      placeholder: "Any other details?"

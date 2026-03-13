@@ -1,0 +1,40 @@
+name: "Bug Report"
+description: "File a bug report to help us improve"
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: python_version
+    attributes:
+      label: "Python Version"
+      placeholder: "3.10, 3.11, 3.12, etc."
+  - type: textarea
+    id: os
+    attributes:
+      label: "Operating System"
+      placeholder: "e.g., macOS 13.2, Ubuntu 22.04"
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: "Steps to Reproduce"
+      placeholder: "1. ...\n2. ...\n3. ..."
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: "Expected Behavior"
+      placeholder: "What should happen?"
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: "Actual Behavior"
+      placeholder: "What actually happens?"
+  - type: markdown
+    attributes:
+      value: |
+        **Security Note:** If this is a security vulnerability, do NOT open an issue.
+        See our [Security Policy](../../SECURITY.md) instead.
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "Additional Context"
+      placeholder: "Any other details?"
