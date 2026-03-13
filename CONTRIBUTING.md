@@ -4,7 +4,7 @@ We appreciate your interest in contributing to PyreWire! This guide explains how
 
 ## Code of Conduct
 
-Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all contributors to uphold it in every interaction.
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all contributors to uphold it in every interaction. For questions or to report violations, contact us at community@cleverplant.com.
 
 ## How to Report Bugs
 
