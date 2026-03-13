@@ -1,4 +1,4 @@
-name: Lint
+name: Lint Main
 
 on:
   push:
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.12']
+        python-version: ['3.10', '3.12']
     steps:
       - uses: actions/checkout@v5
 

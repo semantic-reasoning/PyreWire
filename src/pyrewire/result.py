@@ -1,12 +1,12 @@
 """Result handling for Wirelog evaluation."""
 
-from typing import Any, List
+from typing import Dict, List, Optional, Tuple
 
 
 class Result:
     """Represents the result of a Wirelog program evaluation."""
 
-    def __init__(self, relations: dict[str, List[tuple]] | None = None):
+    def __init__(self, relations: Optional[Dict[str, List[Tuple]]] = None):
         """
         Initialize a Result.
 

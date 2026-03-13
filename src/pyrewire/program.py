@@ -2,6 +2,8 @@
 
 from typing import Any, List, Tuple
 
+from pyrewire.result import Result
+
 
 class Program:
     """A Wirelog program wrapper."""
@@ -49,6 +51,4 @@ class Program:
             Result object containing query results
         """
         # TODO: Implement evaluation via Wirelog C FFI
-        from pyrewire.result import Result
-
         return Result()

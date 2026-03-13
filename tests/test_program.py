@@ -1,6 +1,5 @@
 """Tests for Program class."""
 
-import pytest
 from pyrewire import Program
 
 
