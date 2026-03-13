@@ -79,6 +79,14 @@ flake8 .
 mypy .
 ```
 
+## Community & Contributing
+
+We appreciate your interest in contributing to PyreWire!
+
+- **[Contributing Guide](./CONTRIBUTING.md)**: Learn how to set up development, run tests, and submit pull requests
+- **[Code of Conduct](./CODE_OF_CONDUCT.md)**: Read our community standards and expected behavior
+- **[Security Policy](./SECURITY.md)**: Report security vulnerabilities responsibly
+
 ## License
 
 **PyreWire (Python Wrapper):** dual-licensed under either of
