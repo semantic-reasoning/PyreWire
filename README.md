@@ -1,5 +1,13 @@
 # PyreWire
 
+**Linting Status:**
+| Tool | Status |
+|------|--------|
+| Black | [![Black](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=black)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
+| isort | [![isort](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=isort)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
+| Flake8 | [![Flake8](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=flake8)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
+| mypy | [![mypy](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=mypy)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
+
 A Python wrapper for [Wirelog](https://github.com/justinjoy/wirelog) - a declarative dataflow analysis engine.
 
 ## Overview
