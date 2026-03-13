@@ -38,10 +38,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/justinjoy/pyrewire"
-Repository = "https://github.com/justinjoy/pyrewire"
-Documentation = "https://github.com/justinjoy/pyrewire#readme"
-Issues = "https://github.com/justinjoy/pyrewire/issues"
+Homepage = "https://github.com/gazgiz/PyreWire"
+Repository = "https://github.com/gazgiz/PyreWire"
+Documentation = "https://github.com/gazgiz/PyreWire#readme"
+Issues = "https://github.com/gazgiz/PyreWire/issues"
 
 [tool.setuptools]
 packages = ["pyrewire"]
