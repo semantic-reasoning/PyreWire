@@ -81,12 +81,16 @@ mypy .
 
 ## License
 
-PyreWire is dual-licensed under either of
+**PyreWire (Python Wrapper):** dual-licensed under either of
 
 - [Apache License, Version 2.0](LICENSE-APACHE)
 - [GNU General Public License, version 3 or (at your option) any later version](LICENSE-GPL)
 
 at your option.
+
+**Wirelog (Core Engine):** LGPL-3.0 / Commercial Dual License
+
+**Note:** PyreWire links to the Wirelog core engine. Use of the core engine is subject to its respective license terms.
 
 ## Contributing
 
