@@ -1,4 +1,4 @@
-"""PyreWire - Python wrapper for Wirelog declarative dataflow analysis."""
+"""PyreWire - Python wrapper for wirelog declarative dataflow analysis."""
 
 __version__ = "0.1.0"
 __author__ = "PyreWire Contributors"

@@ -27,7 +27,7 @@ Use the **Feature Request** issue template to propose new functionality:
 ## Development Setup
 
 ```bash
-git clone https://github.com/gazgiz/PyreWire.git
+git clone https://github.com/semantic-reasoning/PyreWire.git
 cd PyreWire
 pip install -e ".[dev]"
 ```

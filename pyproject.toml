@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyrewire"
 version = "0.1.0"
-description = "Python wrapper for Wirelog - declarative dataflow analysis"
+description = "Python wrapper for wirelog - declarative dataflow analysis"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0 OR GPL-3.0-or-later"
@@ -38,10 +38,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/gazgiz/PyreWire"
-Repository = "https://github.com/gazgiz/PyreWire"
-Documentation = "https://github.com/gazgiz/PyreWire#readme"
-Issues = "https://github.com/gazgiz/PyreWire/issues"
+Homepage = "https://github.com/semantic-reasoning/PyreWire"
+Repository = "https://github.com/semantic-reasoning/PyreWire"
+Documentation = "https://github.com/semantic-reasoning/PyreWire#readme"
+Issues = "https://github.com/semantic-reasoning/PyreWire/issues"
 
 [tool.setuptools]
 packages = ["pyrewire"]

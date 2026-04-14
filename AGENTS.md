@@ -1,10 +1,10 @@
 # PyreWire Project Agents
 
-Custom agent specializations for PyreWire (Python wrapper for Wirelog).
+Custom agent specializations for PyreWire (Python wrapper for wirelog).
 
 ## ffi-specialist
 
-**Purpose:** Handle Python/C FFI bindings and Wirelog integration
+**Purpose:** Handle Python/C FFI bindings and wirelog integration
 **Capabilities:**
 - ctypes/cffi configuration
 - C library binding validation
@@ -12,7 +12,7 @@ Custom agent specializations for PyreWire (Python wrapper for Wirelog).
 - Cross-platform C library loading
 
 **When to use:**
-- Implementing Wirelog C function wrapping
+- Implementing wirelog C function wrapping
 - Debugging FFI call failures
 - Performance optimization of C boundary crossings
 
@@ -20,7 +20,7 @@ Custom agent specializations for PyreWire (Python wrapper for Wirelog).
 
 **Purpose:** Datalog syntax, semantics, and query optimization
 **Capabilities:**
-- Wirelog syntax validation
+- wirelog syntax validation
 - Rule/fact correctness checking
 - Query plan analysis
 - Performance optimization for datalog programs

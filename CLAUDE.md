@@ -1,14 +1,14 @@
 <!-- OMC:START -->
 
-# PyreWire - Python Wrapper for Wirelog
+# PyreWire - Python Wrapper for wirelog
 
-PyreWire is a Python wrapper providing Pythonic interfaces to [Wirelog](https://github.com/justinjoy/wirelog), a declarative dataflow analysis engine.
+PyreWire is a Python wrapper providing Pythonic interfaces to [wirelog](https://github.com/semantic-reasoning/wirelog), a declarative dataflow analysis engine.
 
 **Dual-licensed: Apache-2.0 OR GPL-3.0-or-later** | **Project Skeleton: Established 2026-03-13**
 
 ## Project Goals
 
-1. **Python FFI Bindings:** Safe, ergonomic ctypes/cffi wrappers around Wirelog C library
+1. **Python FFI Bindings:** Safe, ergonomic ctypes/cffi wrappers around wirelog C library
 2. **User-Friendly API:** Hide complexity of datalog programs behind intuitive Python classes
 3. **Broad Python Support:** Target Python 3.8+ for wide adoption
 4. **Comprehensive Testing:** Unit, integration, and FFI validation tests
@@ -20,7 +20,7 @@ src/pyrewire/
   ├── __init__.py       # Public API exports
   ├── program.py        # Program class (datalog builder)
   ├── result.py         # Result handling (query outputs)
-  ├── ffi.py            # Wirelog C bindings (TODO)
+  ├── ffi.py            # wirelog C bindings (TODO)
   └── errors.py         # Custom exceptions (TODO)
 
 tests/
@@ -48,7 +48,7 @@ black . && isort . && flake8 . && mypy .
 
 ### Key Guidelines
 
-1. **FFI Bindings:** All Wirelog C function wrappers live in `pyrewire/ffi.py`
+1. **FFI Bindings:** All wirelog C function wrappers live in `pyrewire/ffi.py`
 2. **Type Hints:** Use type annotations for all public APIs (Python 3.8+ compatible)
 3. **Docstrings:** Google-style docstrings for all classes/functions
 4. **Testing:** Aim for 80%+ coverage; FFI tests must validate C boundary

@@ -3,16 +3,16 @@
 **Linting Status:**
 | Tool | Status |
 |------|--------|
-| Black | [![Black](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=black)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
-| isort | [![isort](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=isort)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
-| Flake8 | [![Flake8](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=flake8)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
-| mypy | [![mypy](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=mypy)](https://github.com/gazgiz/PyreWire/actions/workflows/lint-push-main.yml) |
+| Black | [![Black](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=black)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
+| isort | [![isort](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=isort)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
+| Flake8 | [![Flake8](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=flake8)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
+| mypy | [![mypy](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=mypy)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
 
-A Python wrapper for [Wirelog](https://github.com/justinjoy/wirelog) - a declarative dataflow analysis engine.
+A Python wrapper for [wirelog](https://github.com/semantic-reasoning/wirelog) - a declarative dataflow analysis engine.
 
 ## Overview
 
-PyreWire provides a Pythonic interface to Wirelog, enabling you to write datalog programs and perform analysis programmatically from Python.
+PyreWire provides a Pythonic interface to wirelog, enabling you to write datalog programs and perform analysis programmatically from Python.
 
 ## Installation
 
@@ -51,7 +51,7 @@ print(results.get_relation("reach"))
 
 - 🎯 Easy-to-use Python API
 - 📊 Support for declarative dataflow analysis
-- ⚡ Efficient evaluation engine via Wirelog
+- ⚡ Efficient evaluation engine via wirelog
 - 🔄 Integration with Python data structures
 
 ## Development
@@ -59,7 +59,7 @@ print(results.get_relation("reach"))
 ### Setup
 
 ```bash
-git clone https://github.com/gazgiz/PyreWire
+git clone https://github.com/semantic-reasoning/PyreWire
 cd pyrewire
 pip install -e ".[dev]"
 ```
@@ -96,9 +96,9 @@ We appreciate your interest in contributing to PyreWire!
 
 at your option.
 
-**Wirelog (Core Engine):** LGPL-3.0 / Commercial Dual License
+**wirelog (Core Engine):** LGPL-3.0 / Commercial Dual License
 
-**Note:** PyreWire links to the Wirelog core engine. Use of the core engine is subject to its respective license terms.
+**Note:** PyreWire links to the wirelog core engine. Use of the core engine is subject to its respective license terms.
 
 ## Contributing
 

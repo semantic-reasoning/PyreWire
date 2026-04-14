@@ -1,4 +1,4 @@
-"""Main Program interface for Wirelog."""
+"""Main Program interface for wirelog."""
 
 from typing import Any, List, Tuple
 
@@ -6,10 +6,10 @@ from pyrewire.result import Result
 
 
 class Program:
-    """A Wirelog program wrapper."""
+    """A wirelog program wrapper."""
 
     def __init__(self):
-        """Initialize a new Wirelog program."""
+        """Initialize a new wirelog program."""
         self.relations = {}
         self.facts = []
         self.rules = []
@@ -50,5 +50,5 @@ class Program:
         Returns:
             Result object containing query results
         """
-        # TODO: Implement evaluation via Wirelog C FFI
+        # TODO: Implement evaluation via wirelog C FFI
         return Result()

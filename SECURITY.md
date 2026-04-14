@@ -47,9 +47,9 @@ If extenuating circumstances require an extension, we will discuss this with you
 
 This security policy covers **PyreWire Python wrapper code only** (this repository).
 
-If you discover a vulnerability in the upstream Wirelog dataflow engine, please report it directly to the Wirelog project:
+If you discover a vulnerability in the upstream wirelog dataflow engine, please report it directly to the wirelog project:
 
-👉 https://github.com/justinjoy/wirelog
+👉 https://github.com/semantic-reasoning/wirelog
 
 ## PGP / Encrypted Communication
 

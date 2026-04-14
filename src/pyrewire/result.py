@@ -1,10 +1,10 @@
-"""Result handling for Wirelog evaluation."""
+"""Result handling for wirelog evaluation."""
 
 from typing import Dict, List, Optional, Tuple
 
 
 class Result:
-    """Represents the result of a Wirelog program evaluation."""
+    """Represents the result of a wirelog program evaluation."""
 
     def __init__(self, relations: Optional[Dict[str, List[Tuple]]] = None):
         """
