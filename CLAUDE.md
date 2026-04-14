@@ -1,72 +1,34 @@
-<!-- OMC:START -->
+# PyreWire - Python wrapper for wirelog
 
-# PyreWire - Python Wrapper for wirelog
+Python FFI bindings for [wirelog](https://github.com/semantic-reasoning/wirelog), a declarative dataflow analysis engine.
 
-PyreWire is a Python wrapper providing Pythonic interfaces to [wirelog](https://github.com/semantic-reasoning/wirelog), a declarative dataflow analysis engine.
+- **wirelog** (`../wirelog`): C11 engine library (LGPL-3.0, Meson build) — what PyreWire wraps
+- **wyrelog** (`../wyrelog`): application server using wirelog (GPL-3.0-or-later, C17, GLib/DuckDB) — unrelated to PyreWire
 
-**Dual-licensed: Apache-2.0 OR GPL-3.0-or-later** | **Project Skeleton: Established 2026-03-13**
+**License:** Apache-2.0 OR GPL-3.0-or-later (dual-licensed)
 
-## Project Goals
+## Development
 
-1. **Python FFI Bindings:** Safe, ergonomic ctypes/cffi wrappers around wirelog C library
-2. **User-Friendly API:** Hide complexity of datalog programs behind intuitive Python classes
-3. **Broad Python Support:** Target Python 3.8+ for wide adoption
-4. **Comprehensive Testing:** Unit, integration, and FFI validation tests
-
-## Architecture
-
-```
-src/pyrewire/
-  ├── __init__.py       # Public API exports
-  ├── program.py        # Program class (datalog builder)
-  ├── result.py         # Result handling (query outputs)
-  ├── ffi.py            # wirelog C bindings (TODO)
-  └── errors.py         # Custom exceptions (TODO)
-
-tests/
-  ├── test_program.py   # Program API tests
-  ├── test_ffi.py       # FFI binding validation (TODO)
-  └── test_integration.py # End-to-end tests (TODO)
-```
-
-## Development Workflow
-
-### Setup
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev]"   # setup
+pytest                     # test (coverage enabled by default)
+black . && isort .         # format
+flake8 . && mypy .         # lint
 ```
 
-### Testing
-```bash
-pytest --cov=pyrewire
-```
+## Conventions
 
-### Code Quality
-```bash
-black . && isort . && flake8 . && mypy .
-```
+- **TDD:** Write tests first, then implementation
+- **Atomic commits:** Each commit logically independent; include tests with implementation
+- **No emojis** in commit messages
+- **Google-style docstrings** for public APIs
+- **Type hints** on all public APIs (Python 3.10+)
 
-### Key Guidelines
+## FFI Design
 
-1. **FFI Bindings:** All wirelog C function wrappers live in `pyrewire/ffi.py`
-2. **Type Hints:** Use type annotations for all public APIs (Python 3.8+ compatible)
-3. **Docstrings:** Google-style docstrings for all classes/functions
-4. **Testing:** Aim for 80%+ coverage; FFI tests must validate C boundary
-5. **Backwards Compatibility:** Once released, maintain semver compatibility
+- All C bindings go in `pyrewire/ffi.py` (ctypes/cffi)
+- wirelog is a C11 library (Meson build); load the shared library at runtime
 
 ## Custom Agents
 
 @AGENTS.md
-
----
-
-## Dependencies
-
-- **Runtime:** None (pure Python + C library)
-- **Dev:** pytest, black, isort, flake8, mypy
-
-## License
-
-Dual-licensed under **Apache-2.0 OR GPL-3.0-or-later** — see `LICENSE`, `LICENSE-APACHE`, and `LICENSE-GPL`.
-
-<!-- OMC:END -->
