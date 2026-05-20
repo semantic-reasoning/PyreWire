@@ -1,21 +1,22 @@
 """Tests for `pyrewire._core.errors`."""
+
 from __future__ import annotations
 
 import pytest
 
 from pyrewire._core.errors import (
+    _FALLBACK_TEXT,
     CompoundBusyError,
     CompoundSaturatedError,
     ExecError,
     InvalidIRError,
     ParseError,
     WirelogError,
-    WirelogIOError,
     WirelogInternError,
+    WirelogIOError,
     WirelogMemoryError,
     WirelogModeError,
     WirelogVersionError,
-    _FALLBACK_TEXT,
     check,
     error_string,
 )

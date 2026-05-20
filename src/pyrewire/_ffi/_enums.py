@@ -4,6 +4,7 @@ Values match `wirelog/wirelog.h` and `wirelog/wirelog-types.h` byte-for-byte.
 Membership names drop the `WIRELOG_` prefix to read naturally on the Python
 side (e.g. `ColumnType.INT32` mirrors `WIRELOG_TYPE_INT32`).
 """
+
 from __future__ import annotations
 
 from enum import IntEnum

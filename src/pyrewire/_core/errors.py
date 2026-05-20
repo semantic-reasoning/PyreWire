@@ -18,6 +18,7 @@ builds), it falls back to a PyreWire-side text table indexed by
 `ErrorCode`. The fallback is kept indefinitely as a forward-compat
 net.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -79,6 +80,7 @@ class CompoundBusyError(WirelogError):
 
 
 # --- PyreWire-only exception types -----------------------------------------
+
 
 class WirelogVersionError(WirelogError):
     """libwirelog reports a version different from `pyrewire.__version__`."""
@@ -148,7 +150,7 @@ def error_string(rc: int) -> str:
         except Exception:
             raw = None
         if raw:
-            return raw.decode("utf-8", errors="replace")
+            return raw.decode("utf-8", errors="replace")  # type: ignore[no-any-return]
     return _FALLBACK_TEXT.get(code, f"wirelog_error_t={code}")
 
 

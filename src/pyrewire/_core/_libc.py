@@ -13,6 +13,7 @@ wirelog boundary. Centralising the libc resolution policy here ensures:
   reviewers catch the change.
 - All consumers see the same allocator.
 """
+
 from __future__ import annotations
 
 import ctypes

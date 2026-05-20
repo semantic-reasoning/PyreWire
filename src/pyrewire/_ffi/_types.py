@@ -6,6 +6,7 @@ struct layouts are intentionally hidden by wirelog. The two callback
 types (`OnTupleFn`, `OnDeltaFn`) are module-level CFUNCTYPE definitions
 so trampoline instances created from them remain stable singletons.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -29,7 +30,7 @@ class ParseErrorStruct(ctypes.Structure):
     """Mirrors `wirelog_parse_error_t` from wirelog-parser.h."""
 
     _fields_ = [
-        ("error_code", ctypes.c_int),    # wirelog_error_t
+        ("error_code", ctypes.c_int),  # wirelog_error_t
         ("message", ctypes.c_char_p),
         ("line", ctypes.c_uint32),
         ("column", ctypes.c_uint32),
@@ -43,8 +44,8 @@ class ColumnStruct(ctypes.Structure):
 
     _fields_ = [
         ("name", ctypes.c_char_p),
-        ("type", ctypes.c_int),                          # ColumnType
-        ("compound_kind", ctypes.c_int),                 # CompoundKind
+        ("type", ctypes.c_int),  # ColumnType
+        ("compound_kind", ctypes.c_int),  # CompoundKind
         ("compound_functor_id", ctypes.c_uint32),
         ("compound_arity", ctypes.c_uint32),
         ("compound_inline_col_offset", ctypes.c_uint32),
@@ -79,7 +80,7 @@ class CompoundArgStruct(ctypes.Structure):
     """Mirrors `wirelog_compound_arg_t`."""
 
     _fields_ = [
-        ("type", ctypes.c_int),       # ColumnType
+        ("type", ctypes.c_int),  # ColumnType
         ("value", ctypes.c_int64),
     ]
 
@@ -107,11 +108,11 @@ EASY_OPEN_OPTS_SIZE = ctypes.sizeof(EasyOpenOptsStruct)
 # call and break wirelog's pointer-equality identification of the callback.
 
 OnTupleFn = ctypes.CFUNCTYPE(
-    None,                       # void return
-    ctypes.c_char_p,            # const char *relation
+    None,  # void return
+    ctypes.c_char_p,  # const char *relation
     ctypes.POINTER(ctypes.c_int64),  # const int64_t *row
-    ctypes.c_uint32,            # uint32_t ncols
-    ctypes.c_void_p,            # void *user_data
+    ctypes.c_uint32,  # uint32_t ncols
+    ctypes.c_void_p,  # void *user_data
 )
 
 OnDeltaFn = ctypes.CFUNCTYPE(
@@ -119,7 +120,7 @@ OnDeltaFn = ctypes.CFUNCTYPE(
     ctypes.c_char_p,
     ctypes.POINTER(ctypes.c_int64),
     ctypes.c_uint32,
-    ctypes.c_int32,             # int32_t diff (+1 / -1)
+    ctypes.c_int32,  # int32_t diff (+1 / -1)
     ctypes.c_void_p,
 )
 
