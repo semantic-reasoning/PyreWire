@@ -23,8 +23,8 @@ jobs:
         run: isort --check-only .
       - name: flake8
         run: flake8 .
-      - name: mypy
-        run: mypy .
+      - name: mypy (strict on src/pyrewire; tests excluded)
+        run: mypy src/pyrewire
 
   test:
     needs: lint

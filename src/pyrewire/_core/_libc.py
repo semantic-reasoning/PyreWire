@@ -20,6 +20,7 @@ import ctypes
 import sys
 import threading
 from ctypes.util import find_library
+from typing import Any
 
 _LOCK = threading.Lock()
 _HANDLE: ctypes.CDLL | None = None
@@ -72,7 +73,7 @@ def libc_malloc(n: int) -> int:
     return int(ptr) if ptr else 0
 
 
-def libc_free(ptr) -> None:
+def libc_free(ptr: Any) -> None:
     """Free a pointer previously returned by libc `malloc`. NULL is a no-op.
 
     Accepts either an integer address, `None`, or any ctypes pointer
