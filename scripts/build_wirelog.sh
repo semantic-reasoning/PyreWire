@@ -35,10 +35,14 @@ meson setup "$WIRELOG_SRC/builddir" "$WIRELOG_SRC" \
 # no `examples` meson option yet, so we filter by ninja target instead of
 # rebuilding the whole tree. Tracked: an upstream `examples` option would
 # let us drop the grep step.
-mapfile -t targets < <(
-    meson introspect --targets "$WIRELOG_SRC/builddir" \
-        | jq -r '.[] | select(.type=="shared library" or .type=="static library") | .name'
-)
+# `mapfile` is bash 4+; macOS ships bash 3.2 by default. Use a portable
+# while-read loop instead.
+targets=()
+while IFS= read -r line; do
+    [ -n "$line" ] && targets+=("$line")
+done < <(meson introspect --targets "$WIRELOG_SRC/builddir" |
+         jq -r '.[] | select(.type=="shared library" or .type=="static library") | .name')
+
 if [ ${#targets[@]} -gt 0 ]; then
     meson compile -C "$WIRELOG_SRC/builddir" "${targets[@]}"
 else
