@@ -27,7 +27,12 @@ jobs:
       - name: build wirelog from source
         shell: bash
         env:
-          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || '0.40.99' }}
+          # Pinned to `main` until wirelog cuts the next tagged release
+          # (current tag is v0.40.0; meson.build reports 0.40.99 as the dev
+          # version ahead of v0.41.0). When v0.41.0 ships, set the
+          # WIRELOG_VERSION repo variable to that tag and bump pyrewire to
+          # match per the versioning rule.
+          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'main' }}
           WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: bash scripts/build_wirelog.sh
 
