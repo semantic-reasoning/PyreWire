@@ -42,9 +42,13 @@ jobs:
       - name: pytest with coverage gate
         shell: bash
         env:
-          WIRELOG_LIB: ${{ runner.temp }}/wirelog-install/lib/libwirelog.so.1
+          WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: |
           if [ "$RUNNER_OS" = "macOS" ]; then
-            export WIRELOG_LIB=${{ runner.temp }}/wirelog-install/lib/libwirelog.1.dylib
+            export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.1.dylib"
+            export DYLD_LIBRARY_PATH="$WIRELOG_PREFIX/lib:${DYLD_LIBRARY_PATH:-}"
+          else
+            export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.so.1"
+            export LD_LIBRARY_PATH="$WIRELOG_PREFIX/lib:${LD_LIBRARY_PATH:-}"
           fi
           pytest -q
