@@ -116,6 +116,22 @@ class BackendKind(IntEnum):
     COLUMNAR = 1
 
 
+class IRNodeType(IntEnum):
+    """Mirrors `wirelog_ir_node_type_t` from wirelog-ir.h."""
+
+    SCAN = 0
+    PROJECT = 1
+    FILTER = 2
+    JOIN = 3
+    FLATMAP = 4
+    AGGREGATE = 5
+    ANTIJOIN = 6
+    UNION = 7
+    SEMIJOIN = 8
+    COMPOUND_INLINE = 9
+    COMPOUND_SIDE = 10
+
+
 __all__ = [
     "ErrorCode",
     "ColumnType",
@@ -125,4 +141,5 @@ __all__ = [
     "AggFn",
     "StrFn",
     "BackendKind",
+    "IRNodeType",
 ]
