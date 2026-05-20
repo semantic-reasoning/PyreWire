@@ -35,6 +35,7 @@ from pyrewire._ffi._util import (
     wirelog_version,
 )
 from pyrewire.program import Column, Program, Schema, Stratum
+from pyrewire.session import EasySession
 
 __all__ = [
     "__version__",
@@ -42,6 +43,7 @@ __all__ = [
     "Schema",
     "Column",
     "Stratum",
+    "EasySession",
     "ColumnType",
     "CompoundKind",
     "BackendKind",
