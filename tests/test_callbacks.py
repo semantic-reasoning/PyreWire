@@ -115,3 +115,33 @@ def test_handle_survives_gc_pressure_while_session_holds_ref():
         assert token in _REGISTRY
     finally:
         cb.close()
+
+
+def test_drain_reraises_callback_error_then_clears_it():
+    """If anything inside the trampoline body raises, the exception is
+    stashed on the registry slot and `drain()` re-raises it — but the
+    trampoline itself returns normally so wirelog never sees a Python
+    exception bubble back into the FFI call.
+
+    We exercise the contract by simulating the failure on the state
+    object directly (the trampoline's `except BaseException` clause is
+    what would store it in production)."""
+    cb = CallbackHandle("delta")
+    try:
+        cb._state.last_error = RuntimeError("simulated callback failure")
+        with pytest.raises(RuntimeError, match="simulated callback failure"):
+            cb.drain()
+        # After drain raises, the error slot is cleared so future drains
+        # do not raise the same exception twice.
+        assert cb._state.last_error is None
+        assert cb.drain() == []
+    finally:
+        cb.close()
+
+
+def test_trampoline_call_with_null_user_data_is_safe_noop():
+    """Defensive: passing a null `user_data` to the trampoline is a
+    no-op rather than a crash. wirelog never produces this, but a
+    misuse of the FFI should not segfault."""
+    row = (ctypes.c_int64 * 1)(0)
+    _delta_trampoline(b"r", row, 1, 1, None)  # must not raise
