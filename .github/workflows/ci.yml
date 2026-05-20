@@ -33,7 +33,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13]
+        # macos-14 is the ARM (Apple Silicon) runner. Intel macos-13 is
+        # often heavily queued; ARM has more capacity in the GitHub-hosted
+        # pool and is also the architecture wheels target for new Macs.
+        os: [ubuntu-22.04, macos-14]
         python: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
@@ -66,7 +69,14 @@ jobs:
           WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: |
           if [ "$RUNNER_OS" = "macOS" ]; then
-            export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.1.dylib"
+            # The dylib symlink shipped by wirelog may be either form;
+            # prefer the SONAME-1 variant and fall back to the
+            # version-major variant.
+            if [ -f "$WIRELOG_PREFIX/lib/libwirelog.1.dylib" ]; then
+              export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.1.dylib"
+            else
+              export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.dylib"
+            fi
             export DYLD_LIBRARY_PATH="$WIRELOG_PREFIX/lib:${DYLD_LIBRARY_PATH:-}"
           else
             export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.so.1"
