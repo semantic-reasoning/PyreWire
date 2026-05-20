@@ -12,12 +12,11 @@ Two exception classes have no wirelog counterpart:
   `snapshot()` are mixed inside the same insert batch.
 - `WirelogInternError` is raised when a reverse-intern lookup fails.
 
-Implementation note (wirelog 0.40.99): the public ABI does not export
-`wirelog_error_string`. Tracked upstream at
-semantic-reasoning/wirelog#841. Until the symbol ships, `error_string(rc)`
-returns a hard-coded text per `ErrorCode`. When the symbol becomes
-available, the helper transparently switches to the wirelog-provided
-text without any caller change.
+`error_string(rc)` prefers `LIB.wirelog_error_string` (exported since
+semantic-reasoning/wirelog#841). If the symbol is missing (pre-#841
+builds), it falls back to a PyreWire-side text table indexed by
+`ErrorCode`. The fallback is kept indefinitely as a forward-compat
+net.
 """
 from __future__ import annotations
 
@@ -121,8 +120,8 @@ _FALLBACK_TEXT: Dict[int, str] = {
 def _load_error_string_fn() -> "ctypes._FuncPointer | None":
     """Resolve `wirelog_error_string` once if available; None otherwise.
 
-    Cached on first call. Returns None while wirelog#841 leaves the symbol
-    unexported so callers fall back to the local text table.
+    Returns None against pre-#841 builds so callers fall back to the
+    local text table.
     """
     try:
         fn = LIB.wirelog_error_string
