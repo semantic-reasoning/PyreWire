@@ -16,7 +16,9 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
-from ._core.errors import ParseError
+from ._core._libc import libc_free
+from ._core.errors import ExecError, ParseError
+from ._core.intern import InternTable
 from ._ffi import LIB
 from ._ffi import _parser as _parser_ffi  # noqa: F401  -- registers argtypes
 from ._ffi._enums import ColumnType, CompoundKind
@@ -143,6 +145,71 @@ class Program:
 
     def is_stratified(self) -> bool:
         return bool(LIB.wirelog_program_is_stratified(self._handle))
+
+    # --- inline-fact extraction --------------------------------------------
+
+    def facts_raw(self, relation: str) -> list[tuple[int, ...]]:
+        """Return inline `.dl` facts for `relation` as raw int64 tuples.
+
+        Strings appear as wirelog intern ids (no reverse-mapping is
+        attempted here — use `facts(rel, intern=...)` for decoded rows).
+        The heap buffer allocated by `wirelog_program_get_facts` is
+        always freed before this method returns, even on decoding error.
+
+        Raises `ExecError` if `relation` is not declared in the program.
+        """
+        data = ctypes.POINTER(ctypes.c_int64)()
+        nrows = ctypes.c_uint32(0)
+        ncols = ctypes.c_uint32(0)
+        rc = LIB.wirelog_program_get_facts(
+            self._handle,
+            relation.encode("utf-8"),
+            ctypes.byref(data),
+            ctypes.byref(nrows),
+            ctypes.byref(ncols),
+        )
+        if rc == -1:
+            raise ExecError(f"unknown relation: {relation!r}")
+        if rc == 1 or nrows.value == 0 or not data:
+            return []
+        try:
+            r, c = int(nrows.value), int(ncols.value)
+            return [tuple(int(data[i * c + j]) for j in range(c)) for i in range(r)]
+        finally:
+            libc_free(data)
+
+    def facts(
+        self,
+        relation: str,
+        intern: InternTable | None = None,
+    ) -> list[tuple[object, ...]]:
+        """Return decoded inline facts. Numeric / bool / float columns
+        are converted from int64; STRING columns are reverse-interned
+        through `intern` if supplied (otherwise returned as raw ids).
+        """
+        sch = self.schema(relation)
+        if sch is None:
+            raise ExecError(f"no schema for relation: {relation!r}")
+        out: list[tuple[object, ...]] = []
+        for raw_row in self.facts_raw(relation):
+            decoded: list[object] = []
+            for col, raw in zip(sch.columns, raw_row, strict=True):
+                if col.type == ColumnType.STRING:
+                    if intern is None:
+                        decoded.append(int(raw))
+                    else:
+                        try:
+                            decoded.append(intern.lookup(int(raw)))
+                        except Exception:
+                            decoded.append(int(raw))
+                elif col.type == ColumnType.BOOL:
+                    decoded.append(bool(raw))
+                elif col.type == ColumnType.FLOAT:
+                    decoded.append(ctypes.c_double.from_buffer_copy(ctypes.c_int64(raw)).value)
+                else:
+                    decoded.append(int(raw))
+            out.append(tuple(decoded))
+        return out
 
     # --- lifecycle ----------------------------------------------------------
 
