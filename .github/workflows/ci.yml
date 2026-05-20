@@ -51,12 +51,11 @@ jobs:
       - name: build wirelog from source
         shell: bash
         env:
-          # Pinned to `main` until wirelog cuts the next tagged release
-          # (current tag is v0.40.0; meson.build reports 0.40.99 as the dev
-          # version ahead of v0.41.0). When v0.41.0 ships, set the
-          # WIRELOG_VERSION repo variable to that tag and bump pyrewire to
-          # match per the versioning rule.
-          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'main' }}
+          # PyreWire pins to wirelog tagged releases (not `main`) so the
+          # dev-cycle version churn (X.Y.0 → X.Y.99 → X.(Y+1).0 …) does
+          # not silently break PyreWire CI. Bump WIRELOG_VERSION + the
+          # pyrewire version in lock-step when wirelog cuts a new tag.
+          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
           WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: bash scripts/build_wirelog.sh
 
