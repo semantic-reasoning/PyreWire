@@ -1,4 +1,5 @@
 """Tests for `pyrewire._core._libc`."""
+
 from __future__ import annotations
 
 import ctypes
@@ -66,6 +67,7 @@ def test_lazy_init_via_import_does_not_load_libc():
     subprocess to avoid contamination from earlier tests."""
     import subprocess
     import sys
+
     code = (
         "import sys, os\n"
         "sys.path.insert(0, 'src')\n"
@@ -73,9 +75,12 @@ def test_lazy_init_via_import_does_not_load_libc():
         "assert m._HANDLE is None, 'libc loaded eagerly'\n"
         "print('OK')\n"
     )
-    env = {**__import__('os').environ}
+    env = {**__import__("os").environ}
     result = subprocess.run(
         [sys.executable, "-c", code],
-        capture_output=True, text=True, env=env, timeout=10,
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=10,
     )
     assert "OK" in result.stdout, f"stderr={result.stderr!r}"

@@ -8,6 +8,7 @@ Internal PyreWire modules use relative imports (e.g. `from ._ffi import LIB`)
 rather than the absolute path so the `pyrewire._ffi` literal does not appear
 outside this package.
 """
+
 from ._loader import LIB
 
 __all__ = ["LIB"]

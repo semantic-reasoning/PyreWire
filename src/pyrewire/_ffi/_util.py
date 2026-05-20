@@ -8,6 +8,7 @@ fallback table or `None` keeps user code from crashing. The fallback
 paths are kept indefinitely as a forward-compatibility net for users
 paired with pre-#841 libwirelog builds.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -16,8 +17,8 @@ from typing import Any, Callable
 from . import LIB
 from ._enums import AggFn, ArithOp, CmpOp
 
-
 # --- Internal: lazy single-symbol resolver ---------------------------------
+
 
 def _try_resolve(
     name: str,
@@ -31,23 +32,20 @@ def _try_resolve(
         return None
     fn.restype = restype
     fn.argtypes = argtypes
-    return fn
+    return fn  # type: ignore[no-any-return]
 
 
 _version_fn = _try_resolve("wirelog_version_string", ctypes.c_char_p, [])
 _cmp_str_fn = _try_resolve("wirelog_cmp_op_str", ctypes.c_char_p, [ctypes.c_int])
-_arith_str_fn = _try_resolve(
-    "wirelog_arith_op_str", ctypes.c_char_p, [ctypes.c_int]
-)
-_agg_str_fn = _try_resolve(
-    "wirelog_agg_fn_str", ctypes.c_char_p, [ctypes.c_int]
-)
+_arith_str_fn = _try_resolve("wirelog_arith_op_str", ctypes.c_char_p, [ctypes.c_int])
+_agg_str_fn = _try_resolve("wirelog_agg_fn_str", ctypes.c_char_p, [ctypes.c_int])
 _config_embedded_fn = _try_resolve("wirelog_config_embedded", ctypes.c_bool, [])
 _config_ipc_fn = _try_resolve("wirelog_config_ipc", ctypes.c_bool, [])
 _config_threads_fn = _try_resolve("wirelog_config_threads", ctypes.c_bool, [])
 
 
 # --- Public helpers --------------------------------------------------------
+
 
 def wirelog_version() -> str:
     """Return the loaded libwirelog's version string.
@@ -61,12 +59,13 @@ def wirelog_version() -> str:
     if _version_fn is not None:
         raw = _version_fn()
         if raw:
-            return raw.decode("utf-8", errors="replace")
+            return raw.decode("utf-8", errors="replace")  # type: ignore[no-any-return]
     # Pre-#841 fallback: cannot ask the library; report what pyrewire is
     # pinned to. The loader has already confirmed library presence via
     # the sentinel-symbol probe.
     from .. import __version__  # local import to avoid early circular load
     from ._loader import _pep440_base
+
     return _pep440_base(__version__)
 
 

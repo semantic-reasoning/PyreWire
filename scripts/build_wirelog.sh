@@ -27,9 +27,23 @@ git clone --depth 1 --branch "$WIRELOG_VERSION" "$WIRELOG_REPO" "$WIRELOG_SRC"
 meson setup "$WIRELOG_SRC/builddir" "$WIRELOG_SRC" \
     --prefix="$WIRELOG_PREFIX" \
     --buildtype=release \
-    --libdir=lib
+    --libdir=lib \
+    -Dtests=false
 
-meson compile -C "$WIRELOG_SRC/builddir"
+# PyreWire's CI only needs `libwirelog` itself. Skip the example binaries
+# (each example/<NN>/ subdir builds an executable). wirelog 0.40.99 has
+# no `examples` meson option yet, so we filter by ninja target instead of
+# rebuilding the whole tree. Tracked: an upstream `examples` option would
+# let us drop the grep step.
+mapfile -t targets < <(
+    meson introspect --targets "$WIRELOG_SRC/builddir" \
+        | jq -r '.[] | select(.type=="shared library" or .type=="static library") | .name'
+)
+if [ ${#targets[@]} -gt 0 ]; then
+    meson compile -C "$WIRELOG_SRC/builddir" "${targets[@]}"
+else
+    meson compile -C "$WIRELOG_SRC/builddir"
+fi
 meson install -C "$WIRELOG_SRC/builddir"
 
 echo "Installed:"

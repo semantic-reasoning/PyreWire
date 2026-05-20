@@ -6,6 +6,7 @@ no public-API surface yet (sessions, parsers, etc. surface them lazily),
 so this test file reaches into the private layer directly — flagged with
 the same exemption documented for `tests/test_loader.py`.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -34,8 +35,8 @@ from pyrewire._ffi._types import (
     StratumStruct,
 )
 
-
 # ---- Enums -----------------------------------------------------------------
+
 
 def test_error_code_values():
     assert ErrorCode.OK == 0
@@ -102,6 +103,7 @@ def test_backend_kind_values():
 
 # ---- Structs ---------------------------------------------------------------
 
+
 def test_easy_open_opts_size_constant():
     """EASY_OPEN_OPTS_SIZE must equal sizeof(EasyOpenOptsStruct) at runtime."""
     assert EASY_OPEN_OPTS_SIZE == ctypes.sizeof(EasyOpenOptsStruct)
@@ -127,8 +129,12 @@ def test_parse_error_struct_fields():
 
 def test_column_struct_fields():
     expected = [
-        "name", "type", "compound_kind",
-        "compound_functor_id", "compound_arity", "compound_inline_col_offset",
+        "name",
+        "type",
+        "compound_kind",
+        "compound_functor_id",
+        "compound_arity",
+        "compound_inline_col_offset",
     ]
     actual = [name for name, _ in ColumnStruct._fields_]
     assert actual == expected
@@ -160,13 +166,13 @@ def test_io_adapter_struct_abi_version():
 
 
 def test_io_adapter_struct_field_order():
-    expected = ["abi_version", "scheme", "description",
-                "read", "validate", "user_data"]
+    expected = ["abi_version", "scheme", "description", "read", "validate", "user_data"]
     actual = [name for name, _ in IOAdapterStruct._fields_]
     assert actual == expected
 
 
 # ---- Callback types --------------------------------------------------------
+
 
 def test_callback_types_distinct():
     """OnTupleFn and OnDeltaFn must be distinct ctypes function types."""
@@ -175,10 +181,12 @@ def test_callback_types_distinct():
 
 def test_on_tuple_fn_signature():
     """OnTupleFn must have the documented (str, int64*, u32, void*) -> None shape."""
+
     # Build a no-op trampoline and verify it can be assigned through the type.
     @OnTupleFn
     def _noop(relation, row, ncols, user_data):
         return None
+
     assert isinstance(_noop, OnTupleFn)
 
 
@@ -186,6 +194,7 @@ def test_on_delta_fn_signature():
     @OnDeltaFn
     def _noop(relation, row, ncols, diff, user_data):
         return None
+
     assert isinstance(_noop, OnDeltaFn)
 
 

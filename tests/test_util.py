@@ -1,4 +1,5 @@
 """Tests for `pyrewire._ffi._util`."""
+
 from __future__ import annotations
 
 import re

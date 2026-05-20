@@ -6,7 +6,27 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install lint deps
+        run: pip install black isort flake8 mypy
+      - name: black --check
+        run: black --check .
+      - name: isort --check
+        run: isort --check-only .
+      - name: flake8
+        run: flake8 .
+      - name: mypy
+        run: mypy .
+
   test:
+    needs: lint
     name: ${{ matrix.os }} / py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
     strategy:

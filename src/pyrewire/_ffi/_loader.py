@@ -8,6 +8,7 @@ older wirelog builds that omit the symbol cause a
 `WirelogVersionUnavailableWarning` and the load proceeds with library
 presence confirmed via a sentinel-symbol probe.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -69,7 +70,9 @@ def _candidate_paths() -> list[str]:
     try:
         result = subprocess.run(
             ["pkg-config", "--variable=libdir", "wirelog"],
-            capture_output=True, text=True, timeout=5,
+            capture_output=True,
+            text=True,
+            timeout=5,
         )
         if result.returncode == 0 and result.stdout.strip():
             out.append(str(Path(result.stdout.strip()) / soname))
@@ -110,7 +113,9 @@ def load_libwirelog() -> ctypes.CDLL:
     raise OSError(
         "Could not find libwirelog. Tried (in order):\n"
         + ("\n".join(errors) if errors else "  (no candidates)")
-        + "\n\nSet WIRELOG_LIB=/absolute/path/to/" + _soname() + " or install "
+        + "\n\nSet WIRELOG_LIB=/absolute/path/to/"
+        + _soname()
+        + " or install "
         "wirelog into a directory the dynamic linker searches."
     )
 

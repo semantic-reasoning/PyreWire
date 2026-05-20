@@ -3,6 +3,7 @@
 This test module is one of the two files allowed (by project convention) to
 reach into `pyrewire._ffi` directly: it exercises the loader itself.
 """
+
 from __future__ import annotations
 
 import ctypes
@@ -26,7 +27,6 @@ from pyrewire._ffi._loader import (
     _pep440_base,
     _soname,
     _verify_version,
-    load_libwirelog,
 )
 
 
@@ -99,6 +99,7 @@ def test_verify_version_raises_on_mismatch():
 def test_verify_version_accepts_match(monkeypatch):
     """If wirelog_version_string equals pyrewire.__version__ (base), pass."""
     import pyrewire
+
     monkeypatch.setattr(pyrewire, "__version__", "0.40.99+py1")
 
     fake = MagicMock()
@@ -131,20 +132,19 @@ def test_missing_library_raises_oserror_listing_candidates(tmp_path):
     # cannot rescue the subprocess.
     env["LD_LIBRARY_PATH"] = ""
     env["PATH"] = "/usr/bin:/bin"
-    repo_root = os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.dirname(loader.__file__)))
-    )
+    repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(loader.__file__))))
     result = subprocess.run(
         [sys.executable, "-c", code],
         cwd=repo_root,
-        capture_output=True, text=True, env=env, timeout=15,
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=15,
     )
-    assert result.returncode != 0, (
-        f"subprocess unexpectedly succeeded; stderr={result.stderr!r}"
-    )
-    assert "OSError" in result.stderr or "Could not find libwirelog" in result.stderr, (
-        f"OSError not raised at import; stderr={result.stderr!r}"
-    )
-    assert str(nonexistent) in result.stderr, (
-        f"candidate path missing from error message; stderr={result.stderr!r}"
-    )
+    assert result.returncode != 0, f"subprocess unexpectedly succeeded; stderr={result.stderr!r}"
+    assert (
+        "OSError" in result.stderr or "Could not find libwirelog" in result.stderr
+    ), f"OSError not raised at import; stderr={result.stderr!r}"
+    assert (
+        str(nonexistent) in result.stderr
+    ), f"candidate path missing from error message; stderr={result.stderr!r}"
