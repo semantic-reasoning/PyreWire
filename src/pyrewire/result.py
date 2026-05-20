@@ -1,21 +1,21 @@
 """Result handling for wirelog evaluation."""
 
-from typing import Dict, List, Optional, Tuple
+from typing import Any
 
 
 class Result:
     """Represents the result of a wirelog program evaluation."""
 
-    def __init__(self, relations: Optional[Dict[str, List[Tuple]]] = None):
+    def __init__(self, relations: dict[str, list[tuple[Any, ...]]] | None = None) -> None:
         """
         Initialize a Result.
 
         Args:
             relations: Dictionary mapping relation names to result tuples
         """
-        self.relations = relations or {}
+        self.relations: dict[str, list[tuple[Any, ...]]] = relations or {}
 
-    def get_relation(self, name: str) -> List[tuple]:
+    def get_relation(self, name: str) -> list[tuple[Any, ...]]:
         """
         Get results for a specific relation.
 

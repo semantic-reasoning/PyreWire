@@ -38,7 +38,7 @@ def test_lib_is_loaded_cdll():
 
 def test_lib_exposes_sentinel_symbol():
     """The sentinel symbol used to confirm the library is wirelog must resolve."""
-    fn = getattr(LIB, "wirelog_easy_open")
+    fn = LIB.wirelog_easy_open
     assert fn is not None
 
 

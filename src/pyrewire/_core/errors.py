@@ -22,7 +22,6 @@ net.
 from __future__ import annotations
 
 import ctypes
-from typing import Dict, Type
 
 from .._ffi import LIB
 from .._ffi._enums import ErrorCode
@@ -96,7 +95,7 @@ class WirelogInternError(WirelogError):
 
 # --- Error-code mapping -----------------------------------------------------
 
-_CODE_TO_CLS: Dict[int, Type[WirelogError]] = {
+_CODE_TO_CLS: dict[int, type[WirelogError]] = {
     int(ErrorCode.PARSE): ParseError,
     int(ErrorCode.INVALID_IR): InvalidIRError,
     int(ErrorCode.EXEC): ExecError,
@@ -106,7 +105,7 @@ _CODE_TO_CLS: Dict[int, Type[WirelogError]] = {
     int(ErrorCode.COMPOUND_BUSY): CompoundBusyError,
 }
 
-_FALLBACK_TEXT: Dict[int, str] = {
+_FALLBACK_TEXT: dict[int, str] = {
     int(ErrorCode.OK): "OK",
     int(ErrorCode.PARSE): "parse error",
     int(ErrorCode.INVALID_IR): "invalid IR",
@@ -119,7 +118,7 @@ _FALLBACK_TEXT: Dict[int, str] = {
 }
 
 
-def _load_error_string_fn() -> "ctypes._FuncPointer | None":
+def _load_error_string_fn() -> ctypes._FuncPointer | None:
     """Resolve `wirelog_error_string` once if available; None otherwise.
 
     Returns None against pre-#841 builds so callers fall back to the

@@ -1,6 +1,6 @@
 """Main Program interface for wirelog."""
 
-from typing import Any, List, Tuple
+from typing import Any
 
 from pyrewire.result import Result
 
@@ -8,13 +8,13 @@ from pyrewire.result import Result
 class Program:
     """A wirelog program wrapper."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize a new wirelog program."""
-        self.relations = {}
-        self.facts = []
-        self.rules = []
+        self.relations: dict[str, list[tuple[str, str]]] = {}
+        self.facts: list[tuple[str, list[Any]]] = []
+        self.rules: list[str] = []
 
-    def declare_relation(self, name: str, fields: List[Tuple[str, str]]) -> None:
+    def declare_relation(self, name: str, fields: list[tuple[str, str]]) -> None:
         """
         Declare a relation.
 
@@ -24,7 +24,7 @@ class Program:
         """
         self.relations[name] = fields
 
-    def add_fact(self, relation: str, values: List[Any]) -> None:
+    def add_fact(self, relation: str, values: list[Any]) -> None:
         """
         Add a fact to the program.
 

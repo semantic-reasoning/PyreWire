@@ -12,7 +12,8 @@ paired with pre-#841 libwirelog builds.
 from __future__ import annotations
 
 import ctypes
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from . import LIB
 from ._enums import AggFn, ArithOp, CmpOp
