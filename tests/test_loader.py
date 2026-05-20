@@ -129,8 +129,12 @@ def test_missing_library_raises_oserror_listing_candidates(tmp_path):
     env = {**os.environ}
     env.pop("WIRELOG_LIB", None)
     # Hide any system-installed libwirelog so ctypes.util.find_library
-    # cannot rescue the subprocess.
+    # cannot rescue the subprocess. Clear LD_LIBRARY_PATH (Linux),
+    # DYLD_LIBRARY_PATH / DYLD_FALLBACK_LIBRARY_PATH (macOS), and
+    # PATH so the dynamic linker has no fallback search dirs.
     env["LD_LIBRARY_PATH"] = ""
+    env["DYLD_LIBRARY_PATH"] = ""
+    env["DYLD_FALLBACK_LIBRARY_PATH"] = ""
     env["PATH"] = "/usr/bin:/bin"
     repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(loader.__file__))))
     result = subprocess.run(
