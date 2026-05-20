@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-13]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: install meson + ninja
+        run: pip install meson ninja
+
+      - name: build wirelog from source
+        shell: bash
+        env:
+          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || '0.40.99' }}
+          WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
+        run: bash scripts/build_wirelog.sh
+
+      - name: install pyrewire
+        run: pip install -e ".[dev]"
+
+      - name: pytest with coverage gate
+        shell: bash
+        env:
+          WIRELOG_LIB: ${{ runner.temp }}/wirelog-install/lib/libwirelog.so.1
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            export WIRELOG_LIB=${{ runner.temp }}/wirelog-install/lib/libwirelog.1.dylib
+          fi
+          pytest -q

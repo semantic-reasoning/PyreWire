@@ -39,9 +39,9 @@ class WirelogVersionUnavailableWarning(UserWarning):
 
 
 def _soname() -> str:
-    if sys.platform == "darwin":
+    if sys.platform == "darwin":  # pragma: no cover - macOS-only branch
         return "libwirelog.1.dylib"
-    if sys.platform == "win32":
+    if sys.platform == "win32":  # pragma: no cover - Windows-only branch
         return "wirelog-1.dll"
     return "libwirelog.so.1"
 
@@ -146,7 +146,7 @@ def _verify_version(handle: ctypes.CDLL) -> None:
     fn.restype = ctypes.c_char_p
     fn.argtypes = []
     raw = fn()
-    if raw is None:
+    if raw is None:  # pragma: no cover - wirelog never returns NULL here
         warnings.warn(
             "wirelog_version_string returned NULL; skipping version check.",
             WirelogVersionUnavailableWarning,
