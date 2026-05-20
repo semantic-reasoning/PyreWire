@@ -15,7 +15,8 @@ jobs:
         with:
           python-version: "3.12"
       - name: install lint deps
-        run: pip install black isort flake8 mypy
+        # pytest is needed so mypy can find its stubs when type-checking tests/.
+        run: pip install black isort flake8 mypy pytest
       - name: black --check
         run: black --check .
       - name: isort --check
