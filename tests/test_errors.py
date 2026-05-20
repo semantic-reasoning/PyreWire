@@ -60,9 +60,12 @@ def test_error_string_returns_str_for_each_known_code():
         assert s  # non-empty
 
 
-def test_error_string_unknown_code_yields_synthetic_text():
+def test_error_string_unknown_code_does_not_raise():
+    """Unknown codes get either libwirelog's placeholder text or the
+    PyreWire synthetic text. Contract: non-empty string, never raises."""
     s = error_string(7777)
-    assert "7777" in s
+    assert isinstance(s, str)
+    assert s
 
 
 def test_parse_error_carries_optional_fields():

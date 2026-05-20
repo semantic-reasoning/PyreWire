@@ -1,13 +1,12 @@
 """libwirelog discovery, loading, and runtime version verification.
 
-Implementation note (wirelog 0.40.99): the public header declares
-`wirelog_version_string` as `WIRELOG_API`, but the symbol is missing from
-`abi/libwirelog-1.0.symbols` and therefore not exported by the built shared
-object. Tracked upstream at semantic-reasoning/wirelog#841. When the symbol
-is present, the loader verifies that its value matches `pyrewire.__version__`
-(PEP 440 local-version segment stripped). When absent, the loader emits a
-`WirelogVersionUnavailableWarning` and proceeds; library presence is then
-confirmed via a sentinel symbol probe.
+When `wirelog_version_string` is exported (the default since
+semantic-reasoning/wirelog#841 landed), the loader verifies that its
+value matches `pyrewire.__version__` (PEP 440 local-version segment
+stripped). The pre-#841 fallback path is kept for forward-compatibility:
+older wirelog builds that omit the symbol cause a
+`WirelogVersionUnavailableWarning` and the load proceeds with library
+presence confirmed via a sentinel-symbol probe.
 """
 from __future__ import annotations
 
@@ -33,8 +32,9 @@ class WirelogVersionError(Exception):
 class WirelogVersionUnavailableWarning(UserWarning):
     """Emitted when libwirelog does not export wirelog_version_string.
 
-    Tracking upstream: semantic-reasoning/wirelog#841. Once the symbol ships
-    in a released wirelog ABI, this warning will no longer fire.
+    Should not fire against any wirelog build after semantic-reasoning/wirelog#841
+    (resolved). Surfacing it means PyreWire is paired with a pre-fix
+    libwirelog; upgrade the wirelog install.
     """
 
 
@@ -126,8 +126,8 @@ def _pep440_base(version: str) -> str:
 def _verify_version(handle: ctypes.CDLL) -> None:
     """Compare libwirelog's reported version against `pyrewire.__version__`.
 
-    If `wirelog_version_string` is not exported (wirelog#841 workaround),
-    emit `WirelogVersionUnavailableWarning` and proceed without comparison.
+    Pre-#841 builds without `wirelog_version_string` emit
+    `WirelogVersionUnavailableWarning` and skip the comparison.
     """
     from pyrewire import __version__
 
@@ -136,9 +136,9 @@ def _verify_version(handle: ctypes.CDLL) -> None:
         fn = handle.wirelog_version_string
     except AttributeError:
         warnings.warn(
-            "libwirelog does not export wirelog_version_string; "
-            "cannot verify the loaded library matches pyrewire "
-            f"{expected!r}. Tracked at semantic-reasoning/wirelog#841.",
+            "libwirelog does not export wirelog_version_string; cannot "
+            f"verify the loaded library matches pyrewire {expected!r}. "
+            "Upgrade libwirelog to a post-#841 build.",
             WirelogVersionUnavailableWarning,
             stacklevel=2,
         )

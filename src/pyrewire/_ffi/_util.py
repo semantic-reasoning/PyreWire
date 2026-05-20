@@ -1,16 +1,12 @@
 """Wrappers for wirelog utility entry points (version, error_string,
 config probes, enum-to-string converters).
 
-Adapted for semantic-reasoning/wirelog#841: `wirelog_version_string`,
-`wirelog_error_string`, and `wirelog_config_*` are declared `WIRELOG_API`
-in the headers but are not in the public ABI manifest of wirelog 0.40.99.
-This module attempts to resolve each symbol lazily; when a symbol is
-unexported, it returns a PyreWire-side fallback so user code does not
-crash. The three enum-to-string helpers (`cmp_op_str`, `arith_op_str`,
-`agg_fn_str`) are exported and work natively.
-
-When wirelog ships the missing symbols, the fallbacks transparently
-yield to the live values without any caller change.
+Each symbol is resolved lazily through `_try_resolve(name, restype, args)`.
+If the symbol is exported (the default since semantic-reasoning/wirelog#841)
+the wrapper calls into libwirelog directly; if not, a PyreWire-side
+fallback table or `None` keeps user code from crashing. The fallback
+paths are kept indefinitely as a forward-compatibility net for users
+paired with pre-#841 libwirelog builds.
 """
 from __future__ import annotations
 
@@ -56,17 +52,19 @@ _config_threads_fn = _try_resolve("wirelog_config_threads", ctypes.c_bool, [])
 def wirelog_version() -> str:
     """Return the loaded libwirelog's version string.
 
-    Prefers `LIB.wirelog_version_string()` when exported. Falls back to
-    `pyrewire.__version__` (PEP 440 local-version segment stripped) per
-    PyreWire's versioning rule that the two are kept in lock-step.
+    Prefers `LIB.wirelog_version_string()`. Falls back to
+    `pyrewire.__version__` (PEP 440 local-version segment stripped) only
+    against pre-#841 builds without the symbol; PyreWire's versioning
+    rule keeps the two in lock-step so the fallback is informationally
+    equivalent.
     """
     if _version_fn is not None:
         raw = _version_fn()
         if raw:
             return raw.decode("utf-8", errors="replace")
-    # Fallback (wirelog#841): we cannot ask the library, so report what
-    # pyrewire is pinned to. The loader has already verified library
-    # presence via the sentinel-symbol probe.
+    # Pre-#841 fallback: cannot ask the library; report what pyrewire is
+    # pinned to. The loader has already confirmed library presence via
+    # the sentinel-symbol probe.
     from .. import __version__  # local import to avoid early circular load
     from ._loader import _pep440_base
     return _pep440_base(__version__)
@@ -76,9 +74,9 @@ def build_config() -> dict[str, bool | None]:
     """Return wirelog build-config flags.
 
     Returns `{'embedded': bool|None, 'ipc': bool|None, 'threads': bool|None}`.
-    `None` for a flag means wirelog did not expose the corresponding
-    `wirelog_config_*` probe (wirelog#841); callers should treat unknown
-    flags as 'no information', not as `False`.
+    `None` for a flag means the corresponding `wirelog_config_*` probe is
+    not exported (pre-#841 build); callers should treat `None` as
+    'no information', not as `False`.
     """
     return {
         "embedded": bool(_config_embedded_fn()) if _config_embedded_fn else None,
