@@ -40,6 +40,13 @@ jobs:
         env:
           CIBW_BUILD_VERBOSITY: 1
 
+      - name: verify dynamic link (#32)
+        # Fails the build if a wheel ships libwirelog as a static
+        # archive (license boundary) or is missing the bundled
+        # library entirely (loader would fail at import time).
+        shell: bash
+        run: python scripts/ci/check_dynamic_link.py wheelhouse/*.whl
+
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}
