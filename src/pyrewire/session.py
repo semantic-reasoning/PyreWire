@@ -25,7 +25,7 @@ from ._core.intern import InternTable
 from ._ffi import LIB
 from ._ffi import _advanced as _advanced_ffi  # noqa: F401  -- registers argtypes
 from ._ffi import _easy as _easy_ffi  # noqa: F401  -- registers argtypes
-from ._ffi._enums import BackendKind
+from ._ffi._enums import BackendKind, ColumnType
 from ._ffi._types import (
     EASY_OPEN_OPTS_SIZE,
     CompoundArgStruct,
@@ -158,10 +158,13 @@ class EasySession(AbstractContextManager["EasySession"]):
         except Exception:
             self._schema_program = None
         # Per-relation Schema cache (#43). Populated lazily by
-        # `_schema_for(rel)`; `step()` / `snapshot()` (when they ship
-        # with the wirelog#852 tag) decode rows through this cache so
-        # the wirelog program is only consulted once per relation.
+        # `_schema_for(rel)`; `step()` / `snapshot()` decode rows
+        # through this cache so the wirelog program is only consulted
+        # once per relation.
         self._schema_cache: dict[str, Schema] = {}
+        # Delta-mode callback handle (#10). Created lazily on the
+        # first `set_delta_callback` / `step` call.
+        self._delta_cb: CallbackHandle | None = None
 
     # --- intern -------------------------------------------------------------
 
@@ -280,6 +283,123 @@ class EasySession(AbstractContextManager["EasySession"]):
     _SYM_MAX = 16
     _SYM_FIXED_ARGTYPES = (EasySessionHandle, ctypes.c_char_p)
 
+    # --- step / set_delta_callback / snapshot (#10 + #11) ----------------
+
+    def set_delta_callback(
+        self,
+        fn: Callable[[tuple[str, tuple[object, ...], int]], None] | None,
+    ) -> None:
+        """Register (or clear) a user callable invoked once per delta
+        produced by `step()`. Commits the session to INCREMENTAL mode.
+
+        Rejects `wirelog_easy_print_delta` (and other ctypes function
+        pointers that alias it) — the C function aborts the process on
+        a missing reverse-intern. Use
+        :func:`pyrewire.helpers.make_safe_print_delta` instead.
+        """
+        if fn is not None:
+            from .helpers import is_wirelog_print_delta
+
+            if is_wirelog_print_delta(fn):
+                raise TypeError(
+                    "Refusing to register wirelog_easy_print_delta as a "
+                    "Python delta callback: it calls abort() on a missing "
+                    "reverse-intern. Use "
+                    "pyrewire.helpers.make_safe_print_delta(session._intern) "
+                    "instead."
+                )
+        self._require_mode(_Mode.INCREMENTAL)
+        if fn is None:
+            if self._delta_cb is not None:
+                with self._serialize():
+                    rc = LIB.wirelog_easy_set_delta_cb(self._handle, OnDeltaFn(), None)
+                check(rc)
+                self._delta_cb.close()
+                self._delta_cb = None
+            return
+        if self._delta_cb is None:
+            self._delta_cb = CallbackHandle("delta")
+        self._delta_cb._state.user_fn = fn
+        with self._serialize():
+            rc = LIB.wirelog_easy_set_delta_cb(
+                self._handle, self._delta_cb.fn, self._delta_cb.user_data
+            )
+        check(rc)
+
+    def step(self) -> list[tuple[str, tuple[object, ...], int]]:
+        """Drive one fixpoint step. Returns decoded delta events with
+        `STRING` columns reverse-interned through the session's
+        `InternTable` and numeric/bool/float columns decoded by the
+        per-relation schema cache. Commits the session to INCREMENTAL
+        mode."""
+        self._require_mode(_Mode.INCREMENTAL)
+        if self._delta_cb is None:
+            self._delta_cb = CallbackHandle("delta")
+            with self._serialize():
+                rc = LIB.wirelog_easy_set_delta_cb(
+                    self._handle, self._delta_cb.fn, self._delta_cb.user_data
+                )
+            check(rc)
+        with self._serialize():
+            rc = LIB.wirelog_easy_step(self._handle)
+        check(rc)
+        events = self._delta_cb.drain()
+        decoded: list[tuple[str, tuple[object, ...], int]] = []
+        for _kind, rel, ids, diff in events:
+            decoded.append((rel, self._decode_row(rel, ids), int(diff)))
+        user_fn = self._delta_cb._state.user_fn
+        if user_fn is not None:
+            for ev in decoded:
+                user_fn(ev)
+        return decoded
+
+    def snapshot(self, relation: str) -> list[tuple[object, ...]]:
+        """Forward every IDB tuple of `relation` via a one-shot
+        callback. Commits the session to QUERY mode."""
+        self._require_mode(_Mode.QUERY)
+        cb = CallbackHandle("tuple")
+        try:
+            with self._serialize():
+                rc = LIB.wirelog_easy_snapshot(
+                    self._handle,
+                    relation.encode("utf-8"),
+                    cb.fn,
+                    cb.user_data,
+                )
+            check(rc)
+            events = cb.drain()
+        finally:
+            cb.close()
+        return [self._decode_row(rel, ids) for _kind, rel, ids in events]
+
+    def _decode_row(self, relation: str, ids: tuple[int, ...]) -> tuple[object, ...]:
+        """Map an int64 row back to typed Python values via the schema
+        cache and the session's InternTable."""
+        try:
+            sch = self._schema_for(relation)
+        except ExecError:
+            # Unknown relation — surface raw ids rather than crashing.
+            return tuple(int(v) for v in ids)
+        out: list[object] = []
+        ncols = min(len(sch.columns), len(ids))
+        for i in range(ncols):
+            col = sch.columns[i]
+            raw = ids[i]
+            if col.type == ColumnType.STRING:
+                try:
+                    out.append(self._intern.lookup(int(raw)))
+                except Exception:
+                    out.append(int(raw))
+            elif col.type == ColumnType.BOOL:
+                out.append(bool(raw))
+            elif col.type == ColumnType.FLOAT:
+                out.append(ctypes.c_double.from_buffer_copy(ctypes.c_int64(raw)).value)
+            else:
+                out.append(int(raw))
+        for j in range(ncols, len(ids)):
+            out.append(int(ids[j]))
+        return tuple(out)
+
     def insert_sym(self, relation: str, *symbols: str) -> None:
         """Insert one row by listing its `STRING` symbols inline.
 
@@ -368,6 +488,15 @@ class EasySession(AbstractContextManager["EasySession"]):
                 self._schema_program.close()
                 self._schema_program = None
             self._schema_cache.clear()
+            if self._delta_cb is not None:
+                # Best-effort clear before tearing down the slot;
+                # wirelog may have already invalidated the pointer.
+                try:
+                    LIB.wirelog_easy_set_delta_cb(self._handle, OnDeltaFn(), None)
+                except Exception:
+                    pass
+                self._delta_cb.close()
+                self._delta_cb = None
             if self._handle.value:
                 LIB.wirelog_easy_close(self._handle)
             self._handle = EasySessionHandle()
