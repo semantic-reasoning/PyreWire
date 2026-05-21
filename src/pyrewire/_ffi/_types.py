@@ -143,7 +143,11 @@ _IOReadFn = ctypes.CFUNCTYPE(
 _IOValidateFn = ctypes.CFUNCTYPE(
     ctypes.c_int,
     IOCtxHandle,
-    ctypes.c_char_p,
+    # `POINTER(c_char)` (not `c_char_p`) so the Python trampoline
+    # receives a writeable pointer it can `memmove` into; `c_char_p`
+    # surfaces as a read-only `bytes` and would silently drop the
+    # message wirelog expects to read back.
+    ctypes.POINTER(ctypes.c_char),
     ctypes.c_size_t,
     ctypes.c_void_p,
 )
