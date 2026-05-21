@@ -36,6 +36,12 @@ from pyrewire._ffi._util import (
     wirelog_version,
 )
 from pyrewire.batch import BatchProgram, Result
+from pyrewire.io_adapter import (
+    IOContext,
+    register_adapter,
+    registered_schemes,
+    unregister_adapter,
+)
 from pyrewire.ir import IRNode
 from pyrewire.program import Column, Program, Schema, Stratum
 from pyrewire.session import EasySession, Session
@@ -52,6 +58,10 @@ __all__ = [
     "IRNodeType",
     "BatchProgram",
     "Result",
+    "IOContext",
+    "register_adapter",
+    "unregister_adapter",
+    "registered_schemes",
     "ColumnType",
     "CompoundKind",
     "BackendKind",
