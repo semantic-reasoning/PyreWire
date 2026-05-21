@@ -35,7 +35,7 @@ from ._ffi._types import (
     SessionHandle,
 )
 from .compound import Compound, CompoundArg
-from .program import Program
+from .program import Program, Schema
 
 try:  # NumPy is an optional dependency for the zero-copy path (#22).
     import numpy as _np
@@ -157,6 +157,11 @@ class EasySession(AbstractContextManager["EasySession"]):
             self._schema_program: Program | None = Program.from_string(dl_src)
         except Exception:
             self._schema_program = None
+        # Per-relation Schema cache (#43). Populated lazily by
+        # `_schema_for(rel)`; `step()` / `snapshot()` (when they ship
+        # with the wirelog#852 tag) decode rows through this cache so
+        # the wirelog program is only consulted once per relation.
+        self._schema_cache: dict[str, Schema] = {}
 
     # --- intern -------------------------------------------------------------
 
@@ -168,6 +173,30 @@ class EasySession(AbstractContextManager["EasySession"]):
         first call for the same string."""
         with self._serialize():
             return self._intern.intern(value)
+
+    # --- schema cache (#43) ------------------------------------------------
+
+    def _schema_for(self, relation: str) -> Schema:
+        """Return the relation's `Schema`, cached after the first lookup.
+
+        Used by the forthcoming `step()` / `snapshot()` (and the existing
+        `_decode_row` helper in the advanced `Session`) to turn raw
+        `int64` rows back into typed Python values.
+
+        Raises `ExecError` if the relation is not declared in the
+        owned program, or if the helper Program could not be built at
+        session open time.
+        """
+        cached = self._schema_cache.get(relation)
+        if cached is not None:
+            return cached
+        if self._schema_program is None:
+            raise ExecError(f"schema cache is closed; cannot decode relation {relation!r}")
+        sch = self._schema_program.schema(relation)
+        if sch is None:
+            raise ExecError(f"no schema for relation: {relation!r}")
+        self._schema_cache[relation] = sch
+        return sch
 
     # --- inline-fact preview (#47) -----------------------------------------
 
@@ -338,6 +367,7 @@ class EasySession(AbstractContextManager["EasySession"]):
             if self._schema_program is not None:
                 self._schema_program.close()
                 self._schema_program = None
+            self._schema_cache.clear()
             if self._handle.value:
                 LIB.wirelog_easy_close(self._handle)
             self._handle = EasySessionHandle()
