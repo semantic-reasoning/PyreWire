@@ -165,6 +165,10 @@ class EasySession(AbstractContextManager["EasySession"]):
         # Delta-mode callback handle (#10). Created lazily on the
         # first `set_delta_callback` / `step` call.
         self._delta_cb: CallbackHandle | None = None
+        # Keep ctypes input buffers alive until the next evaluating
+        # easy-facade call.  The C incremental path may retain pointers
+        # from insert/remove and consume them during step/snapshot.
+        self._pending_easy_inputs: list[tuple[bytes, Any]] = []
 
     # --- intern -------------------------------------------------------------
 
@@ -244,27 +248,31 @@ class EasySession(AbstractContextManager["EasySession"]):
         """Insert one row. Each `str` element is auto-interned."""
         ids = self._row_to_int64(row)
         arr = (ctypes.c_int64 * len(ids))(*ids)
+        relation_b = relation.encode("utf-8")
         with self._serialize():
             rc = LIB.wirelog_easy_insert(
                 self._handle,
-                relation.encode("utf-8"),
+                relation_b,
                 arr,
                 ctypes.c_uint32(len(ids)),
             )
         check(rc)
+        self._pending_easy_inputs.append((relation_b, arr))
 
     def remove(self, relation: str, row: Row) -> None:
         """Retract one row (z-set multiplicity decrement by 1)."""
         ids = self._row_to_int64(row)
         arr = (ctypes.c_int64 * len(ids))(*ids)
+        relation_b = relation.encode("utf-8")
         with self._serialize():
             rc = LIB.wirelog_easy_remove(
                 self._handle,
-                relation.encode("utf-8"),
+                relation_b,
                 arr,
                 ctypes.c_uint32(len(ids)),
             )
         check(rc)
+        self._pending_easy_inputs.append((relation_b, arr))
 
     # --- variadic *_sym wrappers (#44) -------------------------------------
     #
@@ -344,6 +352,7 @@ class EasySession(AbstractContextManager["EasySession"]):
             rc = LIB.wirelog_easy_step(self._handle)
         check(rc)
         events = self._delta_cb.drain()
+        self._pending_easy_inputs.clear()
         decoded: list[tuple[str, tuple[object, ...], int]] = []
         for _kind, rel, ids, diff in events:
             decoded.append((rel, self._decode_row(rel, ids), int(diff)))
@@ -368,6 +377,7 @@ class EasySession(AbstractContextManager["EasySession"]):
                 )
             check(rc)
             events = cb.drain()
+            self._pending_easy_inputs.clear()
         finally:
             cb.close()
         return [self._decode_row(rel, ids) for _kind, rel, ids in events]
@@ -428,16 +438,18 @@ class EasySession(AbstractContextManager["EasySession"]):
         # symbols + NULL terminator. Pre-wrap each variadic arg in
         # `c_char_p` so the default ctypes coercion is bypassed.
         prev_argtypes = fn.argtypes
+        relation_b = relation.encode("utf-8")
         try:
             with self._serialize():
                 fn.argtypes = list(self._SYM_FIXED_ARGTYPES)
-                args: list[Any] = [self._handle, relation.encode("utf-8")]
+                args: list[Any] = [self._handle, relation_b]
                 args.extend(ctypes.c_char_p(s.encode("utf-8")) for s in symbols)
                 args.append(ctypes.c_char_p(None))  # NULL terminator
                 rc = fn(*args)
         finally:
             fn.argtypes = prev_argtypes
         check(rc)
+        self._pending_easy_inputs.append((relation_b, args))
         for s in symbols:
             self._intern.intern(s)
 
@@ -488,6 +500,7 @@ class EasySession(AbstractContextManager["EasySession"]):
                 self._schema_program.close()
                 self._schema_program = None
             self._schema_cache.clear()
+            self._pending_easy_inputs.clear()
             if self._delta_cb is not None:
                 # Best-effort clear before tearing down the slot;
                 # wirelog may have already invalidated the pointer.
