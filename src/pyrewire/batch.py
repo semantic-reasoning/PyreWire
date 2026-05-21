@@ -28,6 +28,7 @@ from types import TracebackType
 from typing import Any
 
 from ._core.errors import ExecError, check
+from ._core.stdcapture import capture_c_stdout
 from ._ffi import LIB
 from ._ffi import _executor as _executor_ffi  # noqa: F401  -- registers argtypes
 from ._ffi._enums import ColumnType
@@ -106,6 +107,47 @@ class BatchProgram(contextlib.AbstractContextManager["BatchProgram"]):
         if not h:
             _raise_exec(rc.value)
         return Result(ResultHandle(h), program=self._program)
+
+    def load_all_facts(self) -> None:
+        """Load every inline `.dl` fact into the executor.
+
+        Maps to `wirelog_load_all_facts`. Call before `evaluate()` to
+        seed the EDB from the program's inline facts.
+        """
+        self._check_open()
+        self._ensure_executor()
+        rc = LIB.wirelog_load_all_facts(
+            self._program._handle,
+            ctypes.cast(self._executor, ctypes.c_void_p),
+        )
+        if rc != 0:
+            check(rc)
+
+    def load_input_files(self) -> None:
+        """Process every `.input` directive in the program.
+
+        Maps to `wirelog_load_input_files`. Resolves CSV paths relative
+        to the working directory.
+        """
+        self._check_open()
+        self._ensure_executor()
+        rc = LIB.wirelog_load_input_files(
+            self._program._handle,
+            ctypes.cast(self._executor, ctypes.c_void_p),
+        )
+        if rc != 0:
+            check(rc)
+
+    def optimizer_debug(self) -> str:
+        """Return the `wirelog_optimizer_debug` output as a string.
+
+        Captures the C-level stdout the function writes through a
+        temporary fd-1 redirect.
+        """
+        self._check_open()
+        with capture_c_stdout() as buf:
+            LIB.wirelog_optimizer_debug(self._program._handle)
+        return buf.getvalue().decode("utf-8", errors="replace")
 
     # --- lifecycle ----------------------------------------------------------
 
