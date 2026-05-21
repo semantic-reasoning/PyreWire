@@ -45,6 +45,8 @@ dev = [
     # Required by tests/test_sdist_contents.py (#51); without it those
     # tests skip themselves but CI prefers them runnable.
     "build>=1.0",
+    # Required by tests/test_release_workflow_yaml.py (#37).
+    "pyyaml>=6.0",
 ]
 
 [project.urls]
