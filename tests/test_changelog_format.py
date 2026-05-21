@@ -26,7 +26,7 @@ def _project_version() -> str:
     text = (_repo_root() / "pyproject.toml").read_text()
     match = _VERSION_RE.search(text)
     if match is None:
-        raise AssertionError("pyproject.toml has no `version = \"...\"` line")
+        raise AssertionError('pyproject.toml has no `version = "..."` line')
     return match.group(1)
 
 
