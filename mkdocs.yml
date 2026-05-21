@@ -52,6 +52,11 @@ nav:
   - Home: index.md
   - Quickstart: quickstart.md
   - Versioning: versioning.md
+  - Semantics:
+      - Z-set & retraction: semantics/zset.md
+      - Step vs snapshot: semantics/step-vs-snapshot.md
+      - Compounds: semantics/compounds.md
+      - Threading: semantics/threading.md
   - Reference:
       - Sessions: reference/sessions.md
       - Async sessions: reference/async.md
