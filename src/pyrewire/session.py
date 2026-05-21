@@ -146,6 +146,18 @@ class EasySession(AbstractContextManager["EasySession"]):
         self._intern = InternTable(self._intern_raw)
         self._compounds: list[Compound] = []
 
+        # Optional side-program for Python-level introspection (#47):
+        # parses the same source again so callers can ask for schemas
+        # and inline facts without crossing the wirelog easy handle.
+        # If a re-parse fails (e.g. wirelog's parser disagrees with
+        # the easy facade about what is well-formed) we keep `None` so
+        # `preview_inline_facts` falls back to an empty list rather
+        # than aborting the session.
+        try:
+            self._schema_program: Program | None = Program.from_string(dl_src)
+        except Exception:
+            self._schema_program = None
+
     # --- intern -------------------------------------------------------------
 
     def _intern_raw(self, symbol_bytes: bytes) -> int:
@@ -156,6 +168,43 @@ class EasySession(AbstractContextManager["EasySession"]):
         first call for the same string."""
         with self._serialize():
             return self._intern.intern(value)
+
+    # --- inline-fact preview (#47) -----------------------------------------
+
+    def preview_inline_facts(self, relation: str) -> list[tuple[object, ...]]:
+        """Return rows already present in `relation` from inline `.dl`
+        facts at session open time.
+
+        Use this to dedupe against the EDB before calling `insert()`:
+
+            already = set(s.preview_inline_facts("friend"))
+            for row in incoming:
+                if tuple(row) not in already:
+                    s.insert("friend", row)
+
+        Otherwise, reinserting an inline fact raises the row's z-set
+        multiplicity to +2; a single `remove()` will not retract it.
+
+        Returns an empty list if the side-program parse failed at
+        construction (i.e. PyreWire could not build a Python-side view
+        of the program).
+        """
+        if self._schema_program is None:
+            return []
+        try:
+            return self._schema_program.facts(relation, intern=self._intern)
+        except ExecError:
+            return []
+
+    def insert_with_dedupe(self, relation: str, row: Row) -> bool:
+        """Insert `row` only if it is not already in `relation` from
+        inline facts. Returns True if a new row was inserted, False if
+        it was a duplicate that was skipped."""
+        existing = {tuple(r) for r in self.preview_inline_facts(relation)}
+        if tuple(row) in existing:
+            return False
+        self.insert(relation, row)
+        return True
 
     # --- insert / remove ----------------------------------------------------
 
@@ -286,6 +335,9 @@ class EasySession(AbstractContextManager["EasySession"]):
             for c in self._compounds:
                 c.invalidate()
             self._compounds.clear()
+            if self._schema_program is not None:
+                self._schema_program.close()
+                self._schema_program = None
             if self._handle.value:
                 LIB.wirelog_easy_close(self._handle)
             self._handle = EasySessionHandle()
@@ -387,6 +439,25 @@ class Session(AbstractContextManager["Session"]):
     @property
     def intern_table(self) -> InternTable:
         return self._intern
+
+    # --- inline-fact preview (#47) -----------------------------------------
+
+    def preview_inline_facts(self, relation: str) -> list[tuple[object, ...]]:
+        """Return rows already present in `relation` from inline `.dl`
+        facts in the borrowed program.
+
+        STRING columns are reverse-interned through this session's
+        `InternTable`. Because the advanced session has no public
+        forward-intern entry point, callers that want decoded strings
+        should `seed_intern(value, id)` for every known pair before
+        calling this method.
+
+        Returns an empty list if the relation is unknown to the program.
+        """
+        try:
+            return self._program.facts(relation, intern=self._intern)
+        except ExecError:
+            return []
 
     # --- insert / remove ---------------------------------------------------
 
