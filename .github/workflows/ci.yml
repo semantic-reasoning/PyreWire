@@ -38,7 +38,10 @@ jobs:
         # macos-14 is the ARM (Apple Silicon) runner. Intel macos-13 is
         # often heavily queued; ARM has more capacity in the GitHub-hosted
         # pool and is also the architecture wheels target for new Macs.
-        os: [ubuntu-22.04, macos-14]
+        # windows-2022 covers the MSVC toolchain that wheels.yml already
+        # exercises via cibuildwheel; this matrix entry catches MSVC
+        # regressions on every PR instead of only at tag time.
+        os: [ubuntu-22.04, macos-14, windows-2022]
         python: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
@@ -47,10 +50,17 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      # Activate the MSVC 2022 environment (vcvars) so meson + ninja
+      # pick `cl.exe` instead of any stray clang/MinGW gcc on PATH.
+      - name: setup MSVC dev env
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: install meson + ninja
         run: pip install meson ninja
 
-      - name: build wirelog from source
+      - name: build wirelog from source (POSIX)
+        if: runner.os != 'Windows'
         shell: bash
         env:
           # PyreWire pins to wirelog tagged releases (not `main`) so the
@@ -60,6 +70,14 @@ jobs:
           WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
           WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: bash scripts/build_wirelog.sh
+
+      - name: build wirelog from source (Windows / MSVC)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
+          WIRELOG_PREFIX: ${{ runner.temp }}\wirelog-install
+        run: pwsh scripts/build_wirelog.ps1
 
       - name: install pyrewire
         run: pip install -e ".[dev]"
@@ -79,6 +97,13 @@ jobs:
               export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.dylib"
             fi
             export DYLD_LIBRARY_PATH="$WIRELOG_PREFIX/lib:${DYLD_LIBRARY_PATH:-}"
+          elif [ "$RUNNER_OS" = "Windows" ]; then
+            # Meson on Windows installs the DLL into bindir (bin/) and
+            # the import library into libdir (lib/); the loader needs
+            # the DLL at runtime, so point WIRELOG_LIB at it and put
+            # its directory on PATH so dependent DLLs are also found.
+            export WIRELOG_LIB="$WIRELOG_PREFIX/bin/wirelog-1.dll"
+            export PATH="$WIRELOG_PREFIX/bin:$PATH"
           else
             export WIRELOG_LIB="$WIRELOG_PREFIX/lib/libwirelog.so.1"
             export LD_LIBRARY_PATH="$WIRELOG_PREFIX/lib:${LD_LIBRARY_PATH:-}"
