@@ -37,6 +37,9 @@ dev = [
     "flake8>=6.0",
     "mypy>=1.0",
     "numpy>=1.24",
+    # Required by tests/test_sdist_contents.py (#51); without it those
+    # tests skip themselves but CI prefers them runnable.
+    "build>=1.0",
 ]
 
 [project.urls]
@@ -46,8 +49,14 @@ Documentation = "https://github.com/semantic-reasoning/PyreWire#readme"
 Issues = "https://github.com/semantic-reasoning/PyreWire/issues"
 
 [tool.setuptools]
-packages = ["pyrewire"]
+packages = ["pyrewire", "pyrewire._core", "pyrewire._ffi", "pyrewire._lib"]
 package-dir = {"" = "src"}
+
+# Belt-and-suspenders with MANIFEST.in: different setuptools versions
+# consult these rules in slightly different orders, so we list them in
+# both places. See #51 for the rationale.
+[tool.setuptools.exclude-package-data]
+"pyrewire._lib" = ["*.so", "*.so.*", "*.dylib", "*.dll", "*.pyd"]
 
 [tool.black]
 line-length = 100
