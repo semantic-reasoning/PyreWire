@@ -38,7 +38,7 @@ from pyrewire._ffi._util import (
 from pyrewire.batch import BatchProgram, Result
 from pyrewire.ir import IRNode
 from pyrewire.program import Column, Program, Schema, Stratum
-from pyrewire.session import EasySession
+from pyrewire.session import EasySession, Session
 
 __all__ = [
     "__version__",
@@ -47,6 +47,7 @@ __all__ = [
     "Column",
     "Stratum",
     "EasySession",
+    "Session",
     "IRNode",
     "IRNodeType",
     "BatchProgram",
