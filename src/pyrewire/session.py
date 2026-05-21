@@ -28,11 +28,13 @@ from ._ffi import _easy as _easy_ffi  # noqa: F401  -- registers argtypes
 from ._ffi._enums import BackendKind
 from ._ffi._types import (
     EASY_OPEN_OPTS_SIZE,
+    CompoundArgStruct,
     EasyOpenOptsStruct,
     EasySessionHandle,
     OnDeltaFn,
     SessionHandle,
 )
+from .compound import Compound, CompoundArg
 from .program import Program
 
 try:  # NumPy is an optional dependency for the zero-copy path (#22).
@@ -54,6 +56,40 @@ class _Mode(Enum):
     UNSET = 0
     INCREMENTAL = 1
     QUERY = 2
+
+
+def _make_compound_call(
+    fn: Any,
+    handle: Any,
+    functor: str,
+    args: Sequence[CompoundArg],
+    serialize_cm: Any,
+) -> int:
+    """Shared core of `make_compound` for both session classes.
+
+    Builds the `wirelog_compound_arg_t[]` array, invokes `fn` under the
+    given serialise context, and returns the raw `uint64_t` handle.
+    Raises `WirelogError` (subclass) on a non-OK rc.
+    """
+    n = len(args)
+    arr_t = CompoundArgStruct * max(n, 1)
+    if n:
+        arr = arr_t(*(a.to_struct() for a in args))
+    else:
+        arr = arr_t()
+    out = ctypes.c_uint64(0)
+    with serialize_cm:
+        rc = fn(
+            handle,
+            functor.encode("utf-8"),
+            ctypes.c_uint32(n),
+            arr,
+            ctypes.byref(out),
+        )
+    check(rc)
+    if out.value == 0:
+        raise ExecError(f"make_compound returned NULL handle for {functor}/{n}")
+    return int(out.value)
 
 
 class _NullCM:
@@ -108,6 +144,7 @@ class EasySession(AbstractContextManager["EasySession"]):
         self._closed: bool = False
         self._mode: _Mode = _Mode.UNSET
         self._intern = InternTable(self._intern_raw)
+        self._compounds: list[Compound] = []
 
     # --- intern -------------------------------------------------------------
 
@@ -165,6 +202,22 @@ class EasySession(AbstractContextManager["EasySession"]):
                 raise TypeError(f"unsupported row value type: {type(v).__name__}")
         return out
 
+    # --- compounds ----------------------------------------------------------
+
+    def make_compound(self, functor: str, args: Sequence[CompoundArg]) -> Compound:
+        """Allocate a session-local compound. The returned `Compound`
+        becomes invalid when this session is closed."""
+        h = _make_compound_call(
+            LIB.wirelog_easy_make_compound,
+            self._handle,
+            functor,
+            args,
+            self._serialize(),
+        )
+        c = Compound(self, functor, len(args), h)
+        self._compounds.append(c)
+        return c
+
     # --- lifecycle ----------------------------------------------------------
 
     def close(self) -> None:
@@ -172,6 +225,9 @@ class EasySession(AbstractContextManager["EasySession"]):
         if self._closed:
             return
         with self._lock if self._lock is not None else _NullCM():
+            for c in self._compounds:
+                c.invalidate()
+            self._compounds.clear()
             if self._handle.value:
                 LIB.wirelog_easy_close(self._handle)
             self._handle = EasySessionHandle()
@@ -255,6 +311,7 @@ class Session(AbstractContextManager["Session"]):
         self._mode: _Mode = _Mode.UNSET
         self._delta_cb: CallbackHandle | None = None
         self._intern = InternTable(self._reject_intern)
+        self._compounds: list[Compound] = []
 
     # --- intern ------------------------------------------------------------
 
@@ -435,6 +492,22 @@ class Session(AbstractContextManager["Session"]):
             cb.close()
         return [(rel, vals) for _kind, rel, vals in events]
 
+    # --- compounds ---------------------------------------------------------
+
+    def make_compound(self, functor: str, args: Sequence[CompoundArg]) -> Compound:
+        """Allocate a session-local compound. The returned `Compound`
+        becomes invalid when this session is closed."""
+        h = _make_compound_call(
+            LIB.wirelog_session_make_compound,
+            self._handle,
+            functor,
+            args,
+            self._serialize(),
+        )
+        c = Compound(self, functor, len(args), h)
+        self._compounds.append(c)
+        return c
+
     # --- lifecycle ---------------------------------------------------------
 
     @property
@@ -447,6 +520,9 @@ class Session(AbstractContextManager["Session"]):
         if self._closed:
             return
         with self._lock if self._lock is not None else _NullCM():
+            for c in self._compounds:
+                c.invalidate()
+            self._compounds.clear()
             if self._delta_cb is not None:
                 # Clear wirelog's pointer before tearing the slot down.
                 try:
