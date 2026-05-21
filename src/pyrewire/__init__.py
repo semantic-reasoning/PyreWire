@@ -36,6 +36,7 @@ from pyrewire._ffi._util import (
     wirelog_version,
 )
 from pyrewire.batch import BatchProgram, Result
+from pyrewire.compound import Compound, CompoundArg
 from pyrewire.io_adapter import (
     IOContext,
     register_adapter,
@@ -58,6 +59,8 @@ __all__ = [
     "IRNodeType",
     "BatchProgram",
     "Result",
+    "Compound",
+    "CompoundArg",
     "IOContext",
     "register_adapter",
     "unregister_adapter",
