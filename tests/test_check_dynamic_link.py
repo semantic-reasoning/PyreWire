@@ -18,6 +18,10 @@ def _script() -> Path:
     return _repo_root() / "scripts" / "ci" / "check_dynamic_link.py"
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="POSIX-only: NTFS has no executable bit; CI invokes the script via `python <path>`",
+)
 def test_script_exists_and_is_executable():
     s = _script()
     assert s.is_file()
