@@ -35,6 +35,11 @@ from pyrewire._ffi._util import (
     cmp_op_name,
     wirelog_version,
 )
+from pyrewire.asyncio_session import (
+    AsyncBatchProgram,
+    AsyncEasySession,
+    AsyncSession,
+)
 from pyrewire.batch import BatchProgram, Result
 from pyrewire.compound import Compound, CompoundArg
 from pyrewire.io_adapter import (
@@ -61,6 +66,9 @@ __all__ = [
     "Result",
     "Compound",
     "CompoundArg",
+    "AsyncEasySession",
+    "AsyncSession",
+    "AsyncBatchProgram",
     "IOContext",
     "register_adapter",
     "unregister_adapter",
