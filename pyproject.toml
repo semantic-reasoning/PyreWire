@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyrewire"
-version = "0.41.0"
+version = "0.41.99"
 description = "Python wrapper for wirelog - declarative dataflow analysis"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -69,7 +69,7 @@ test-command = "pytest -q {project}/tests/integration"
 test-requires = ["pytest"]
 # Pin the wirelog source tag here too so the environment matches the
 # `WIRELOG_VERSION` used by the test-matrix workflow.
-environment = { WIRELOG_VERSION = "v0.41.0" }
+environment = { WIRELOG_VERSION = "v0.41.99" }
 
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux_2_28"
