@@ -35,6 +35,11 @@ from ._ffi._types import (
 )
 from .program import Program
 
+try:  # NumPy is an optional dependency for the zero-copy path (#22).
+    import numpy as _np
+except ImportError:  # pragma: no cover - exercised via monkeypatch
+    _np = None  # type: ignore[assignment]
+
 Value = int | str | bool | float
 Row = Sequence[Value]
 
@@ -308,6 +313,63 @@ class Session(AbstractContextManager["Session"]):
             return
         with self._serialize():
             rc = LIB.wirelog_session_remove(
+                self._handle,
+                relation.encode("utf-8"),
+                flat,
+                ctypes.c_uint32(nrows),
+                ctypes.c_uint32(ncols),
+            )
+        check(rc)
+
+    # --- zero-copy NumPy path (#22) ----------------------------------------
+
+    def insert_batch(self, relation: str, rows: Any) -> None:
+        """Batched insert that accepts a 2-D `int64` NumPy array (or any
+        2-D sequence of ints). When the input is an ndarray that is
+        already `int64` and C-contiguous, wirelog reads the buffer
+        directly without copying.
+        """
+        self._require_mode(_Mode.INCREMENTAL)
+        self._batch_iud(relation, rows, LIB.wirelog_session_insert)
+
+    def remove_batch(self, relation: str, rows: Any) -> None:
+        """Like `insert_batch` but emits z-set decrements."""
+        self._require_mode(_Mode.INCREMENTAL)
+        self._batch_iud(relation, rows, LIB.wirelog_session_remove)
+
+    def _batch_iud(self, relation: str, rows: Any, fn: Any) -> None:
+        if _np is not None and isinstance(rows, _np.ndarray):
+            arr = rows
+            if arr.ndim != 2:
+                raise ValueError(f"rows ndarray must be 2-D, got ndim={arr.ndim}")
+            if arr.dtype != _np.int64:
+                arr = arr.astype(_np.int64, copy=False)
+            if not arr.flags["C_CONTIGUOUS"]:
+                arr = _np.ascontiguousarray(arr)
+            nrows, ncols = arr.shape
+            if nrows == 0:
+                return
+            buf = arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+            with self._serialize():
+                rc = fn(
+                    self._handle,
+                    relation.encode("utf-8"),
+                    buf,
+                    ctypes.c_uint32(nrows),
+                    ctypes.c_uint32(ncols),
+                )
+            check(rc)
+            # Keep `arr` alive until after the FFI call returns. It is
+            # local to this function, so this is implicit, but make the
+            # invariant explicit for readers.
+            del arr
+            return
+        # Fallback: list-of-lists path through the existing flattener.
+        flat, nrows, ncols = self._flatten(rows)
+        if not nrows:
+            return
+        with self._serialize():
+            rc = fn(
                 self._handle,
                 relation.encode("utf-8"),
                 flat,
