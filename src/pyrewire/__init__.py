@@ -35,6 +35,7 @@ from pyrewire._ffi._util import (
     cmp_op_name,
     wirelog_version,
 )
+from pyrewire.batch import BatchProgram, Result
 from pyrewire.ir import IRNode
 from pyrewire.program import Column, Program, Schema, Stratum
 from pyrewire.session import EasySession
@@ -48,6 +49,8 @@ __all__ = [
     "EasySession",
     "IRNode",
     "IRNodeType",
+    "BatchProgram",
+    "Result",
     "ColumnType",
     "CompoundKind",
     "BackendKind",
