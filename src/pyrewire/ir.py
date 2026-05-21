@@ -12,6 +12,7 @@ from collections.abc import Iterator
 
 from pyrewire._core._libc import libc_free
 from pyrewire._ffi import LIB
+from pyrewire._ffi import _ir as _ir_ffi  # noqa: F401  -- registers argtypes
 from pyrewire._ffi._enums import IRNodeType
 from pyrewire._ffi._types import IRNodeHandle
 
