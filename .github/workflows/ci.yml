@@ -16,7 +16,9 @@ jobs:
           python-version: "3.12"
       - name: install lint deps
         # pytest is needed so mypy can find its stubs when type-checking tests/.
-        run: pip install black isort flake8 mypy pytest
+        # numpy is an optional runtime dependency (#22 zero-copy path) but
+        # mypy still needs its types when type-checking src/pyrewire/session.py.
+        run: pip install black isort flake8 mypy pytest numpy
       - name: black --check
         run: black --check .
       - name: isort --check
