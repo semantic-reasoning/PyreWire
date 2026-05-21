@@ -780,6 +780,38 @@ class Session(AbstractContextManager["Session"]):
             cb.close()
         return [(rel, vals) for _kind, rel, vals in events]
 
+    def snapshot_arrays(self) -> dict[str, Any]:
+        """Zero-copy snapshot variant returning `{relation: ndarray}` (#28).
+
+        Each ndarray is `numpy.int64` and shape `(n_rows, n_cols)`.
+        Numerical columns are returned as raw int64 — STRING columns
+        carry intern ids, not text; reverse-decode via `seed_intern`
+        beforehand if you need text.
+
+        Raises `RuntimeError` if NumPy is not installed.
+        """
+        if _np is None:
+            raise RuntimeError("snapshot_arrays requires NumPy; install with `pip install numpy`")
+        self._require_mode(_Mode.QUERY)
+        cb = CallbackHandle("tuple")
+        try:
+            with self._serialize():
+                rc = LIB.wirelog_session_snapshot(self._handle, cb.fn, cb.user_data)
+            check(rc)
+            events = cb.drain()
+        finally:
+            cb.close()
+        grouped: dict[str, list[tuple[int, ...]]] = {}
+        for _kind, rel, vals in events:
+            grouped.setdefault(rel, []).append(vals)
+        out: dict[str, Any] = {}
+        for rel, rows in grouped.items():
+            if rows:
+                out[rel] = _np.asarray(rows, dtype=_np.int64)
+            else:
+                out[rel] = _np.zeros((0, 0), dtype=_np.int64)
+        return out
+
     # --- compounds ---------------------------------------------------------
 
     def make_compound(self, functor: str, args: Sequence[CompoundArg]) -> Compound:
