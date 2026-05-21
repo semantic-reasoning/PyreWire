@@ -64,6 +64,35 @@ def test_step_returns_list_of_decoded_deltas():
                 assert isinstance(d, tuple) and len(d) == 3
 
 
+def test_step_preserves_insert_buffers_until_evaluation_issue_863():
+    """Regression for wirelog#863: Python-side bookkeeping between
+    insert() and step() must not let ctypes input buffers be reclaimed."""
+    src = """
+    .decl edge(x: int32, y: int32)
+    .decl reach(x: int32, y: int32)
+    reach(X, Y) :- edge(X, Y).
+    reach(X, Y) :- edge(X, Z), reach(Z, Y).
+    """
+    with EasySession(src) as s:
+        s.insert("edge", [1, 2])
+        s.insert("edge", [2, 3])
+        # Force Python allocations in the same window where step() also
+        # performs mode/callback bookkeeping.
+        _junk = [b"edge" for _ in range(32)]
+        deltas_1 = s.step()
+        assert {row for rel, row, diff in deltas_1 if rel == "reach" and diff > 0} == {
+            (1, 2),
+            (1, 3),
+            (2, 3),
+        }
+
+        s.insert("edge", [3, 4])
+        _junk = [b"edge" for _ in range(32)]
+        deltas_2 = s.step()
+        reach_added = {row for rel, row, diff in deltas_2 if rel == "reach" and diff > 0}
+        assert (3, 4) in reach_added
+
+
 def test_step_with_callback_does_not_raise():
     """Setting a delta callback and driving step() must not raise.
     Whether wirelog buffers events for delivery is a separate
