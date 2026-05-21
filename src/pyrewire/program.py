@@ -17,12 +17,13 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ._core._libc import libc_free
-from ._core.errors import ExecError, ParseError
+from ._core.errors import ExecError, ParseError, WirelogVersionError
 from ._core.intern import InternTable
 from ._ffi import LIB
 from ._ffi import _parser as _parser_ffi  # noqa: F401  -- registers argtypes
 from ._ffi._enums import ColumnType, CompoundKind
-from ._ffi._types import ParseErrorStruct, ProgramHandle
+from ._ffi._types import IRNodeHandle, ParseErrorStruct, ProgramHandle
+from .ir import IRNode
 
 
 @dataclass(frozen=True)
@@ -145,6 +146,28 @@ class Program:
 
     def is_stratified(self) -> bool:
         return bool(LIB.wirelog_program_is_stratified(self._handle))
+
+    def relation_ir(self, relation: str) -> IRNode | None:
+        """Return the IR root for a derived relation, or `None`.
+
+        When multiple rules derive `relation`, the returned node is a
+        `WIRELOG_IR_UNION`. Returns `None` for unknown relations,
+        EDB-only relations, or programs whose relation IRs have not
+        been built. The borrowed pointer is owned by this `Program`
+        and remains valid until close.
+
+        Requires libwirelog with the `wirelog_program_get_relation_ir`
+        accessor (post-wirelog#860, > 0.41.0).
+        """
+        if not hasattr(LIB, "wirelog_program_get_relation_ir"):
+            raise WirelogVersionError(
+                "Program.relation_ir requires libwirelog with "
+                "wirelog_program_get_relation_ir (post-wirelog#860, > 0.41.0)"
+            )
+        h = LIB.wirelog_program_get_relation_ir(self._handle, relation.encode("utf-8"))
+        if not h:
+            return None
+        return IRNode(IRNodeHandle(h))
 
     # --- inline-fact extraction --------------------------------------------
 

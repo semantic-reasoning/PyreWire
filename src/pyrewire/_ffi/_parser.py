@@ -9,6 +9,7 @@ Covers:
 - `wirelog_program_get_rule_count`
 - `wirelog_program_get_schema`, `wirelog_program_is_stratified`
 - `wirelog_program_get_facts`, `wirelog_program_get_intern`
+- `wirelog_program_get_relation_ir` (post-wirelog#860; absent on older builds)
 - `wirelog_load_all_facts`, `wirelog_load_input_files`
 - `wirelog_optimize`, `wirelog_optimizer_debug`
 
@@ -24,6 +25,7 @@ import ctypes
 from . import LIB
 from ._types import (
     InternHandle,
+    IRNodeHandle,
     ParseErrorStruct,
     ProgramHandle,
     SchemaStruct,
@@ -75,6 +77,15 @@ def _register() -> None:
 
     LIB.wirelog_program_get_intern.restype = InternHandle
     LIB.wirelog_program_get_intern.argtypes = [ProgramHandle]
+
+    # wirelog#860: per-relation IR root accessor. Registered guardedly
+    # because older libwirelog builds (<= 0.41.0) do not export it.
+    if hasattr(LIB, "wirelog_program_get_relation_ir"):
+        LIB.wirelog_program_get_relation_ir.restype = IRNodeHandle
+        LIB.wirelog_program_get_relation_ir.argtypes = [
+            ProgramHandle,
+            ctypes.c_char_p,
+        ]
 
     LIB.wirelog_load_all_facts.restype = ctypes.c_int
     LIB.wirelog_load_all_facts.argtypes = [ProgramHandle, ctypes.c_void_p]
