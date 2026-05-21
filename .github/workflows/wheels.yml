@@ -52,3 +52,64 @@ jobs:
           name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
           if-no-files-found: error
+
+  # Install each built wheel into a clean GitHub-hosted runner (no
+  # system wirelog) and run the integration suite against it. Catches
+  # RPATH / loader regressions that the structural #32 gate cannot.
+  install_test:
+    needs: build_wheels
+    name: install ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14, windows-2022]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: dist
+
+      - name: pip install local wheel
+        shell: bash
+        run: |
+          PY_TAG=$(python -c 'import sys; print(f"cp{sys.version_info.major}{sys.version_info.minor}")')
+          # Pick the wheel for this Python version; fail loudly if no match.
+          WHL=$(ls dist/pyrewire-*-${PY_TAG}-${PY_TAG}-*.whl | head -1 || true)
+          if [ -z "$WHL" ]; then
+            echo "no wheel matched dist/pyrewire-*-${PY_TAG}-${PY_TAG}-*.whl"
+            ls dist/
+            exit 1
+          fi
+          python -m pip install "$WHL" pytest
+
+      - name: pyrewire imports + uses wheel-bundled libwirelog
+        shell: bash
+        run: |
+          python -c "
+          import pyrewire
+          print('pyrewire version =', pyrewire.__version__)
+          print('wirelog version =', pyrewire.wirelog_version())
+          from pyrewire._ffi import LIB
+          path = getattr(LIB, '_name', '')
+          assert 'pyrewire' in path and '_lib' in path, (
+              f'expected wheel-bundled libwirelog, loader chose {path}'
+          )
+          "
+
+      - name: run wheel install integration tests
+        shell: bash
+        env:
+          # Opt-in flag the integration test checks before running its
+          # bundled-library assertions; without it the tests skip so
+          # that running `pytest` against the editable dev install
+          # doesn't trip on `WIRELOG_LIB` overrides.
+          PYREWIRE_WHEEL_INSTALL_TEST: "1"
+        run: pytest -q tests/integration/test_wheel_install.py
