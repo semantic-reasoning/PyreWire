@@ -6,6 +6,8 @@ import ctypes
 import os
 import sys
 
+import pytest
+
 from pyrewire._core.stdcapture import capture_c_stdout
 from pyrewire._ffi import LIB
 
@@ -19,8 +21,17 @@ def test_captures_python_print():
     assert b"hello-from-fd" in buf.getvalue()
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason=(
+        "Windows CRT stdio doesn't honor POSIX fd-1 dup2 the way glibc/musl do — "
+        "msvcrt.dll's FILE* stdout caches the original fd internally, so capturing "
+        "a printf-from-DLL via dup2-on-fd-1 needs a Windows-specific path "
+        "(see #19 follow-up)."
+    ),
+)
 def test_captures_c_level_write():
-    libc = ctypes.CDLL(None) if sys.platform != "win32" else ctypes.CDLL("ucrtbase.dll")
+    libc = ctypes.CDLL(None)
     libc.printf.restype = ctypes.c_int
     libc.printf.argtypes = [ctypes.c_char_p]
     libc.fflush.argtypes = [ctypes.c_void_p]

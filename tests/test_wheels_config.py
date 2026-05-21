@@ -9,6 +9,7 @@ test parses the YAML/TOML and asserts the required pieces exist.
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 import pytest
@@ -79,6 +80,13 @@ def test_build_wirelog_powershell_script_exists():
     assert "WIRELOG_VERSION" in text
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason=(
+        "POSIX-only: NTFS has no executable bit; "
+        "the bash script is consumed by Linux/macOS runners"
+    ),
+)
 def test_build_wirelog_bash_script_exists():
     """The Linux/macOS runners share the bash script."""
     sh = _repo_root() / "scripts" / "build_wirelog.sh"

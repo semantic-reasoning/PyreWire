@@ -13,6 +13,7 @@ We parse the YAML rather than grep so cosmetic reorders pass cleanly.
 from __future__ import annotations
 
 import stat
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -71,6 +72,10 @@ def test_nightly_files_failure_issue_on_failure():
     assert "failure" in str(failure_steps[0].get("if", "")).lower()
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="POSIX-only: NTFS has no executable bit; the nightly workflow only runs on ubuntu-22.04",
+)
 def test_failure_script_exists_and_is_executable():
     script = _repo_root() / "scripts" / "ci" / "open_nightly_failure_issue.sh"
     assert script.is_file()
