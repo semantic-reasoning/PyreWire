@@ -892,6 +892,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pyrewire.session.Session.snapshot_arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        snapshot_arrays
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pyrewire.session.Session.make_compound" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3129,7 +3140,39 @@ to QUERY mode. Crossing modes raises <code>WirelogModeError</code>.</p>
 <span class="normal"><a href="#__codelineno-0-847">847</a></span>
 <span class="normal"><a href="#__codelineno-0-848">848</a></span>
 <span class="normal"><a href="#__codelineno-0-849">849</a></span>
-<span class="normal"><a href="#__codelineno-0-850">850</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-538" name="__codelineno-0-538"></a><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">(</span><span class="n">AbstractContextManager</span><span class="p">[</span><span class="s2">&quot;Session&quot;</span><span class="p">]):</span>
+<span class="normal"><a href="#__codelineno-0-850">850</a></span>
+<span class="normal"><a href="#__codelineno-0-851">851</a></span>
+<span class="normal"><a href="#__codelineno-0-852">852</a></span>
+<span class="normal"><a href="#__codelineno-0-853">853</a></span>
+<span class="normal"><a href="#__codelineno-0-854">854</a></span>
+<span class="normal"><a href="#__codelineno-0-855">855</a></span>
+<span class="normal"><a href="#__codelineno-0-856">856</a></span>
+<span class="normal"><a href="#__codelineno-0-857">857</a></span>
+<span class="normal"><a href="#__codelineno-0-858">858</a></span>
+<span class="normal"><a href="#__codelineno-0-859">859</a></span>
+<span class="normal"><a href="#__codelineno-0-860">860</a></span>
+<span class="normal"><a href="#__codelineno-0-861">861</a></span>
+<span class="normal"><a href="#__codelineno-0-862">862</a></span>
+<span class="normal"><a href="#__codelineno-0-863">863</a></span>
+<span class="normal"><a href="#__codelineno-0-864">864</a></span>
+<span class="normal"><a href="#__codelineno-0-865">865</a></span>
+<span class="normal"><a href="#__codelineno-0-866">866</a></span>
+<span class="normal"><a href="#__codelineno-0-867">867</a></span>
+<span class="normal"><a href="#__codelineno-0-868">868</a></span>
+<span class="normal"><a href="#__codelineno-0-869">869</a></span>
+<span class="normal"><a href="#__codelineno-0-870">870</a></span>
+<span class="normal"><a href="#__codelineno-0-871">871</a></span>
+<span class="normal"><a href="#__codelineno-0-872">872</a></span>
+<span class="normal"><a href="#__codelineno-0-873">873</a></span>
+<span class="normal"><a href="#__codelineno-0-874">874</a></span>
+<span class="normal"><a href="#__codelineno-0-875">875</a></span>
+<span class="normal"><a href="#__codelineno-0-876">876</a></span>
+<span class="normal"><a href="#__codelineno-0-877">877</a></span>
+<span class="normal"><a href="#__codelineno-0-878">878</a></span>
+<span class="normal"><a href="#__codelineno-0-879">879</a></span>
+<span class="normal"><a href="#__codelineno-0-880">880</a></span>
+<span class="normal"><a href="#__codelineno-0-881">881</a></span>
+<span class="normal"><a href="#__codelineno-0-882">882</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-538" name="__codelineno-0-538"></a><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">(</span><span class="n">AbstractContextManager</span><span class="p">[</span><span class="s2">&quot;Session&quot;</span><span class="p">]):</span>
 <a id="__codelineno-0-539" name="__codelineno-0-539"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper over the wirelog *advanced* session API (`wirelog_session_*`).</span>
 <a id="__codelineno-0-540" name="__codelineno-0-540"></a>
 <a id="__codelineno-0-541" name="__codelineno-0-541"></a><span class="sd">    The advanced API differs from `EasySession` in four ways:</span>
@@ -3374,74 +3417,106 @@ to QUERY mode. Crossing modes raises <code>WirelogModeError</code>.</p>
 <a id="__codelineno-0-780" name="__codelineno-0-780"></a>            <span class="n">cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 <a id="__codelineno-0-781" name="__codelineno-0-781"></a>        <span class="k">return</span> <span class="p">[(</span><span class="n">rel</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span> <span class="k">for</span> <span class="n">_kind</span><span class="p">,</span> <span class="n">rel</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">events</span><span class="p">]</span>
 <a id="__codelineno-0-782" name="__codelineno-0-782"></a>
-<a id="__codelineno-0-783" name="__codelineno-0-783"></a>    <span class="c1"># --- compounds ---------------------------------------------------------</span>
-<a id="__codelineno-0-784" name="__codelineno-0-784"></a>
-<a id="__codelineno-0-785" name="__codelineno-0-785"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CompoundArg</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Compound</span><span class="p">:</span>
-<a id="__codelineno-0-786" name="__codelineno-0-786"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Allocate a session-local compound. The returned `Compound`</span>
-<a id="__codelineno-0-787" name="__codelineno-0-787"></a><span class="sd">        becomes invalid when this session is closed.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-788" name="__codelineno-0-788"></a>        <span class="n">h</span> <span class="o">=</span> <span class="n">_make_compound_call</span><span class="p">(</span>
-<a id="__codelineno-0-789" name="__codelineno-0-789"></a>            <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_make_compound</span><span class="p">,</span>
-<a id="__codelineno-0-790" name="__codelineno-0-790"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span>
-<a id="__codelineno-0-791" name="__codelineno-0-791"></a>            <span class="n">functor</span><span class="p">,</span>
-<a id="__codelineno-0-792" name="__codelineno-0-792"></a>            <span class="n">args</span><span class="p">,</span>
-<a id="__codelineno-0-793" name="__codelineno-0-793"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(),</span>
-<a id="__codelineno-0-794" name="__codelineno-0-794"></a>        <span class="p">)</span>
-<a id="__codelineno-0-795" name="__codelineno-0-795"></a>        <span class="n">c</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">h</span><span class="p">)</span>
-<a id="__codelineno-0-796" name="__codelineno-0-796"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-<a id="__codelineno-0-797" name="__codelineno-0-797"></a>        <span class="k">return</span> <span class="n">c</span>
-<a id="__codelineno-0-798" name="__codelineno-0-798"></a>
-<a id="__codelineno-0-799" name="__codelineno-0-799"></a>    <span class="c1"># --- lifecycle ---------------------------------------------------------</span>
-<a id="__codelineno-0-800" name="__codelineno-0-800"></a>
-<a id="__codelineno-0-801" name="__codelineno-0-801"></a>    <span class="nd">@property</span>
-<a id="__codelineno-0-802" name="__codelineno-0-802"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">program</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Program</span><span class="p">:</span>
-<a id="__codelineno-0-803" name="__codelineno-0-803"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program</span>
-<a id="__codelineno-0-804" name="__codelineno-0-804"></a>
-<a id="__codelineno-0-805" name="__codelineno-0-805"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-806" name="__codelineno-0-806"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Destroy the session. The borrowed `Program` is NOT freed —</span>
-<a id="__codelineno-0-807" name="__codelineno-0-807"></a><span class="sd">        the caller still owns it.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-808" name="__codelineno-0-808"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
-<a id="__codelineno-0-809" name="__codelineno-0-809"></a>            <span class="k">return</span>
-<a id="__codelineno-0-810" name="__codelineno-0-810"></a>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_NullCM</span><span class="p">():</span>
-<a id="__codelineno-0-811" name="__codelineno-0-811"></a>            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="p">:</span>
-<a id="__codelineno-0-812" name="__codelineno-0-812"></a>                <span class="n">c</span><span class="o">.</span><span class="n">invalidate</span><span class="p">()</span>
-<a id="__codelineno-0-813" name="__codelineno-0-813"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<a id="__codelineno-0-814" name="__codelineno-0-814"></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-815" name="__codelineno-0-815"></a>                <span class="c1"># Clear wirelog&#39;s pointer before tearing the slot down.</span>
-<a id="__codelineno-0-816" name="__codelineno-0-816"></a>                <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-817" name="__codelineno-0-817"></a>                    <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_set_delta_cb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">OnDeltaFn</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
-<a id="__codelineno-0-818" name="__codelineno-0-818"></a>                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-<a id="__codelineno-0-819" name="__codelineno-0-819"></a>                    <span class="k">pass</span>
-<a id="__codelineno-0-820" name="__codelineno-0-820"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<a id="__codelineno-0-821" name="__codelineno-0-821"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-822" name="__codelineno-0-822"></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-<a id="__codelineno-0-823" name="__codelineno-0-823"></a>                <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_destroy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
-<a id="__codelineno-0-824" name="__codelineno-0-824"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="n">SessionHandle</span><span class="p">()</span>
-<a id="__codelineno-0-825" name="__codelineno-0-825"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-826" name="__codelineno-0-826"></a>
-<a id="__codelineno-0-827" name="__codelineno-0-827"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-828" name="__codelineno-0-828"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<a id="__codelineno-0-829" name="__codelineno-0-829"></a>
-<a id="__codelineno-0-830" name="__codelineno-0-830"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-831" name="__codelineno-0-831"></a>        <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-832" name="__codelineno-0-832"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<a id="__codelineno-0-833" name="__codelineno-0-833"></a>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-<a id="__codelineno-0-834" name="__codelineno-0-834"></a>            <span class="k">pass</span>
-<a id="__codelineno-0-835" name="__codelineno-0-835"></a>
-<a id="__codelineno-0-836" name="__codelineno-0-836"></a>    <span class="c1"># --- internals ---------------------------------------------------------</span>
-<a id="__codelineno-0-837" name="__codelineno-0-837"></a>
-<a id="__codelineno-0-838" name="__codelineno-0-838"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<a id="__codelineno-0-839" name="__codelineno-0-839"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_NullCM</span><span class="p">()</span>
-<a id="__codelineno-0-840" name="__codelineno-0-840"></a>
-<a id="__codelineno-0-841" name="__codelineno-0-841"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_require_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">want</span><span class="p">:</span> <span class="n">_Mode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-842" name="__codelineno-0-842"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">==</span> <span class="n">_Mode</span><span class="o">.</span><span class="n">UNSET</span><span class="p">:</span>
-<a id="__codelineno-0-843" name="__codelineno-0-843"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">want</span>
-<a id="__codelineno-0-844" name="__codelineno-0-844"></a>            <span class="k">return</span>
-<a id="__codelineno-0-845" name="__codelineno-0-845"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">!=</span> <span class="n">want</span><span class="p">:</span>
-<a id="__codelineno-0-846" name="__codelineno-0-846"></a>            <span class="k">raise</span> <span class="n">WirelogModeError</span><span class="p">(</span>
-<a id="__codelineno-0-847" name="__codelineno-0-847"></a>                <span class="sa">f</span><span class="s2">&quot;session is in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> mode; &quot;</span>
-<a id="__codelineno-0-848" name="__codelineno-0-848"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">want</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> operation rejected. Close and reopen the &quot;</span>
-<a id="__codelineno-0-849" name="__codelineno-0-849"></a>                <span class="s2">&quot;session to switch modes.&quot;</span>
-<a id="__codelineno-0-850" name="__codelineno-0-850"></a>            <span class="p">)</span>
+<a id="__codelineno-0-783" name="__codelineno-0-783"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">snapshot_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a id="__codelineno-0-784" name="__codelineno-0-784"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Zero-copy snapshot variant returning `{relation: ndarray}` (#28).</span>
+<a id="__codelineno-0-785" name="__codelineno-0-785"></a>
+<a id="__codelineno-0-786" name="__codelineno-0-786"></a><span class="sd">        Each ndarray is `numpy.int64` and shape `(n_rows, n_cols)`.</span>
+<a id="__codelineno-0-787" name="__codelineno-0-787"></a><span class="sd">        Numerical columns are returned as raw int64 — STRING columns</span>
+<a id="__codelineno-0-788" name="__codelineno-0-788"></a><span class="sd">        carry intern ids, not text; reverse-decode via `seed_intern`</span>
+<a id="__codelineno-0-789" name="__codelineno-0-789"></a><span class="sd">        beforehand if you need text.</span>
+<a id="__codelineno-0-790" name="__codelineno-0-790"></a>
+<a id="__codelineno-0-791" name="__codelineno-0-791"></a><span class="sd">        Raises `RuntimeError` if NumPy is not installed.</span>
+<a id="__codelineno-0-792" name="__codelineno-0-792"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-793" name="__codelineno-0-793"></a>        <span class="k">if</span> <span class="n">_np</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-794" name="__codelineno-0-794"></a>            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;snapshot_arrays requires NumPy; install with `pip install numpy`&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-795" name="__codelineno-0-795"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_require_mode</span><span class="p">(</span><span class="n">_Mode</span><span class="o">.</span><span class="n">QUERY</span><span class="p">)</span>
+<a id="__codelineno-0-796" name="__codelineno-0-796"></a>        <span class="n">cb</span> <span class="o">=</span> <span class="n">CallbackHandle</span><span class="p">(</span><span class="s2">&quot;tuple&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-797" name="__codelineno-0-797"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-798" name="__codelineno-0-798"></a>            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">():</span>
+<a id="__codelineno-0-799" name="__codelineno-0-799"></a>                <span class="n">rc</span> <span class="o">=</span> <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">cb</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">cb</span><span class="o">.</span><span class="n">user_data</span><span class="p">)</span>
+<a id="__codelineno-0-800" name="__codelineno-0-800"></a>            <span class="n">check</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+<a id="__codelineno-0-801" name="__codelineno-0-801"></a>            <span class="n">events</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+<a id="__codelineno-0-802" name="__codelineno-0-802"></a>        <span class="k">finally</span><span class="p">:</span>
+<a id="__codelineno-0-803" name="__codelineno-0-803"></a>            <span class="n">cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-804" name="__codelineno-0-804"></a>        <span class="n">grouped</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-805" name="__codelineno-0-805"></a>        <span class="k">for</span> <span class="n">_kind</span><span class="p">,</span> <span class="n">rel</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<a id="__codelineno-0-806" name="__codelineno-0-806"></a>            <span class="n">grouped</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">rel</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+<a id="__codelineno-0-807" name="__codelineno-0-807"></a>        <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-808" name="__codelineno-0-808"></a>        <span class="k">for</span> <span class="n">rel</span><span class="p">,</span> <span class="n">rows</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-0-809" name="__codelineno-0-809"></a>            <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+<a id="__codelineno-0-810" name="__codelineno-0-810"></a>                <span class="n">out</span><span class="p">[</span><span class="n">rel</span><span class="p">]</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-0-811" name="__codelineno-0-811"></a>            <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-812" name="__codelineno-0-812"></a>                <span class="n">out</span><span class="p">[</span><span class="n">rel</span><span class="p">]</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-0-813" name="__codelineno-0-813"></a>        <span class="k">return</span> <span class="n">out</span>
+<a id="__codelineno-0-814" name="__codelineno-0-814"></a>
+<a id="__codelineno-0-815" name="__codelineno-0-815"></a>    <span class="c1"># --- compounds ---------------------------------------------------------</span>
+<a id="__codelineno-0-816" name="__codelineno-0-816"></a>
+<a id="__codelineno-0-817" name="__codelineno-0-817"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CompoundArg</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Compound</span><span class="p">:</span>
+<a id="__codelineno-0-818" name="__codelineno-0-818"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Allocate a session-local compound. The returned `Compound`</span>
+<a id="__codelineno-0-819" name="__codelineno-0-819"></a><span class="sd">        becomes invalid when this session is closed.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-820" name="__codelineno-0-820"></a>        <span class="n">h</span> <span class="o">=</span> <span class="n">_make_compound_call</span><span class="p">(</span>
+<a id="__codelineno-0-821" name="__codelineno-0-821"></a>            <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_make_compound</span><span class="p">,</span>
+<a id="__codelineno-0-822" name="__codelineno-0-822"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span>
+<a id="__codelineno-0-823" name="__codelineno-0-823"></a>            <span class="n">functor</span><span class="p">,</span>
+<a id="__codelineno-0-824" name="__codelineno-0-824"></a>            <span class="n">args</span><span class="p">,</span>
+<a id="__codelineno-0-825" name="__codelineno-0-825"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(),</span>
+<a id="__codelineno-0-826" name="__codelineno-0-826"></a>        <span class="p">)</span>
+<a id="__codelineno-0-827" name="__codelineno-0-827"></a>        <span class="n">c</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">h</span><span class="p">)</span>
+<a id="__codelineno-0-828" name="__codelineno-0-828"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<a id="__codelineno-0-829" name="__codelineno-0-829"></a>        <span class="k">return</span> <span class="n">c</span>
+<a id="__codelineno-0-830" name="__codelineno-0-830"></a>
+<a id="__codelineno-0-831" name="__codelineno-0-831"></a>    <span class="c1"># --- lifecycle ---------------------------------------------------------</span>
+<a id="__codelineno-0-832" name="__codelineno-0-832"></a>
+<a id="__codelineno-0-833" name="__codelineno-0-833"></a>    <span class="nd">@property</span>
+<a id="__codelineno-0-834" name="__codelineno-0-834"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">program</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Program</span><span class="p">:</span>
+<a id="__codelineno-0-835" name="__codelineno-0-835"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_program</span>
+<a id="__codelineno-0-836" name="__codelineno-0-836"></a>
+<a id="__codelineno-0-837" name="__codelineno-0-837"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-838" name="__codelineno-0-838"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Destroy the session. The borrowed `Program` is NOT freed —</span>
+<a id="__codelineno-0-839" name="__codelineno-0-839"></a><span class="sd">        the caller still owns it.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-840" name="__codelineno-0-840"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
+<a id="__codelineno-0-841" name="__codelineno-0-841"></a>            <span class="k">return</span>
+<a id="__codelineno-0-842" name="__codelineno-0-842"></a>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_NullCM</span><span class="p">():</span>
+<a id="__codelineno-0-843" name="__codelineno-0-843"></a>            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="p">:</span>
+<a id="__codelineno-0-844" name="__codelineno-0-844"></a>                <span class="n">c</span><span class="o">.</span><span class="n">invalidate</span><span class="p">()</span>
+<a id="__codelineno-0-845" name="__codelineno-0-845"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<a id="__codelineno-0-846" name="__codelineno-0-846"></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-847" name="__codelineno-0-847"></a>                <span class="c1"># Clear wirelog&#39;s pointer before tearing the slot down.</span>
+<a id="__codelineno-0-848" name="__codelineno-0-848"></a>                <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-849" name="__codelineno-0-849"></a>                    <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_set_delta_cb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">OnDeltaFn</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-0-850" name="__codelineno-0-850"></a>                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<a id="__codelineno-0-851" name="__codelineno-0-851"></a>                    <span class="k">pass</span>
+<a id="__codelineno-0-852" name="__codelineno-0-852"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-853" name="__codelineno-0-853"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-854" name="__codelineno-0-854"></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+<a id="__codelineno-0-855" name="__codelineno-0-855"></a>                <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_destroy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+<a id="__codelineno-0-856" name="__codelineno-0-856"></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="n">SessionHandle</span><span class="p">()</span>
+<a id="__codelineno-0-857" name="__codelineno-0-857"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-858" name="__codelineno-0-858"></a>
+<a id="__codelineno-0-859" name="__codelineno-0-859"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-860" name="__codelineno-0-860"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-861" name="__codelineno-0-861"></a>
+<a id="__codelineno-0-862" name="__codelineno-0-862"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-863" name="__codelineno-0-863"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-864" name="__codelineno-0-864"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-865" name="__codelineno-0-865"></a>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<a id="__codelineno-0-866" name="__codelineno-0-866"></a>            <span class="k">pass</span>
+<a id="__codelineno-0-867" name="__codelineno-0-867"></a>
+<a id="__codelineno-0-868" name="__codelineno-0-868"></a>    <span class="c1"># --- internals ---------------------------------------------------------</span>
+<a id="__codelineno-0-869" name="__codelineno-0-869"></a>
+<a id="__codelineno-0-870" name="__codelineno-0-870"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<a id="__codelineno-0-871" name="__codelineno-0-871"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_NullCM</span><span class="p">()</span>
+<a id="__codelineno-0-872" name="__codelineno-0-872"></a>
+<a id="__codelineno-0-873" name="__codelineno-0-873"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_require_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">want</span><span class="p">:</span> <span class="n">_Mode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-874" name="__codelineno-0-874"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">==</span> <span class="n">_Mode</span><span class="o">.</span><span class="n">UNSET</span><span class="p">:</span>
+<a id="__codelineno-0-875" name="__codelineno-0-875"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">want</span>
+<a id="__codelineno-0-876" name="__codelineno-0-876"></a>            <span class="k">return</span>
+<a id="__codelineno-0-877" name="__codelineno-0-877"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">!=</span> <span class="n">want</span><span class="p">:</span>
+<a id="__codelineno-0-878" name="__codelineno-0-878"></a>            <span class="k">raise</span> <span class="n">WirelogModeError</span><span class="p">(</span>
+<a id="__codelineno-0-879" name="__codelineno-0-879"></a>                <span class="sa">f</span><span class="s2">&quot;session is in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> mode; &quot;</span>
+<a id="__codelineno-0-880" name="__codelineno-0-880"></a>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">want</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> operation rejected. Close and reopen the &quot;</span>
+<a id="__codelineno-0-881" name="__codelineno-0-881"></a>                <span class="s2">&quot;session to switch modes.&quot;</span>
+<a id="__codelineno-0-882" name="__codelineno-0-882"></a>            <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3908,6 +3983,96 @@ raise <code>WirelogModeError</code>.</p>
 <div class="doc doc-object doc-function">
 
 
+<h3 id="pyrewire.session.Session.snapshot_arrays" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">snapshot_arrays</span>
+
+
+<a href="#pyrewire.session.Session.snapshot_arrays" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">snapshot_arrays</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Zero-copy snapshot variant returning <code>{relation: ndarray}</code> (#28).</p>
+<p>Each ndarray is <code>numpy.int64</code> and shape <code>(n_rows, n_cols)</code>.
+Numerical columns are returned as raw int64 — STRING columns
+carry intern ids, not text; reverse-decode via <code>seed_intern</code>
+beforehand if you need text.</p>
+<p>Raises <code>RuntimeError</code> if NumPy is not installed.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyrewire/session.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-783">783</a></span>
+<span class="normal"><a href="#__codelineno-0-784">784</a></span>
+<span class="normal"><a href="#__codelineno-0-785">785</a></span>
+<span class="normal"><a href="#__codelineno-0-786">786</a></span>
+<span class="normal"><a href="#__codelineno-0-787">787</a></span>
+<span class="normal"><a href="#__codelineno-0-788">788</a></span>
+<span class="normal"><a href="#__codelineno-0-789">789</a></span>
+<span class="normal"><a href="#__codelineno-0-790">790</a></span>
+<span class="normal"><a href="#__codelineno-0-791">791</a></span>
+<span class="normal"><a href="#__codelineno-0-792">792</a></span>
+<span class="normal"><a href="#__codelineno-0-793">793</a></span>
+<span class="normal"><a href="#__codelineno-0-794">794</a></span>
+<span class="normal"><a href="#__codelineno-0-795">795</a></span>
+<span class="normal"><a href="#__codelineno-0-796">796</a></span>
+<span class="normal"><a href="#__codelineno-0-797">797</a></span>
+<span class="normal"><a href="#__codelineno-0-798">798</a></span>
+<span class="normal"><a href="#__codelineno-0-799">799</a></span>
+<span class="normal"><a href="#__codelineno-0-800">800</a></span>
+<span class="normal"><a href="#__codelineno-0-801">801</a></span>
+<span class="normal"><a href="#__codelineno-0-802">802</a></span>
+<span class="normal"><a href="#__codelineno-0-803">803</a></span>
+<span class="normal"><a href="#__codelineno-0-804">804</a></span>
+<span class="normal"><a href="#__codelineno-0-805">805</a></span>
+<span class="normal"><a href="#__codelineno-0-806">806</a></span>
+<span class="normal"><a href="#__codelineno-0-807">807</a></span>
+<span class="normal"><a href="#__codelineno-0-808">808</a></span>
+<span class="normal"><a href="#__codelineno-0-809">809</a></span>
+<span class="normal"><a href="#__codelineno-0-810">810</a></span>
+<span class="normal"><a href="#__codelineno-0-811">811</a></span>
+<span class="normal"><a href="#__codelineno-0-812">812</a></span>
+<span class="normal"><a href="#__codelineno-0-813">813</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-783" name="__codelineno-0-783"></a><span class="k">def</span><span class="w"> </span><span class="nf">snapshot_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a id="__codelineno-0-784" name="__codelineno-0-784"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Zero-copy snapshot variant returning `{relation: ndarray}` (#28).</span>
+<a id="__codelineno-0-785" name="__codelineno-0-785"></a>
+<a id="__codelineno-0-786" name="__codelineno-0-786"></a><span class="sd">    Each ndarray is `numpy.int64` and shape `(n_rows, n_cols)`.</span>
+<a id="__codelineno-0-787" name="__codelineno-0-787"></a><span class="sd">    Numerical columns are returned as raw int64 — STRING columns</span>
+<a id="__codelineno-0-788" name="__codelineno-0-788"></a><span class="sd">    carry intern ids, not text; reverse-decode via `seed_intern`</span>
+<a id="__codelineno-0-789" name="__codelineno-0-789"></a><span class="sd">    beforehand if you need text.</span>
+<a id="__codelineno-0-790" name="__codelineno-0-790"></a>
+<a id="__codelineno-0-791" name="__codelineno-0-791"></a><span class="sd">    Raises `RuntimeError` if NumPy is not installed.</span>
+<a id="__codelineno-0-792" name="__codelineno-0-792"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-793" name="__codelineno-0-793"></a>    <span class="k">if</span> <span class="n">_np</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-794" name="__codelineno-0-794"></a>        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;snapshot_arrays requires NumPy; install with `pip install numpy`&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-795" name="__codelineno-0-795"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_require_mode</span><span class="p">(</span><span class="n">_Mode</span><span class="o">.</span><span class="n">QUERY</span><span class="p">)</span>
+<a id="__codelineno-0-796" name="__codelineno-0-796"></a>    <span class="n">cb</span> <span class="o">=</span> <span class="n">CallbackHandle</span><span class="p">(</span><span class="s2">&quot;tuple&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-797" name="__codelineno-0-797"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-798" name="__codelineno-0-798"></a>        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">():</span>
+<a id="__codelineno-0-799" name="__codelineno-0-799"></a>            <span class="n">rc</span> <span class="o">=</span> <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">cb</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">cb</span><span class="o">.</span><span class="n">user_data</span><span class="p">)</span>
+<a id="__codelineno-0-800" name="__codelineno-0-800"></a>        <span class="n">check</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+<a id="__codelineno-0-801" name="__codelineno-0-801"></a>        <span class="n">events</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+<a id="__codelineno-0-802" name="__codelineno-0-802"></a>    <span class="k">finally</span><span class="p">:</span>
+<a id="__codelineno-0-803" name="__codelineno-0-803"></a>        <span class="n">cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-804" name="__codelineno-0-804"></a>    <span class="n">grouped</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-805" name="__codelineno-0-805"></a>    <span class="k">for</span> <span class="n">_kind</span><span class="p">,</span> <span class="n">rel</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<a id="__codelineno-0-806" name="__codelineno-0-806"></a>        <span class="n">grouped</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">rel</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+<a id="__codelineno-0-807" name="__codelineno-0-807"></a>    <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-0-808" name="__codelineno-0-808"></a>    <span class="k">for</span> <span class="n">rel</span><span class="p">,</span> <span class="n">rows</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-0-809" name="__codelineno-0-809"></a>        <span class="k">if</span> <span class="n">rows</span><span class="p">:</span>
+<a id="__codelineno-0-810" name="__codelineno-0-810"></a>            <span class="n">out</span><span class="p">[</span><span class="n">rel</span><span class="p">]</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-0-811" name="__codelineno-0-811"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-812" name="__codelineno-0-812"></a>            <span class="n">out</span><span class="p">[</span><span class="n">rel</span><span class="p">]</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<a id="__codelineno-0-813" name="__codelineno-0-813"></a>    <span class="k">return</span> <span class="n">out</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="pyrewire.session.Session.make_compound" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">make_compound</span>
 
@@ -3924,31 +4089,31 @@ becomes invalid when this session is closed.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/pyrewire/session.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-785">785</a></span>
-<span class="normal"><a href="#__codelineno-0-786">786</a></span>
-<span class="normal"><a href="#__codelineno-0-787">787</a></span>
-<span class="normal"><a href="#__codelineno-0-788">788</a></span>
-<span class="normal"><a href="#__codelineno-0-789">789</a></span>
-<span class="normal"><a href="#__codelineno-0-790">790</a></span>
-<span class="normal"><a href="#__codelineno-0-791">791</a></span>
-<span class="normal"><a href="#__codelineno-0-792">792</a></span>
-<span class="normal"><a href="#__codelineno-0-793">793</a></span>
-<span class="normal"><a href="#__codelineno-0-794">794</a></span>
-<span class="normal"><a href="#__codelineno-0-795">795</a></span>
-<span class="normal"><a href="#__codelineno-0-796">796</a></span>
-<span class="normal"><a href="#__codelineno-0-797">797</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-785" name="__codelineno-0-785"></a><span class="k">def</span><span class="w"> </span><span class="nf">make_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CompoundArg</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Compound</span><span class="p">:</span>
-<a id="__codelineno-0-786" name="__codelineno-0-786"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Allocate a session-local compound. The returned `Compound`</span>
-<a id="__codelineno-0-787" name="__codelineno-0-787"></a><span class="sd">    becomes invalid when this session is closed.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-788" name="__codelineno-0-788"></a>    <span class="n">h</span> <span class="o">=</span> <span class="n">_make_compound_call</span><span class="p">(</span>
-<a id="__codelineno-0-789" name="__codelineno-0-789"></a>        <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_make_compound</span><span class="p">,</span>
-<a id="__codelineno-0-790" name="__codelineno-0-790"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span>
-<a id="__codelineno-0-791" name="__codelineno-0-791"></a>        <span class="n">functor</span><span class="p">,</span>
-<a id="__codelineno-0-792" name="__codelineno-0-792"></a>        <span class="n">args</span><span class="p">,</span>
-<a id="__codelineno-0-793" name="__codelineno-0-793"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(),</span>
-<a id="__codelineno-0-794" name="__codelineno-0-794"></a>    <span class="p">)</span>
-<a id="__codelineno-0-795" name="__codelineno-0-795"></a>    <span class="n">c</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">h</span><span class="p">)</span>
-<a id="__codelineno-0-796" name="__codelineno-0-796"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-<a id="__codelineno-0-797" name="__codelineno-0-797"></a>    <span class="k">return</span> <span class="n">c</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-817">817</a></span>
+<span class="normal"><a href="#__codelineno-0-818">818</a></span>
+<span class="normal"><a href="#__codelineno-0-819">819</a></span>
+<span class="normal"><a href="#__codelineno-0-820">820</a></span>
+<span class="normal"><a href="#__codelineno-0-821">821</a></span>
+<span class="normal"><a href="#__codelineno-0-822">822</a></span>
+<span class="normal"><a href="#__codelineno-0-823">823</a></span>
+<span class="normal"><a href="#__codelineno-0-824">824</a></span>
+<span class="normal"><a href="#__codelineno-0-825">825</a></span>
+<span class="normal"><a href="#__codelineno-0-826">826</a></span>
+<span class="normal"><a href="#__codelineno-0-827">827</a></span>
+<span class="normal"><a href="#__codelineno-0-828">828</a></span>
+<span class="normal"><a href="#__codelineno-0-829">829</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-817" name="__codelineno-0-817"></a><span class="k">def</span><span class="w"> </span><span class="nf">make_compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">CompoundArg</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Compound</span><span class="p">:</span>
+<a id="__codelineno-0-818" name="__codelineno-0-818"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Allocate a session-local compound. The returned `Compound`</span>
+<a id="__codelineno-0-819" name="__codelineno-0-819"></a><span class="sd">    becomes invalid when this session is closed.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-820" name="__codelineno-0-820"></a>    <span class="n">h</span> <span class="o">=</span> <span class="n">_make_compound_call</span><span class="p">(</span>
+<a id="__codelineno-0-821" name="__codelineno-0-821"></a>        <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_make_compound</span><span class="p">,</span>
+<a id="__codelineno-0-822" name="__codelineno-0-822"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span>
+<a id="__codelineno-0-823" name="__codelineno-0-823"></a>        <span class="n">functor</span><span class="p">,</span>
+<a id="__codelineno-0-824" name="__codelineno-0-824"></a>        <span class="n">args</span><span class="p">,</span>
+<a id="__codelineno-0-825" name="__codelineno-0-825"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(),</span>
+<a id="__codelineno-0-826" name="__codelineno-0-826"></a>    <span class="p">)</span>
+<a id="__codelineno-0-827" name="__codelineno-0-827"></a>    <span class="n">c</span> <span class="o">=</span> <span class="n">Compound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functor</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">h</span><span class="p">)</span>
+<a id="__codelineno-0-828" name="__codelineno-0-828"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<a id="__codelineno-0-829" name="__codelineno-0-829"></a>    <span class="k">return</span> <span class="n">c</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3974,47 +4139,47 @@ the caller still owns it.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/pyrewire/session.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-805">805</a></span>
-<span class="normal"><a href="#__codelineno-0-806">806</a></span>
-<span class="normal"><a href="#__codelineno-0-807">807</a></span>
-<span class="normal"><a href="#__codelineno-0-808">808</a></span>
-<span class="normal"><a href="#__codelineno-0-809">809</a></span>
-<span class="normal"><a href="#__codelineno-0-810">810</a></span>
-<span class="normal"><a href="#__codelineno-0-811">811</a></span>
-<span class="normal"><a href="#__codelineno-0-812">812</a></span>
-<span class="normal"><a href="#__codelineno-0-813">813</a></span>
-<span class="normal"><a href="#__codelineno-0-814">814</a></span>
-<span class="normal"><a href="#__codelineno-0-815">815</a></span>
-<span class="normal"><a href="#__codelineno-0-816">816</a></span>
-<span class="normal"><a href="#__codelineno-0-817">817</a></span>
-<span class="normal"><a href="#__codelineno-0-818">818</a></span>
-<span class="normal"><a href="#__codelineno-0-819">819</a></span>
-<span class="normal"><a href="#__codelineno-0-820">820</a></span>
-<span class="normal"><a href="#__codelineno-0-821">821</a></span>
-<span class="normal"><a href="#__codelineno-0-822">822</a></span>
-<span class="normal"><a href="#__codelineno-0-823">823</a></span>
-<span class="normal"><a href="#__codelineno-0-824">824</a></span>
-<span class="normal"><a href="#__codelineno-0-825">825</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-805" name="__codelineno-0-805"></a><span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-806" name="__codelineno-0-806"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Destroy the session. The borrowed `Program` is NOT freed —</span>
-<a id="__codelineno-0-807" name="__codelineno-0-807"></a><span class="sd">    the caller still owns it.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-808" name="__codelineno-0-808"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
-<a id="__codelineno-0-809" name="__codelineno-0-809"></a>        <span class="k">return</span>
-<a id="__codelineno-0-810" name="__codelineno-0-810"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_NullCM</span><span class="p">():</span>
-<a id="__codelineno-0-811" name="__codelineno-0-811"></a>        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="p">:</span>
-<a id="__codelineno-0-812" name="__codelineno-0-812"></a>            <span class="n">c</span><span class="o">.</span><span class="n">invalidate</span><span class="p">()</span>
-<a id="__codelineno-0-813" name="__codelineno-0-813"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<a id="__codelineno-0-814" name="__codelineno-0-814"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-815" name="__codelineno-0-815"></a>            <span class="c1"># Clear wirelog&#39;s pointer before tearing the slot down.</span>
-<a id="__codelineno-0-816" name="__codelineno-0-816"></a>            <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-817" name="__codelineno-0-817"></a>                <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_set_delta_cb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">OnDeltaFn</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
-<a id="__codelineno-0-818" name="__codelineno-0-818"></a>            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-<a id="__codelineno-0-819" name="__codelineno-0-819"></a>                <span class="k">pass</span>
-<a id="__codelineno-0-820" name="__codelineno-0-820"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<a id="__codelineno-0-821" name="__codelineno-0-821"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-822" name="__codelineno-0-822"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-<a id="__codelineno-0-823" name="__codelineno-0-823"></a>            <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_destroy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
-<a id="__codelineno-0-824" name="__codelineno-0-824"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="n">SessionHandle</span><span class="p">()</span>
-<a id="__codelineno-0-825" name="__codelineno-0-825"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-837">837</a></span>
+<span class="normal"><a href="#__codelineno-0-838">838</a></span>
+<span class="normal"><a href="#__codelineno-0-839">839</a></span>
+<span class="normal"><a href="#__codelineno-0-840">840</a></span>
+<span class="normal"><a href="#__codelineno-0-841">841</a></span>
+<span class="normal"><a href="#__codelineno-0-842">842</a></span>
+<span class="normal"><a href="#__codelineno-0-843">843</a></span>
+<span class="normal"><a href="#__codelineno-0-844">844</a></span>
+<span class="normal"><a href="#__codelineno-0-845">845</a></span>
+<span class="normal"><a href="#__codelineno-0-846">846</a></span>
+<span class="normal"><a href="#__codelineno-0-847">847</a></span>
+<span class="normal"><a href="#__codelineno-0-848">848</a></span>
+<span class="normal"><a href="#__codelineno-0-849">849</a></span>
+<span class="normal"><a href="#__codelineno-0-850">850</a></span>
+<span class="normal"><a href="#__codelineno-0-851">851</a></span>
+<span class="normal"><a href="#__codelineno-0-852">852</a></span>
+<span class="normal"><a href="#__codelineno-0-853">853</a></span>
+<span class="normal"><a href="#__codelineno-0-854">854</a></span>
+<span class="normal"><a href="#__codelineno-0-855">855</a></span>
+<span class="normal"><a href="#__codelineno-0-856">856</a></span>
+<span class="normal"><a href="#__codelineno-0-857">857</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-837" name="__codelineno-0-837"></a><span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-838" name="__codelineno-0-838"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Destroy the session. The borrowed `Program` is NOT freed —</span>
+<a id="__codelineno-0-839" name="__codelineno-0-839"></a><span class="sd">    the caller still owns it.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-840" name="__codelineno-0-840"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span><span class="p">:</span>
+<a id="__codelineno-0-841" name="__codelineno-0-841"></a>        <span class="k">return</span>
+<a id="__codelineno-0-842" name="__codelineno-0-842"></a>    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_NullCM</span><span class="p">():</span>
+<a id="__codelineno-0-843" name="__codelineno-0-843"></a>        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="p">:</span>
+<a id="__codelineno-0-844" name="__codelineno-0-844"></a>            <span class="n">c</span><span class="o">.</span><span class="n">invalidate</span><span class="p">()</span>
+<a id="__codelineno-0-845" name="__codelineno-0-845"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_compounds</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<a id="__codelineno-0-846" name="__codelineno-0-846"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-847" name="__codelineno-0-847"></a>            <span class="c1"># Clear wirelog&#39;s pointer before tearing the slot down.</span>
+<a id="__codelineno-0-848" name="__codelineno-0-848"></a>            <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-849" name="__codelineno-0-849"></a>                <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_set_delta_cb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">OnDeltaFn</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-0-850" name="__codelineno-0-850"></a>            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<a id="__codelineno-0-851" name="__codelineno-0-851"></a>                <span class="k">pass</span>
+<a id="__codelineno-0-852" name="__codelineno-0-852"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-853" name="__codelineno-0-853"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_cb</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-854" name="__codelineno-0-854"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+<a id="__codelineno-0-855" name="__codelineno-0-855"></a>            <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_session_destroy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
+<a id="__codelineno-0-856" name="__codelineno-0-856"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="n">SessionHandle</span><span class="p">()</span>
+<a id="__codelineno-0-857" name="__codelineno-0-857"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
