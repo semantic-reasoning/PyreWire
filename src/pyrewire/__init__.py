@@ -25,6 +25,7 @@ from pyrewire._ffi._enums import (
     ColumnType,
     CompoundKind,
     ErrorCode,
+    IRNodeType,
     StrFn,
 )
 from pyrewire._ffi._util import (
@@ -34,6 +35,7 @@ from pyrewire._ffi._util import (
     cmp_op_name,
     wirelog_version,
 )
+from pyrewire.ir import IRNode
 from pyrewire.program import Column, Program, Schema, Stratum
 from pyrewire.session import EasySession
 
@@ -44,6 +46,8 @@ __all__ = [
     "Column",
     "Stratum",
     "EasySession",
+    "IRNode",
+    "IRNodeType",
     "ColumnType",
     "CompoundKind",
     "BackendKind",
