@@ -1,28 +1,39 @@
 """High-level session wrappers over wirelog's facade APIs.
 
-`EasySession` (this issue, #9) wraps `wirelog_easy_*`. Delta-mode
-machinery (`step` / `deltas` / `set_delta_callback`) is added in #10;
-query-mode `snapshot` lands in #11; `make_compound` in #23.
+`EasySession` (#9) wraps `wirelog_easy_*`. `Session` (#21) wraps the
+advanced `wirelog_session_*` API: caller-owned program, backend
+selection, batched insert / remove, step, snapshot, delta callbacks,
+and an explicit program-borrow guarantee.
+
+Delta-mode machinery (`step` / `deltas` / `set_delta_callback`) on
+`EasySession` is added in #10; query-mode `snapshot` lands in #11;
+`make_compound` (advanced) in #23.
 """
 
 from __future__ import annotations
 
 import ctypes
 import threading
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from contextlib import AbstractContextManager
 from enum import Enum
 from typing import Any
 
-from ._core.errors import ExecError, check
+from ._core.callbacks import CallbackHandle
+from ._core.errors import ExecError, WirelogInternError, WirelogModeError, check
 from ._core.intern import InternTable
 from ._ffi import LIB
+from ._ffi import _advanced as _advanced_ffi  # noqa: F401  -- registers argtypes
 from ._ffi import _easy as _easy_ffi  # noqa: F401  -- registers argtypes
+from ._ffi._enums import BackendKind
 from ._ffi._types import (
     EASY_OPEN_OPTS_SIZE,
     EasyOpenOptsStruct,
     EasySessionHandle,
+    OnDeltaFn,
+    SessionHandle,
 )
+from .program import Program
 
 Value = int | str | bool | float
 Row = Sequence[Value]
@@ -194,4 +205,223 @@ class EasySession(AbstractContextManager["EasySession"]):
             )
 
 
-__all__ = ["EasySession"]
+class Session(AbstractContextManager["Session"]):
+    """Wrapper over the wirelog *advanced* session API (`wirelog_session_*`).
+
+    The advanced API differs from `EasySession` in four ways:
+
+    1. **Caller-owned program.** Pass a `Program` you created (and own).
+       `Session` keeps a strong reference so the program stays alive
+       while the session is open.
+    2. **Backend selection.** Choose `BackendKind.DEFAULT` or
+       `BackendKind.COLUMNAR` and a worker count at construction.
+    3. **Batched insert / remove.** Pass a sequence of int64 rows in
+       one FFI call.
+    4. **No automatic string interning.** Callers either supply int64
+       row values or pre-seed the intern table with `seed_intern`.
+
+    Mode machine: the first `step()` or `set_delta_callback()` commits
+    the session to INCREMENTAL mode; the first `snapshot()` commits it
+    to QUERY mode. Crossing modes raises `WirelogModeError`.
+    """
+
+    def __init__(
+        self,
+        program: Program,
+        *,
+        backend: BackendKind = BackendKind.DEFAULT,
+        num_workers: int = 0,
+        lock: bool = True,
+    ) -> None:
+        self._program = program  # strong reference — program is borrowed
+        self._handle: SessionHandle = SessionHandle()
+        rc = LIB.wirelog_session_create(
+            program._handle,
+            ctypes.c_int(int(backend)),
+            ctypes.c_uint32(int(num_workers)),
+            ctypes.byref(self._handle),
+        )
+        check(rc)
+        if not self._handle.value:
+            raise ExecError("wirelog_session_create returned a NULL handle")
+
+        self._lock: threading.RLock | None = threading.RLock() if lock else None
+        self._closed: bool = False
+        self._mode: _Mode = _Mode.UNSET
+        self._delta_cb: CallbackHandle | None = None
+        self._intern = InternTable(self._reject_intern)
+
+    # --- intern ------------------------------------------------------------
+
+    @staticmethod
+    def _reject_intern(_b: bytes) -> int:
+        raise WirelogInternError(
+            "advanced Session has no public intern API; supply int64 values "
+            "directly or call seed_intern(value, id) for known pairs"
+        )
+
+    def seed_intern(self, value: str, sym_id: int) -> None:
+        """Pre-populate the (value, id) pair in the reverse-intern cache."""
+        self._intern.remember(int(sym_id), value)
+
+    @property
+    def intern_table(self) -> InternTable:
+        return self._intern
+
+    # --- insert / remove ---------------------------------------------------
+
+    def _flatten(self, rows: Sequence[Sequence[int]]) -> tuple[Any, int, int]:
+        if not rows:
+            return None, 0, 0
+        ncols = len(rows[0])
+        if ncols == 0:
+            raise ValueError("rows must have at least one column")
+        flat = (ctypes.c_int64 * (ncols * len(rows)))()
+        for i, r in enumerate(rows):
+            if len(r) != ncols:
+                raise ValueError(f"row {i} has {len(r)} cols, expected {ncols} (first row)")
+            for j, v in enumerate(r):
+                flat[i * ncols + j] = int(v)
+        return flat, len(rows), ncols
+
+    def insert(self, relation: str, rows: Sequence[Sequence[int]]) -> None:
+        """Batched insert. Every value must already be an `int64`."""
+        self._require_mode(_Mode.INCREMENTAL)
+        flat, nrows, ncols = self._flatten(rows)
+        if not nrows:
+            return
+        with self._serialize():
+            rc = LIB.wirelog_session_insert(
+                self._handle,
+                relation.encode("utf-8"),
+                flat,
+                ctypes.c_uint32(nrows),
+                ctypes.c_uint32(ncols),
+            )
+        check(rc)
+
+    def remove(self, relation: str, rows: Sequence[Sequence[int]]) -> None:
+        """Batched retract (z-set multiplicity decrement by 1 per row)."""
+        self._require_mode(_Mode.INCREMENTAL)
+        flat, nrows, ncols = self._flatten(rows)
+        if not nrows:
+            return
+        with self._serialize():
+            rc = LIB.wirelog_session_remove(
+                self._handle,
+                relation.encode("utf-8"),
+                flat,
+                ctypes.c_uint32(nrows),
+                ctypes.c_uint32(ncols),
+            )
+        check(rc)
+
+    # --- step / snapshot / callbacks --------------------------------------
+
+    def set_delta_callback(self, fn: Callable[[str, tuple[int, ...], int], None] | None) -> None:
+        """Register or clear the delta callback. The session enters
+        INCREMENTAL mode on the first call."""
+        self._require_mode(_Mode.INCREMENTAL)
+        if fn is None:
+            if self._delta_cb is not None:
+                with self._serialize():
+                    rc = LIB.wirelog_session_set_delta_cb(self._handle, OnDeltaFn(), None)
+                check(rc)
+                self._delta_cb.close()
+                self._delta_cb = None
+            return
+        if self._delta_cb is None:
+            self._delta_cb = CallbackHandle("delta")
+        self._delta_cb._state.user_fn = fn
+        with self._serialize():
+            rc = LIB.wirelog_session_set_delta_cb(
+                self._handle, self._delta_cb.fn, self._delta_cb.user_data
+            )
+        check(rc)
+
+    def step(self) -> list[tuple[str, tuple[int, ...], int]]:
+        """Drive one fixpoint step. Returns `(relation, row, diff)` events
+        that wirelog emitted for the delta callback during this step."""
+        self._require_mode(_Mode.INCREMENTAL)
+        if self._delta_cb is None:
+            self._delta_cb = CallbackHandle("delta")
+            with self._serialize():
+                rc = LIB.wirelog_session_set_delta_cb(
+                    self._handle, self._delta_cb.fn, self._delta_cb.user_data
+                )
+            check(rc)
+        with self._serialize():
+            rc = LIB.wirelog_session_step(self._handle)
+        check(rc)
+        events = self._delta_cb.drain()
+        return [(rel, vals, diff) for _kind, rel, vals, diff in events]
+
+    def snapshot(self) -> list[tuple[str, tuple[int, ...]]]:
+        """Forward every IDB tuple. Returns `(relation, row)` pairs.
+
+        Commits the session to QUERY mode; subsequent `step()` calls
+        raise `WirelogModeError`.
+        """
+        self._require_mode(_Mode.QUERY)
+        cb = CallbackHandle("tuple")
+        try:
+            with self._serialize():
+                rc = LIB.wirelog_session_snapshot(self._handle, cb.fn, cb.user_data)
+            check(rc)
+            events = cb.drain()
+        finally:
+            cb.close()
+        return [(rel, vals) for _kind, rel, vals in events]
+
+    # --- lifecycle ---------------------------------------------------------
+
+    @property
+    def program(self) -> Program:
+        return self._program
+
+    def close(self) -> None:
+        """Destroy the session. The borrowed `Program` is NOT freed —
+        the caller still owns it."""
+        if self._closed:
+            return
+        with self._lock if self._lock is not None else _NullCM():
+            if self._delta_cb is not None:
+                # Clear wirelog's pointer before tearing the slot down.
+                try:
+                    LIB.wirelog_session_set_delta_cb(self._handle, OnDeltaFn(), None)
+                except Exception:
+                    pass
+                self._delta_cb.close()
+                self._delta_cb = None
+            if self._handle.value:
+                LIB.wirelog_session_destroy(self._handle)
+                self._handle = SessionHandle()
+            self._closed = True
+
+    def __exit__(self, *exc: object) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+    # --- internals ---------------------------------------------------------
+
+    def _serialize(self) -> Any:
+        return self._lock if self._lock is not None else _NullCM()
+
+    def _require_mode(self, want: _Mode) -> None:
+        if self._mode == _Mode.UNSET:
+            self._mode = want
+            return
+        if self._mode != want:
+            raise WirelogModeError(
+                f"session is in {self._mode.name} mode; "
+                f"{want.name} operation rejected. Close and reopen the "
+                "session to switch modes."
+            )
+
+
+__all__ = ["EasySession", "Session"]
