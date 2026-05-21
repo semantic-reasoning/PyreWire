@@ -43,6 +43,15 @@ jobs:
         # regressions on every PR instead of only at tag time.
         os: [ubuntu-22.04, macos-14, windows-2022]
         python: ["3.10", "3.11", "3.12", "3.13"]
+    env:
+      # PyreWire pins to wirelog tagged releases (not `main`) so the
+      # dev-cycle version churn (X.Y.0 → X.Y.99 → X.(Y+1).0 …) does
+      # not silently break PyreWire CI. Bump WIRELOG_VERSION + the
+      # pyrewire version in lock-step when wirelog cuts a new tag.
+      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
+      # Forward slashes work on Windows too — Win32 path APIs accept
+      # them, and the bash pytest step reads this value verbatim.
+      WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
     steps:
       - uses: actions/checkout@v4
 
@@ -56,27 +65,55 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
+      # Resolve WIRELOG_VERSION (a tag like `v0.41.0` or a branch ref
+      # like `main`) to the underlying commit SHA. The cache key uses
+      # the SHA — not the version label — so that:
+      #   * a moving ref like `main` invalidates the cache each time
+      #     upstream advances, and
+      #   * a retagged release (same label, new commit) also
+      #     invalidates correctly.
+      # `git ls-remote URL <ref>` returns both the tag object and its
+      # `^{}` peeled commit for annotated tags; `tail -1` picks the
+      # peeled commit. For branches and lightweight tags it's the
+      # only line.
+      - name: resolve wirelog commit sha
+        id: wirelog-sha
+        shell: bash
+        run: |
+          sha=$(git ls-remote https://github.com/semantic-reasoning/wirelog "$WIRELOG_VERSION" | tail -1 | awk '{print $1}')
+          if [ -z "$sha" ]; then
+            echo "could not resolve $WIRELOG_VERSION on github.com/semantic-reasoning/wirelog" >&2
+            exit 1
+          fi
+          echo "Resolved $WIRELOG_VERSION -> $sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      # Cache the wirelog install prefix across runs. Key includes the
+      # resolved commit SHA and the build-script hashes so a script
+      # edit or a wirelog-side commit invalidates entries automatically.
+      # The matrix.os axis keeps Linux / macOS / Windows caches separate
+      # (binary incompatible). Python-version is NOT in the key because
+      # the install is pure C; one cache entry serves every py3.10–3.13
+      # matrix slot on the same OS.
+      - name: cache wirelog install
+        id: cache-wirelog
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WIRELOG_PREFIX }}
+          key: wirelog-${{ matrix.os }}-${{ steps.wirelog-sha.outputs.sha }}-${{ hashFiles('scripts/build_wirelog.sh', 'scripts/build_wirelog.ps1') }}
+
       - name: install meson + ninja
+        if: steps.cache-wirelog.outputs.cache-hit != 'true'
         run: pip install meson ninja
 
       - name: build wirelog from source (POSIX)
-        if: runner.os != 'Windows'
+        if: steps.cache-wirelog.outputs.cache-hit != 'true' && runner.os != 'Windows'
         shell: bash
-        env:
-          # PyreWire pins to wirelog tagged releases (not `main`) so the
-          # dev-cycle version churn (X.Y.0 → X.Y.99 → X.(Y+1).0 …) does
-          # not silently break PyreWire CI. Bump WIRELOG_VERSION + the
-          # pyrewire version in lock-step when wirelog cuts a new tag.
-          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
-          WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: bash scripts/build_wirelog.sh
 
       - name: build wirelog from source (Windows / MSVC)
-        if: runner.os == 'Windows'
+        if: steps.cache-wirelog.outputs.cache-hit != 'true' && runner.os == 'Windows'
         shell: pwsh
-        env:
-          WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
-          WIRELOG_PREFIX: ${{ runner.temp }}\wirelog-install
         run: pwsh scripts/build_wirelog.ps1
 
       - name: install pyrewire
@@ -84,8 +121,6 @@ jobs:
 
       - name: pytest with coverage gate
         shell: bash
-        env:
-          WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
         run: |
           if [ "$RUNNER_OS" = "macOS" ]; then
             # The dylib symlink shipped by wirelog may be either form;
