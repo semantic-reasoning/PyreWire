@@ -1,0 +1,17 @@
+include LICENSE LICENSE-APACHE LICENSE-GPL
+include README.md CHANGELOG.md
+include pyproject.toml
+include MANIFEST.in
+
+graft src/pyrewire
+graft tests
+graft scripts
+
+# Source distributions never ship compiled wirelog binaries; the
+# wheel-repair tools populate `pyrewire/_lib/` later. See #51 / #31.
+recursive-exclude src/pyrewire/_lib *.so *.so.* *.dylib *.dll *.pyd
+
+# Always strip stray __pycache__/.pyc files.
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
