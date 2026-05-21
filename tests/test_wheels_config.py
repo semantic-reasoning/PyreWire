@@ -1,0 +1,86 @@
+"""Regression: cibuildwheel matrix and supporting scripts stay wired (#30 + #31).
+
+The wheel build is what makes `pip install pyrewire` work without a
+system wirelog. A future refactor that drops the per-platform
+`repair-wheel-command` would silently regress to broken wheels. This
+test parses the YAML/TOML and asserts the required pieces exist.
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+import pytest
+
+yaml = pytest.importorskip("yaml")
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def _read(path: str) -> str:
+    return (_repo_root() / path).read_text()
+
+
+def test_pyproject_has_cibuildwheel_table():
+    text = _read("pyproject.toml")
+    assert "[tool.cibuildwheel]" in text
+    assert "[tool.cibuildwheel.linux]" in text
+    assert "[tool.cibuildwheel.macos]" in text
+    assert "[tool.cibuildwheel.windows]" in text
+
+
+def test_each_platform_has_repair_wheel_command():
+    """The wheel-repair step (#31) is what bundles libwirelog into the
+    wheel. Missing it on any platform breaks `pip install pyrewire`."""
+    text = _read("pyproject.toml")
+    sections = re.split(r"\n(?=\[tool\.cibuildwheel\.[a-z]+\])", text)
+    for section in sections:
+        if section.startswith("[tool.cibuildwheel.linux]"):
+            assert "auditwheel repair" in section
+        elif section.startswith("[tool.cibuildwheel.macos]"):
+            assert "delocate-wheel" in section
+        elif section.startswith("[tool.cibuildwheel.windows]"):
+            assert "delvewheel repair" in section
+
+
+def test_wheels_workflow_triggers_on_v_tags_and_dispatch():
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    on = wf.get("on") or wf.get(True)
+    assert isinstance(on, dict)
+    push = on.get("push") or {}
+    assert "v*" in (push.get("tags") or [])
+    assert "workflow_dispatch" in on
+
+
+def test_wheels_workflow_uploads_artifacts():
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    steps = wf["jobs"]["build_wheels"]["steps"]
+    uses = [s.get("uses", "") for s in steps]
+    assert any(
+        "upload-artifact" in u for u in uses
+    ), "wheels workflow must upload built wheels as artifacts"
+
+
+def test_wheels_workflow_uses_cibuildwheel_action():
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    steps = wf["jobs"]["build_wheels"]["steps"]
+    assert any("pypa/cibuildwheel" in s.get("uses", "") for s in steps)
+
+
+def test_build_wirelog_powershell_script_exists():
+    """The Windows runner needs a PowerShell-flavoured build script."""
+    ps1 = _repo_root() / "scripts" / "build_wirelog.ps1"
+    assert ps1.is_file()
+    text = ps1.read_text()
+    assert "meson" in text
+    assert "WIRELOG_VERSION" in text
+
+
+def test_build_wirelog_bash_script_exists():
+    """The Linux/macOS runners share the bash script."""
+    sh = _repo_root() / "scripts" / "build_wirelog.sh"
+    assert sh.is_file()
+    assert sh.stat().st_mode & 0o111, "build_wirelog.sh must be executable"
