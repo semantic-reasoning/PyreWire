@@ -187,14 +187,20 @@ class EasySession(AbstractContextManager["EasySession"]):
 
     # --- variadic *_sym wrappers (#44) -------------------------------------
     #
-    # `wirelog_easy_insert_sym` / `remove_sym` are variadic in C: relation
-    # name, then up to 16 `const char *` symbols, then a NULL sentinel.
-    # ctypes calls a function with `argtypes=None` as a plain variadic and
-    # would default-coerce every argument; setting `argtypes` per call
-    # matches the C convention exactly. Holding the session lock for the
-    # duration makes the shared `argtypes` swap safe under concurrency.
+    # `wirelog_easy_insert_sym` / `remove_sym` are variadic in C: a fixed
+    # `(session, relation)` prefix, then up to 16 `const char *` symbols,
+    # then a NULL sentinel. On Apple Silicon (macOS arm64) variadic
+    # functions use a different ABI than fixed-arity functions, and
+    # ctypes needs `argtypes` to describe *only* the fixed arguments —
+    # the variadic tail uses the platform's variadic ABI from there.
+    # See https://docs.python.org/3/library/ctypes.html#calling-variadic-functions
+    #
+    # On non-Apple-arm64 platforms this still works because ctypes uses
+    # the fixed signature for the leading args and the platform's
+    # default convention for the rest.
 
     _SYM_MAX = 16
+    _SYM_FIXED_ARGTYPES = (EasySessionHandle, ctypes.c_char_p)
 
     def insert_sym(self, relation: str, *symbols: str) -> None:
         """Insert one row by listing its `STRING` symbols inline.
@@ -219,16 +225,17 @@ class EasySession(AbstractContextManager["EasySession"]):
                 f"wirelog_easy_{{insert,remove}}_sym accepts at most "
                 f"{self._SYM_MAX} symbols per call (got {len(symbols)})"
             )
-        argtypes = [EasySessionHandle, ctypes.c_char_p]
-        argtypes.extend(ctypes.c_char_p for _ in symbols)
-        argtypes.append(ctypes.c_char_p)  # NULL sentinel slot
+        # Set argtypes for the FIXED arguments only; ctypes uses the
+        # platform's variadic ABI for the remaining `const char *`
+        # symbols + NULL terminator. Pre-wrap each variadic arg in
+        # `c_char_p` so the default ctypes coercion is bypassed.
         prev_argtypes = fn.argtypes
         try:
             with self._serialize():
-                fn.argtypes = argtypes
+                fn.argtypes = list(self._SYM_FIXED_ARGTYPES)
                 args: list[Any] = [self._handle, relation.encode("utf-8")]
-                args.extend(s.encode("utf-8") for s in symbols)
-                args.append(None)
+                args.extend(ctypes.c_char_p(s.encode("utf-8")) for s in symbols)
+                args.append(ctypes.c_char_p(None))  # NULL terminator
                 rc = fn(*args)
         finally:
             fn.argtypes = prev_argtypes
