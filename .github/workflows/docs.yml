@@ -1,0 +1,33 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install docs deps
+        # Docs build the API reference straight from docstrings via
+        # `mkdocstrings`. No runtime wirelog needed; `mkdocstrings`
+        # uses static analysis (griffe) so the C library is not loaded.
+        run: pip install ".[docs]"
+      - name: mkdocs build --strict
+        run: mkdocs build --strict
+      - name: mkdocs gh-deploy
+        run: mkdocs gh-deploy --force --clean

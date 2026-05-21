@@ -29,6 +29,11 @@ dependencies = []
 
 [project.optional-dependencies]
 numpy = ["numpy>=1.24"]
+docs = [
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
