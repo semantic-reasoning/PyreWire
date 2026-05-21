@@ -42,6 +42,11 @@ from pyrewire.asyncio_session import (
 )
 from pyrewire.batch import BatchProgram, Result
 from pyrewire.compound import Compound, CompoundArg
+from pyrewire.helpers import (
+    Delta,
+    is_wirelog_print_delta,
+    make_safe_print_delta,
+)
 from pyrewire.io_adapter import (
     IOContext,
     register_adapter,
@@ -66,6 +71,9 @@ __all__ = [
     "Result",
     "Compound",
     "CompoundArg",
+    "Delta",
+    "make_safe_print_delta",
+    "is_wirelog_print_delta",
     "AsyncEasySession",
     "AsyncSession",
     "AsyncBatchProgram",
