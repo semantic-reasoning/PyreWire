@@ -26,16 +26,23 @@ if (Test-Path $Src) {
 # serves CI's pinned tag (`v0.41.0`) and the nightly's `main`.
 git clone --depth 1 --branch $WirelogVersion $Repo $Src
 
-# Build with tests + examples disabled — PyreWire's CI only needs the
-# library and the public headers.
+# Build with tests disabled — PyreWire's CI only needs the library
+# and the public headers. wirelog v0.41.0 has no `examples` meson
+# option (it was added on a later branch), so we limit compilation
+# to the `wirelog` target instead; that pulls in its subproject
+# deps (nanoarrow, libxxhash) but skips the example binaries.
 pip install --upgrade meson ninja
 
 meson setup "$Src\builddir" $Src `
     --prefix=$Prefix `
     --buildtype=release `
-    -Dtests=false `
-    -Dexamples=false
-meson compile -C "$Src\builddir"
+    -Dtests=false
+meson compile -C "$Src\builddir" wirelog
+# Run `meson install` without `--skip-subprojects` so the wirelog DLL's
+# co-located runtime deps (nanoarrow.dll, libxxhash.dll) end up in
+# `$Prefix\bin\` next to it. ctypes loads wirelog-1.dll by absolute
+# path, which uses LOAD_WITH_ALTERED_SEARCH_PATH on Windows and so
+# finds dependent DLLs in the same directory.
 meson install -C "$Src\builddir"
 
 Write-Host "wirelog installed to $Prefix"
