@@ -1,0 +1,74 @@
+name: nightly
+
+# Build wirelog from `main` (not the pinned release tag) and run
+# PyreWire's full test suite against it. If the run fails, file or
+# update a `nightly-failure` tracking issue so upstream breakage is
+# visible within 24 hours.
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # daily at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: nightly
+  cancel-in-progress: true
+
+jobs:
+  test_against_main:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: install meson + ninja
+        run: pip install meson ninja
+
+      - name: build wirelog from main
+        env:
+          WIRELOG_VERSION: main
+          WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
+        run: bash scripts/build_wirelog.sh
+
+      - name: install pyrewire (dev)
+        run: pip install -e ".[dev,numpy]"
+
+      - name: bump pyrewire version to match wirelog main
+        # `main` builds report a dev version (`0.41.99` or later).
+        # PyreWire's loader rejects mismatched versions; here we
+        # deliberately track upstream-main, so the nightly job
+        # overrides the pyproject version for the run.
+        shell: bash
+        run: |
+          src_dir="$RUNNER_TEMP/wirelog-src"
+          if [ -d "$src_dir" ]; then
+            wirelog_ver=$(grep -oE "version: '[0-9]+\.[0-9]+\.[0-9]+'" "$src_dir/meson.build" | head -1 | sed "s/version: '//; s/'//")
+            if [ -n "$wirelog_ver" ]; then
+              python -c "import re, pathlib; p=pathlib.Path('src/pyrewire/__init__.py'); p.write_text(re.sub(r'__version__ = \"[^\"]+\"', f'__version__ = \"$wirelog_ver\"', p.read_text()))"
+              echo "patched pyrewire to $wirelog_ver"
+            fi
+          fi
+
+      - name: pytest (no coverage gate)
+        id: tests
+        env:
+          LD_LIBRARY_PATH: ${{ runner.temp }}/wirelog-install/lib
+        run: pytest -q -o addopts="" tests/
+
+      - name: file or update nightly-failure issue
+        if: failure() && steps.tests.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: bash scripts/ci/open_nightly_failure_issue.sh
