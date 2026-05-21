@@ -185,6 +185,57 @@ class EasySession(AbstractContextManager["EasySession"]):
             )
         check(rc)
 
+    # --- variadic *_sym wrappers (#44) -------------------------------------
+    #
+    # `wirelog_easy_insert_sym` / `remove_sym` are variadic in C: relation
+    # name, then up to 16 `const char *` symbols, then a NULL sentinel.
+    # ctypes calls a function with `argtypes=None` as a plain variadic and
+    # would default-coerce every argument; setting `argtypes` per call
+    # matches the C convention exactly. Holding the session lock for the
+    # duration makes the shared `argtypes` swap safe under concurrency.
+
+    _SYM_MAX = 16
+
+    def insert_sym(self, relation: str, *symbols: str) -> None:
+        """Insert one row by listing its `STRING` symbols inline.
+
+        Equivalent to `insert(relation, list(symbols))` but routed
+        through `wirelog_easy_insert_sym` for ABI parity with the C
+        surface. Symbols are interned by wirelog; PyreWire mirrors
+        them into its reverse-intern cache after the call succeeds.
+
+        Caps at 16 symbols per call (wirelog header constraint).
+        """
+        self._sym_call(LIB.wirelog_easy_insert_sym, relation, symbols)
+
+    def remove_sym(self, relation: str, *symbols: str) -> None:
+        """Retract one row by inline symbols (z-set decrement)."""
+        self._sym_call(LIB.wirelog_easy_remove_sym, relation, symbols)
+
+    def _sym_call(self, fn: Any, relation: str, symbols: tuple[str, ...]) -> None:
+        self._require_mode(_Mode.INCREMENTAL)
+        if len(symbols) > self._SYM_MAX:
+            raise ValueError(
+                f"wirelog_easy_{{insert,remove}}_sym accepts at most "
+                f"{self._SYM_MAX} symbols per call (got {len(symbols)})"
+            )
+        argtypes = [EasySessionHandle, ctypes.c_char_p]
+        argtypes.extend(ctypes.c_char_p for _ in symbols)
+        argtypes.append(ctypes.c_char_p)  # NULL sentinel slot
+        prev_argtypes = fn.argtypes
+        try:
+            with self._serialize():
+                fn.argtypes = argtypes
+                args: list[Any] = [self._handle, relation.encode("utf-8")]
+                args.extend(s.encode("utf-8") for s in symbols)
+                args.append(None)
+                rc = fn(*args)
+        finally:
+            fn.argtypes = prev_argtypes
+        check(rc)
+        for s in symbols:
+            self._intern.intern(s)
+
     def _row_to_int64(self, row: Row) -> list[int]:
         out: list[int] = []
         for v in row:
