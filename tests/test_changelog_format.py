@@ -8,10 +8,7 @@ is allowed (and encouraged) but is ignored for the equality check.
 from __future__ import annotations
 
 import re
-import tomllib
 from pathlib import Path
-
-_toml_loads = tomllib.loads
 
 
 def _repo_root() -> Path:
@@ -19,11 +16,18 @@ def _repo_root() -> Path:
 
 
 _HEADING_RE = re.compile(r"^##\s+\[([^\]]+)\](?:\s+-\s+\S+)?\s*$", re.MULTILINE)
+# pyproject.toml is structured; parse only the `version = "..."` field so
+# we don't depend on `tomllib` (Python 3.11+) — py3.10 in the test
+# matrix would otherwise ImportError-fail this whole module.
+_VERSION_RE = re.compile(r'^version\s*=\s*"([^"]+)"\s*$', re.MULTILINE)
 
 
 def _project_version() -> str:
-    data = _toml_loads((_repo_root() / "pyproject.toml").read_text())
-    return str(data["project"]["version"])
+    text = (_repo_root() / "pyproject.toml").read_text()
+    match = _VERSION_RE.search(text)
+    if match is None:
+        raise AssertionError("pyproject.toml has no `version = \"...\"` line")
+    return match.group(1)
 
 
 def _topmost_released_version(changelog_text: str) -> str | None:
