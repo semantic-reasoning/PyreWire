@@ -8,9 +8,10 @@ is allowed (and encouraged) but is ignored for the equality check.
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
 
-import tomllib
+_toml_loads = tomllib.loads
 
 
 def _repo_root() -> Path:
@@ -21,7 +22,7 @@ _HEADING_RE = re.compile(r"^##\s+\[([^\]]+)\](?:\s+-\s+\S+)?\s*$", re.MULTILINE)
 
 
 def _project_version() -> str:
-    data = tomllib.loads((_repo_root() / "pyproject.toml").read_text())
+    data = _toml_loads((_repo_root() / "pyproject.toml").read_text())
     return str(data["project"]["version"])
 
 
