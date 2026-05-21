@@ -44,4 +44,20 @@
          <loc>https://semantic-reasoning.github.io/PyreWire/reference/sessions/</loc>
          <lastmod>2026-05-21</lastmod>
     </url>
+    <url>
+         <loc>https://semantic-reasoning.github.io/PyreWire/semantics/compounds/</loc>
+         <lastmod>2026-05-21</lastmod>
+    </url>
+    <url>
+         <loc>https://semantic-reasoning.github.io/PyreWire/semantics/step-vs-snapshot/</loc>
+         <lastmod>2026-05-21</lastmod>
+    </url>
+    <url>
+         <loc>https://semantic-reasoning.github.io/PyreWire/semantics/threading/</loc>
+         <lastmod>2026-05-21</lastmod>
+    </url>
+    <url>
+         <loc>https://semantic-reasoning.github.io/PyreWire/semantics/zset/</loc>
+         <lastmod>2026-05-21</lastmod>
+    </url>
 </urlset>
