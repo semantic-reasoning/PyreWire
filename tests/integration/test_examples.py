@@ -86,6 +86,7 @@ _STEP_EXAMPLES_SKIPIF = pytest.mark.skipif(
     "module_name,expected_key,min_rows",
     [
         ("08_delta_queries", "step_deltas", 5),
+        ("10_recursive_under_update", "phase1_insert_chain", 6),
     ],
 )
 def test_step_example_returns_nonempty_relation(
