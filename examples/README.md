@@ -11,20 +11,14 @@ test under `tests/integration/test_examples.py`.
 | `02_reachability.py` | wirelog 02 | Transitive closure over a directed graph |
 | `03_bitwise.py` | wirelog 03 | Built-in `band` / `bor` / `bxor` / `bshl` / `bshr` |
 | `06_timestamp_lww.py` | wirelog 06 | Last-writer-wins via the `max()` aggregate |
+| `08_delta_queries.py` | wirelog 08 | Driving `EasySession.step()` and collecting per-step deltas |
+| `10_recursive_under_update.py` | wirelog 10 | Incremental maintenance of a recursive rule under insert/remove/re-insert |
+| `11_time_evolution.py` | wirelog 11 | Per-epoch delta isolation: each `step()` is a discrete time slice |
 | `12_batch_vs_session.py` | wirelog 12 (in spirit) | Compares the batch closure path with the session's EDB preview |
+| `12_snapshot_vs_delta.py` | wirelog 12 | Side-by-side comparison of `snapshot()` vs `step()` deliveries |
+| `retraction_basics.py` | wirelog 09 | Symmetric retraction through `step()` |
 
 ## Deferred examples
-
-The wirelog examples that drive `set_delta_callback` / incremental
-`step()` (`08-delta-queries`, `10-recursive-under-update`,
-`11-time-evolution`, and the original `12-snapshot-vs-delta`) require
-`EasySession.step` / `snapshot`. Those wrappers ship once wirelog
-cuts a release tag that includes
-[wirelog#852](https://github.com/semantic-reasoning/wirelog/pull/852)
-(tracked in
-[wirelog#859](https://github.com/semantic-reasoning/wirelog/issues/859)).
-The equivalent ports will land in the same PR that lands the
-EasySession.step support.
 
 The CSV-input examples (`02` style with external `.input`) require
 the IO-adapter glue. `pyrewire.io_adapter.register_adapter` is
