@@ -1,41 +1,60 @@
 # Versioning
 
-PyreWire's version number is **pinned to the wirelog version it
-wraps**. A PyreWire release labelled `0.41.0` always wraps the
-matching wirelog `v0.41.0` tag — never a `main` snapshot, never a
-different upstream release.
+PyreWire and wirelog version **independently**. PyreWire's version
+number tracks PyreWire's own release cadence; the wirelog releases
+it can run against are declared separately.
+
+## How compatibility is declared
+
+Each PyreWire build supports exactly one wirelog `MAJOR.MINOR` series.
+The series is encoded in `COMPATIBLE_WIRELOG_SERIES` inside
+`src/pyrewire/_ffi/_loader.py`. The loader rejects any libwirelog
+whose reported version falls outside that series with
+`WirelogVersionError`.
+
+- Patch releases inside the series (e.g. `0.43.0`, `0.43.1`, `0.43.99`)
+  are accepted interchangeably.
+- A different minor (e.g. `0.42.x`, `0.44.x`) or major is rejected,
+  even if the ABI happens to match.
 
 ## Why
 
-wirelog's ABI is not yet stable. Mixing PyreWire built against one
-wirelog version with a different `libwirelog.so.X` is undefined
-behaviour at best and a segfault at worst. Strict version lockstep
-keeps that surface enforceable end-to-end:
+wirelog's ABI is not yet stable. PyreWire validates against a single
+minor series at a time; mixing in releases from a different series
+is undefined behaviour. The loader check enforces this end-to-end:
 
-- The CI pipeline pins `WIRELOG_VERSION` to the same tag as the
-  PyreWire release.
-- The loader (`pyrewire._ffi._loader`) verifies the runtime
-  `libwirelog` matches the version PyreWire was built against, and
-  raises `WirelogVersionError` otherwise.
-- Wheels bundle the matching `libwirelog.so.X` (`auditwheel` /
-  `delocate` / `delvewheel`), so a `pip install pyrewire==0.41.0`
-  pulls in exactly one ABI-compatible pair.
+- `WIRELOG_VERSION` in CI pins the exact tag CI builds and tests
+  against.
+- `COMPATIBLE_WIRELOG_SERIES` in the loader rejects out-of-series
+  builds at import time.
+- Wheels bundle a matching `libwirelog.so.X` via `auditwheel` /
+  `delocate` / `delvewheel`.
 
-## PyreWire-only hotfixes
+## PyreWire-only changes
 
-PyreWire-only fixes (e.g. a Python-side bug that does not need a new
-wirelog release) use **PEP 440 build metadata**:
+A PyreWire-only fix (Python-side bug that does not need a new
+wirelog) is a plain PyreWire patch bump; the supported wirelog
+series is unaffected.
 
-- `0.41.0` — initial release wrapping wirelog `v0.41.0`.
-- `0.41.0.post1` — PyreWire-only patch, still wraps wirelog `v0.41.0`.
-- `0.41.1` — released only when wirelog `v0.41.1` exists; PyreWire
-  rebuilds against it.
+## Moving to a new wirelog series
+
+When PyreWire is rebuilt and re-validated against a new wirelog
+minor series:
+
+1. Update `WIRELOG_VERSION` in CI / `pyproject.toml` cibuildwheel
+   sections to the new tag.
+2. Update `COMPATIBLE_WIRELOG_SERIES` in `_loader.py` to the new
+   `(major, minor)`.
+3. Record the change in the CHANGELOG.
+
+PyreWire's own `__version__` is bumped only when there is a PyreWire
+release to publish; it is **not** tied to the wirelog change.
 
 ## Compatibility table
 
-| PyreWire        | wirelog          | Notes                        |
-| --------------- | ---------------- | ---------------------------- |
-| `0.41.0`        | `v0.41.0`        | Initial public release.      |
+| PyreWire        | Supported wirelog series | Notes                       |
+| --------------- | ------------------------ | --------------------------- |
+| `0.41.99`       | `0.41.x`                 | Independent versioning.     |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).

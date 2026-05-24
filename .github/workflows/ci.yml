@@ -44,10 +44,11 @@ jobs:
         os: [ubuntu-22.04, macos-14, windows-2022]
         python: ["3.10", "3.11", "3.12", "3.13"]
     env:
-      # PyreWire pins to wirelog tagged releases (not `main`) so the
-      # dev-cycle version churn (X.Y.0 → X.Y.99 → X.(Y+1).0 …) does
-      # not silently break PyreWire CI. Bump WIRELOG_VERSION + the
-      # pyrewire version in lock-step when wirelog cuts a new tag.
+      # PyreWire pins to a single wirelog MAJOR.MINOR series — see
+      # COMPATIBLE_WIRELOG_SERIES in src/pyrewire/_ffi/_loader.py.
+      # WIRELOG_VERSION here is the exact tag CI builds against; bump
+      # it (and the loader's series constant if the minor changes)
+      # independently of PyreWire's own __version__.
       WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
       # Forward slashes work on Windows too — Win32 path APIs accept
       # them, and the bash pytest step reads this value verbatim.

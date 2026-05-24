@@ -51,23 +51,15 @@ _config_threads_fn = _try_resolve("wirelog_config_threads", ctypes.c_bool, [])
 def wirelog_version() -> str:
     """Return the loaded libwirelog's version string.
 
-    Prefers `LIB.wirelog_version_string()`. Falls back to
-    `pyrewire.__version__` (PEP 440 local-version segment stripped) only
-    against pre-#841 builds without the symbol; PyreWire's versioning
-    rule keeps the two in lock-step so the fallback is informationally
-    equivalent.
+    Prefers `LIB.wirelog_version_string()`. Pre-#841 builds without
+    the symbol return `"unknown"` — PyreWire's version is unrelated to
+    the wirelog version, so there is no informative fallback.
     """
     if _version_fn is not None:
         raw = _version_fn()
         if raw:
             return raw.decode("utf-8", errors="replace")  # type: ignore[no-any-return]
-    # Pre-#841 fallback: cannot ask the library; report what pyrewire is
-    # pinned to. The loader has already confirmed library presence via
-    # the sentinel-symbol probe.
-    from .. import __version__  # local import to avoid early circular load
-    from ._loader import _pep440_base
-
-    return _pep440_base(__version__)
+    return "unknown"
 
 
 def build_config() -> dict[str, bool | None]:
