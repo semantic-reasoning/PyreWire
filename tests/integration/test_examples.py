@@ -41,6 +41,7 @@ def _import_example(name: str) -> Any:
         ("01_simple", "ancestor", 1),
         ("02_reachability", "reach", 1),
         ("03_bitwise", "result", 1),
+        ("04_hash_functions", "unique_record", 4),
         ("06_timestamp_lww", "latest", 1),
         ("12_batch_vs_session", "batch_reach", 1),
     ],
