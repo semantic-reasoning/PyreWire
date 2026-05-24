@@ -50,9 +50,13 @@ jobs:
       # it (and the loader's series constant if the minor changes)
       # independently of PyreWire's own __version__.
       WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.43.0' }}
-      # Forward slashes work on Windows too — Win32 path APIs accept
-      # them, and the bash pytest step reads this value verbatim.
-      WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
+      # `runner.temp` is NOT available in job-level `env:` (only in
+      # step-level contexts) — using it here caused the whole workflow
+      # to fail at startup (#114). `github.workspace` IS resolvable at
+      # job level and resolves to a stable per-job path on all three
+      # runner OSes. Forward slashes work on Windows too — Win32 path
+      # APIs accept them, and the bash pytest step reads this verbatim.
+      WIRELOG_PREFIX: ${{ github.workspace }}/wirelog-install
     steps:
       - uses: actions/checkout@v4
 
