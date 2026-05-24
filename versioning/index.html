@@ -378,6 +378,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#how-compatibility-is-declared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How compatibility is declared
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -389,10 +400,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pyrewire-only-hotfixes" class="md-nav__link">
+  <a href="#pyrewire-only-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        PyreWire-only hotfixes
+        PyreWire-only changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#moving-to-a-new-wirelog-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Moving to a new wirelog series
       
     </span>
   </a>
@@ -897,48 +919,63 @@
 
 
 <h1 id="versioning">Versioning<a class="headerlink" href="#versioning" title="Permanent link">&para;</a></h1>
-<p>PyreWire's version number is <strong>pinned to the wirelog version it
-wraps</strong>. A PyreWire release labelled <code>0.41.0</code> always wraps the
-matching wirelog <code>v0.41.0</code> tag — never a <code>main</code> snapshot, never a
-different upstream release.</p>
+<p>PyreWire and wirelog version <strong>independently</strong>. PyreWire's version
+number tracks PyreWire's own release cadence; the wirelog releases
+it can run against are declared separately.</p>
+<h2 id="how-compatibility-is-declared">How compatibility is declared<a class="headerlink" href="#how-compatibility-is-declared" title="Permanent link">&para;</a></h2>
+<p>Each PyreWire build supports exactly one wirelog <code>MAJOR.MINOR</code> series.
+The series is encoded in <code>COMPATIBLE_WIRELOG_SERIES</code> inside
+<code>src/pyrewire/_ffi/_loader.py</code>. The loader rejects any libwirelog
+whose reported version falls outside that series with
+<code>WirelogVersionError</code>.</p>
+<ul>
+<li>Patch releases inside the series (e.g. <code>0.43.0</code>, <code>0.43.1</code>, <code>0.43.99</code>)
+  are accepted interchangeably.</li>
+<li>A different minor (e.g. <code>0.42.x</code>, <code>0.44.x</code>) or major is rejected,
+  even if the ABI happens to match.</li>
+</ul>
 <h2 id="why">Why<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
-<p>wirelog's ABI is not yet stable. Mixing PyreWire built against one
-wirelog version with a different <code>libwirelog.so.X</code> is undefined
-behaviour at best and a segfault at worst. Strict version lockstep
-keeps that surface enforceable end-to-end:</p>
+<p>wirelog's ABI is not yet stable. PyreWire validates against a single
+minor series at a time; mixing in releases from a different series
+is undefined behaviour. The loader check enforces this end-to-end:</p>
 <ul>
-<li>The CI pipeline pins <code>WIRELOG_VERSION</code> to the same tag as the
-  PyreWire release.</li>
-<li>The loader (<code>pyrewire._ffi._loader</code>) verifies the runtime
-  <code>libwirelog</code> matches the version PyreWire was built against, and
-  raises <code>WirelogVersionError</code> otherwise.</li>
-<li>Wheels bundle the matching <code>libwirelog.so.X</code> (<code>auditwheel</code> /
-  <code>delocate</code> / <code>delvewheel</code>), so a <code>pip install pyrewire==0.41.0</code>
-  pulls in exactly one ABI-compatible pair.</li>
+<li><code>WIRELOG_VERSION</code> in CI pins the exact tag CI builds and tests
+  against.</li>
+<li><code>COMPATIBLE_WIRELOG_SERIES</code> in the loader rejects out-of-series
+  builds at import time.</li>
+<li>Wheels bundle a matching <code>libwirelog.so.X</code> via <code>auditwheel</code> /
+  <code>delocate</code> / <code>delvewheel</code>.</li>
 </ul>
-<h2 id="pyrewire-only-hotfixes">PyreWire-only hotfixes<a class="headerlink" href="#pyrewire-only-hotfixes" title="Permanent link">&para;</a></h2>
-<p>PyreWire-only fixes (e.g. a Python-side bug that does not need a new
-wirelog release) use <strong>PEP 440 build metadata</strong>:</p>
-<ul>
-<li><code>0.41.0</code> — initial release wrapping wirelog <code>v0.41.0</code>.</li>
-<li><code>0.41.0.post1</code> — PyreWire-only patch, still wraps wirelog <code>v0.41.0</code>.</li>
-<li><code>0.41.1</code> — released only when wirelog <code>v0.41.1</code> exists; PyreWire
-  rebuilds against it.</li>
-</ul>
+<h2 id="pyrewire-only-changes">PyreWire-only changes<a class="headerlink" href="#pyrewire-only-changes" title="Permanent link">&para;</a></h2>
+<p>A PyreWire-only fix (Python-side bug that does not need a new
+wirelog) is a plain PyreWire patch bump; the supported wirelog
+series is unaffected.</p>
+<h2 id="moving-to-a-new-wirelog-series">Moving to a new wirelog series<a class="headerlink" href="#moving-to-a-new-wirelog-series" title="Permanent link">&para;</a></h2>
+<p>When PyreWire is rebuilt and re-validated against a new wirelog
+minor series:</p>
+<ol>
+<li>Update <code>WIRELOG_VERSION</code> in CI / <code>pyproject.toml</code> cibuildwheel
+   sections to the new tag.</li>
+<li>Update <code>COMPATIBLE_WIRELOG_SERIES</code> in <code>_loader.py</code> to the new
+   <code>(major, minor)</code>.</li>
+<li>Record the change in the CHANGELOG.</li>
+</ol>
+<p>PyreWire's own <code>__version__</code> is bumped only when there is a PyreWire
+release to publish; it is <strong>not</strong> tied to the wirelog change.</p>
 <h2 id="compatibility-table">Compatibility table<a class="headerlink" href="#compatibility-table" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>PyreWire</th>
-<th>wirelog</th>
+<th>Supported wirelog series</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>0.41.0</code></td>
-<td><code>v0.41.0</code></td>
-<td>Initial public release.</td>
+<td><code>0.41.99</code></td>
+<td><code>0.43.x</code></td>
+<td>Independent versioning.</td>
 </tr>
 </tbody>
 </table>
