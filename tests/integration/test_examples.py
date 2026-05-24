@@ -61,3 +61,44 @@ def test_example_returns_nonempty_relation(
         f"{module_name}.run()[{expected_relation!r}] returned only "
         f"{len(rows)} rows; expected at least {min_rows}"
     )
+
+
+def _wirelog_ver() -> tuple[int, ...]:
+    try:
+        import pyrewire
+
+        return tuple(int(p) for p in pyrewire.wirelog_version().split("."))
+    except Exception:  # noqa: BLE001
+        return (0, 0, 0)
+
+
+_STEP_EXAMPLES_SKIPIF = pytest.mark.skipif(
+    _wirelog_ver() <= (0, 41, 0),
+    reason=(
+        "step()/snapshot example ports need wirelog > 0.41.0 (wirelog#852); "
+        "older libwirelog returns empty delta lists. Tracked in wirelog#859."
+    ),
+)
+
+
+@_STEP_EXAMPLES_SKIPIF
+@pytest.mark.parametrize(
+    "module_name,expected_key,min_rows",
+    [
+        ("08_delta_queries", "step_deltas", 5),
+    ],
+)
+def test_step_example_returns_nonempty_relation(
+    module_name: str, expected_key: str, min_rows: int
+) -> None:
+    mod = _import_example(module_name)
+    assert hasattr(mod, "run"), f"{module_name} missing run() entry point"
+    out = mod.run()
+    assert isinstance(out, dict), f"{module_name}.run() must return a dict"
+    assert expected_key in out, f"{module_name}.run() did not return key {expected_key!r}"
+    rows = out[expected_key]
+    assert isinstance(rows, list)
+    assert len(rows) >= min_rows, (
+        f"{module_name}.run()[{expected_key!r}] returned only "
+        f"{len(rows)} rows; expected at least {min_rows}"
+    )
