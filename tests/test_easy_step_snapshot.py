@@ -76,10 +76,14 @@ def test_step_preserves_insert_buffers_until_evaluation_issue_863():
     with EasySession(src) as s:
         s.insert("edge", [1, 2])
         s.insert("edge", [2, 3])
-        # Force Python allocations in the same window where step() also
-        # performs mode/callback bookkeeping.
-        _junk = [b"edge" for _ in range(32)]
+        # Hold live Python allocations across step() so the allocator
+        # is exercised in the same window where step() does its mode /
+        # callback bookkeeping — a regression guard for the input
+        # buffer lifetime fix (570822c). `del` after step() releases
+        # them and keeps the variable's role visible to the linter.
+        filler = [b"edge" for _ in range(32)]
         deltas_1 = s.step()
+        del filler
         assert {row for rel, row, diff in deltas_1 if rel == "reach" and diff > 0} == {
             (1, 2),
             (1, 3),
@@ -87,8 +91,9 @@ def test_step_preserves_insert_buffers_until_evaluation_issue_863():
         }
 
         s.insert("edge", [3, 4])
-        _junk = [b"edge" for _ in range(32)]
+        filler = [b"edge" for _ in range(32)]
         deltas_2 = s.step()
+        del filler
         reach_added = {row for rel, row, diff in deltas_2 if rel == "reach" and diff > 0}
         assert (3, 4) in reach_added
 
