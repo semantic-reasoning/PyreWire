@@ -43,6 +43,7 @@ def _import_example(name: str) -> Any:
         ("03_bitwise", "result", 1),
         ("04_hash_functions", "unique_record", 4),
         ("06_timestamp_lww", "latest", 1),
+        ("07_multi_source_analysis", "integrated", 10),
         ("12_batch_vs_session", "batch_reach", 1),
     ],
 )
