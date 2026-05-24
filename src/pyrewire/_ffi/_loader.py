@@ -27,7 +27,7 @@ from pathlib import Path
 _SENTINEL_SYMBOL = "wirelog_easy_open"
 
 
-COMPATIBLE_WIRELOG_SERIES: tuple[int, int] = (0, 41)
+COMPATIBLE_WIRELOG_SERIES: tuple[int, int] = (0, 43)
 """The single wirelog `MAJOR.MINOR` series this PyreWire build supports.
 
 PyreWire pins to one wirelog minor series at a time. Patch releases
