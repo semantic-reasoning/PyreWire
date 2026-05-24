@@ -1,10 +1,11 @@
 """libwirelog discovery, loading, and runtime version verification.
 
-When `wirelog_version_string` is exported (the default since
-semantic-reasoning/wirelog#841 landed), the loader verifies that its
-value matches `pyrewire.__version__` (PEP 440 local-version segment
-stripped). The pre-#841 fallback path is kept for forward-compatibility:
-older wirelog builds that omit the symbol cause a
+PyreWire and wirelog version independently. PyreWire declares a single
+compatible wirelog `MAJOR.MINOR` series in `COMPATIBLE_WIRELOG_SERIES`;
+any patch release within that series is accepted, everything else is
+rejected. When `wirelog_version_string` is exported (the default since
+semantic-reasoning/wirelog#841 landed) the series is compared against
+its reported value. Pre-#841 builds that omit the symbol cause a
 `WirelogVersionUnavailableWarning` and the load proceeds with library
 presence confirmed via a sentinel-symbol probe.
 """
@@ -26,8 +27,19 @@ from pathlib import Path
 _SENTINEL_SYMBOL = "wirelog_easy_open"
 
 
+COMPATIBLE_WIRELOG_SERIES: tuple[int, int] = (0, 41)
+"""The single wirelog `MAJOR.MINOR` series this PyreWire build supports.
+
+PyreWire pins to one wirelog minor series at a time. Patch releases
+within the series are accepted; any other release (older or newer
+minor) is rejected. Bump this when PyreWire is rebuilt and re-tested
+against a new wirelog minor series — independently of PyreWire's own
+version number.
+"""
+
+
 class WirelogVersionError(Exception):
-    """Raised when libwirelog's reported version disagrees with pyrewire.__version__."""
+    """Raised when libwirelog's reported version is outside COMPATIBLE_WIRELOG_SERIES."""
 
 
 class WirelogVersionUnavailableWarning(UserWarning):
@@ -128,22 +140,38 @@ def _pep440_base(version: str) -> str:
     return _PEP440_LOCAL_RE.sub("", version)
 
 
+def _parse_version(version: str) -> tuple[int, int, int]:
+    """Parse a `MAJOR.MINOR.PATCH` (PEP 440 base) string to a tuple.
+
+    Extra dot-separated components (e.g. wirelog dev tags) are ignored;
+    only the first three numeric segments are consulted.
+    """
+    parts = _pep440_base(version).split(".")
+    nums: list[int] = []
+    for part in parts[:3]:
+        try:
+            nums.append(int(part))
+        except ValueError:
+            break
+    while len(nums) < 3:
+        nums.append(0)
+    return nums[0], nums[1], nums[2]
+
+
 def _verify_version(handle: ctypes.CDLL) -> None:
-    """Compare libwirelog's reported version against `pyrewire.__version__`.
+    """Reject libwirelog builds outside COMPATIBLE_WIRELOG_SERIES.
 
     Pre-#841 builds without `wirelog_version_string` emit
     `WirelogVersionUnavailableWarning` and skip the comparison.
     """
-    from pyrewire import __version__
-
-    expected = _pep440_base(__version__)
+    series = "{}.{}.x".format(*COMPATIBLE_WIRELOG_SERIES)
     try:
         fn = handle.wirelog_version_string
     except AttributeError:
         warnings.warn(
             "libwirelog does not export wirelog_version_string; cannot "
-            f"verify the loaded library matches pyrewire {expected!r}. "
-            "Upgrade libwirelog to a post-#841 build.",
+            f"verify the loaded library is in the supported wirelog "
+            f"{series} series. Upgrade libwirelog to a post-#841 build.",
             WirelogVersionUnavailableWarning,
             stacklevel=2,
         )
@@ -159,12 +187,12 @@ def _verify_version(handle: ctypes.CDLL) -> None:
         )
         return
     actual = _pep440_base(raw.decode())
-    if actual != expected:
+    major, minor, _patch = _parse_version(actual)
+    if (major, minor) != COMPATIBLE_WIRELOG_SERIES:
         raise WirelogVersionError(
-            f"libwirelog version {actual!r} does not match "
-            f"pyrewire version {expected!r}. PyreWire follows wirelog's "
-            "versioning verbatim; install matching versions or set "
-            "WIRELOG_LIB to the correct library."
+            f"libwirelog version {actual!r} is outside the supported "
+            f"wirelog {series} series. Install a compatible libwirelog "
+            "or set WIRELOG_LIB to a supported library."
         )
 
 

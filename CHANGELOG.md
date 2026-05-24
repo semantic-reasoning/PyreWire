@@ -1,10 +1,10 @@
 # Changelog
 
 All notable changes to PyreWire are recorded here. The format follows
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
-project adheres to the
-[versioning rule](docs/versioning.md) pinning each PyreWire release
-to the matching wirelog release.
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). PyreWire and
+wirelog version independently; each PyreWire release declares a single
+supported wirelog `MAJOR.MINOR` series (see
+[versioning rule](docs/versioning.md)).
 
 ## [Unreleased]
 

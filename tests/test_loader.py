@@ -21,9 +21,11 @@ import pytest
 import pyrewire._ffi._loader as loader
 from pyrewire._ffi import LIB
 from pyrewire._ffi._loader import (
+    COMPATIBLE_WIRELOG_SERIES,
     WirelogVersionError,
     WirelogVersionUnavailableWarning,
     _candidate_paths,
+    _parse_version,
     _pep440_base,
     _soname,
     _verify_version,
@@ -74,41 +76,47 @@ def test_verify_version_warns_when_symbol_unavailable():
     ), f"expected WirelogVersionUnavailableWarning, got {[w.category for w in caught]}"
 
 
-def test_verify_version_raises_on_mismatch():
-    """If wirelog_version_string IS exported and disagrees with
-    pyrewire.__version__, the verifier raises WirelogVersionError."""
-    # Build a fake CDLL-like handle that exposes a callable named
-    # wirelog_version_string returning a bogus version string.
-    fake = MagicMock()
+def test_verify_version_raises_outside_supported_series():
+    """Any wirelog outside COMPATIBLE_WIRELOG_SERIES (older minor, newer
+    minor, or different major) is rejected with WirelogVersionError."""
+    major, minor = COMPATIBLE_WIRELOG_SERIES
+    out_of_range = [
+        f"{major}.{minor - 1}.0".encode() if minor > 0 else None,
+        f"{major}.{minor + 1}.0".encode(),
+        f"{major + 1}.0.0".encode(),
+    ]
+    for reported in filter(None, out_of_range):
+        fake = MagicMock()
+        fake.wirelog_version_string = lambda r=reported: r
+        fake.wirelog_version_string.restype = None
+        fake.wirelog_version_string.argtypes = None
+        with pytest.raises(WirelogVersionError) as excinfo:
+            _verify_version(fake)
+        assert reported.decode() in str(excinfo.value)
 
-    def _fake_version_string():
-        return b"99.0.0"
 
-    # Configure the fake so getattr(fake, "wirelog_version_string")() returns
-    # a bytes value and the assignments inside _verify_version (.restype /
-    # .argtypes) succeed without side effects.
-    fake.wirelog_version_string = _fake_version_string
-    fake.wirelog_version_string.restype = None
-    fake.wirelog_version_string.argtypes = None
-
-    with pytest.raises(WirelogVersionError) as excinfo:
+def test_verify_version_accepts_any_patch_in_series():
+    """Every patch release inside COMPATIBLE_WIRELOG_SERIES is accepted —
+    pyrewire.__version__ is irrelevant to the comparison."""
+    major, minor = COMPATIBLE_WIRELOG_SERIES
+    for patch in (0, 1, 99):
+        reported = f"{major}.{minor}.{patch}".encode()
+        fake = MagicMock()
+        fake.wirelog_version_string = lambda r=reported: r
+        fake.wirelog_version_string.restype = None
+        fake.wirelog_version_string.argtypes = None
+        # Should not raise.
         _verify_version(fake)
-    assert "99.0.0" in str(excinfo.value)
 
 
-def test_verify_version_accepts_match(monkeypatch):
-    """If wirelog_version_string equals pyrewire.__version__ (base), pass."""
-    import pyrewire
-
-    monkeypatch.setattr(pyrewire, "__version__", "0.40.99+py1")
-
-    fake = MagicMock()
-    fake.wirelog_version_string = lambda: b"0.40.99"
-    fake.wirelog_version_string.restype = None
-    fake.wirelog_version_string.argtypes = None
-
-    # Should not raise.
-    _verify_version(fake)
+def test_parse_version_handles_dotted_strings():
+    assert _parse_version("0.41.0") == (0, 41, 0)
+    assert _parse_version("0.43.0") == (0, 43, 0)
+    assert _parse_version("0.41.99") == (0, 41, 99)
+    # Extra dev-tag segments are tolerated.
+    assert _parse_version("0.43.0.dev1") == (0, 43, 0)
+    # PEP 440 local-version segment is stripped first.
+    assert _parse_version("0.41.99+py1") == (0, 41, 99)
 
 
 def test_missing_library_raises_oserror_listing_candidates(tmp_path):

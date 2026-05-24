@@ -42,22 +42,6 @@ jobs:
       - name: install pyrewire (dev)
         run: pip install -e ".[dev,numpy]"
 
-      - name: bump pyrewire version to match wirelog main
-        # `main` builds report a dev version (`0.41.99` or later).
-        # PyreWire's loader rejects mismatched versions; here we
-        # deliberately track upstream-main, so the nightly job
-        # overrides the pyproject version for the run.
-        shell: bash
-        run: |
-          src_dir="$RUNNER_TEMP/wirelog-src"
-          if [ -d "$src_dir" ]; then
-            wirelog_ver=$(grep -oE "version: '[0-9]+\.[0-9]+\.[0-9]+'" "$src_dir/meson.build" | head -1 | sed "s/version: '//; s/'//")
-            if [ -n "$wirelog_ver" ]; then
-              python -c "import re, pathlib; p=pathlib.Path('src/pyrewire/__init__.py'); p.write_text(re.sub(r'__version__ = \"[^\"]+\"', f'__version__ = \"$wirelog_ver\"', p.read_text()))"
-              echo "patched pyrewire to $wirelog_ver"
-            fi
-          fi
-
       - name: pytest (no coverage gate)
         id: tests
         env:
