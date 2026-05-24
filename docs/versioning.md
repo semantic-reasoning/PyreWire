@@ -54,7 +54,7 @@ release to publish; it is **not** tied to the wirelog change.
 
 | PyreWire        | Supported wirelog series | Notes                       |
 | --------------- | ------------------------ | --------------------------- |
-| `0.41.99`       | `0.41.x`                 | Independent versioning.     |
+| `0.41.99`       | `0.43.x`                 | Independent versioning.     |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).

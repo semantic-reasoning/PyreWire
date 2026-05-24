@@ -49,7 +49,7 @@ jobs:
       # WIRELOG_VERSION here is the exact tag CI builds against; bump
       # it (and the loader's series constant if the minor changes)
       # independently of PyreWire's own __version__.
-      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.41.0' }}
+      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.43.0' }}
       # Forward slashes work on Windows too — Win32 path APIs accept
       # them, and the bash pytest step reads this value verbatim.
       WIRELOG_PREFIX: ${{ runner.temp }}/wirelog-install
