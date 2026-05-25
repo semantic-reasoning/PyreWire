@@ -69,9 +69,9 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      # Resolve WIRELOG_VERSION (a tag like `v0.41.0` or a branch ref
-      # like `main`) to the underlying commit SHA. The cache key uses
-      # the SHA — not the version label — so that:
+      # Resolve WIRELOG_VERSION (a tag like `v0.43.0`, a branch ref
+      # like `main`, or an exact commit SHA) to the underlying commit
+      # SHA. The cache key uses the SHA — not the version label — so that:
       #   * a moving ref like `main` invalidates the cache each time
       #     upstream advances, and
       #   * a retagged release (same label, new commit) also
@@ -84,7 +84,11 @@ jobs:
         id: wirelog-sha
         shell: bash
         run: |
-          sha=$(git ls-remote https://github.com/semantic-reasoning/wirelog "$WIRELOG_VERSION" | tail -1 | awk '{print $1}')
+          if [[ "$WIRELOG_VERSION" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            sha="$WIRELOG_VERSION"
+          else
+            sha=$(git ls-remote https://github.com/semantic-reasoning/wirelog "$WIRELOG_VERSION" | tail -1 | awk '{print $1}')
+          fi
           if [ -z "$sha" ]; then
             echo "could not resolve $WIRELOG_VERSION on github.com/semantic-reasoning/wirelog" >&2
             exit 1
