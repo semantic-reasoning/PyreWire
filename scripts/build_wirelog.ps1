@@ -3,13 +3,13 @@
 # the prefix used by the wheel-bundling step.
 #
 # Inputs (env):
-#   WIRELOG_VERSION  - tag / branch name to check out (default: v0.41.0)
+#   WIRELOG_VERSION  - tag / branch name / commit SHA to check out (default: main)
 #   WIRELOG_PREFIX   - install prefix (default: C:\wirelog-install)
 #   WIRELOG_REPO     - git URL (default: https://github.com/semantic-reasoning/wirelog)
 
 $ErrorActionPreference = "Stop"
 
-$WirelogVersion = if ($env:WIRELOG_VERSION) { $env:WIRELOG_VERSION } else { "v0.41.0" }
+$WirelogVersion = if ($env:WIRELOG_VERSION) { $env:WIRELOG_VERSION } else { "main" }
 $Prefix = if ($env:WIRELOG_PREFIX) { $env:WIRELOG_PREFIX } else { "C:\wirelog-install" }
 $Repo   = if ($env:WIRELOG_REPO)   { $env:WIRELOG_REPO }   else { "https://github.com/semantic-reasoning/wirelog" }
 $Src    = "$env:TEMP\wirelog-src"
@@ -22,9 +22,16 @@ if (Test-Path $Src) {
     Remove-Item -Recurse -Force $Src
 }
 
-# `--branch` accepts both tags and branch names, so the same script
-# serves CI's pinned tag (`v0.41.0`) and the nightly's `main`.
-git clone --depth 1 --branch $WirelogVersion $Repo $Src
+# `--branch` accepts tags and branch names. For exact commit pins, fetch
+# just that object and detach HEAD there.
+git ls-remote --exit-code --heads --tags $Repo $WirelogVersion *> $null
+if ($LASTEXITCODE -eq 0) {
+    git clone --depth 1 --branch $WirelogVersion $Repo $Src
+} else {
+    git clone --filter=blob:none --no-checkout $Repo $Src
+    git -C $Src fetch --depth 1 origin $WirelogVersion
+    git -C $Src checkout --detach FETCH_HEAD
+}
 
 # Build with tests disabled — PyreWire's CI only needs the library
 # and the public headers. wirelog v0.41.0 has no `examples` meson

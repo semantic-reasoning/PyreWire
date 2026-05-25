@@ -6,45 +6,43 @@ it can run against are declared separately.
 
 ## How compatibility is declared
 
-Each PyreWire build supports exactly one wirelog `MAJOR.MINOR` series.
-The series is encoded in `COMPATIBLE_WIRELOG_SERIES` inside
-`src/pyrewire/_ffi/_loader.py`. The loader rejects any libwirelog
-whose reported version falls outside that series with
-`WirelogVersionError`.
+Each PyreWire build declares the oldest wirelog version it supports in
+`MINIMUM_WIRELOG_VERSION` inside `src/pyrewire/_ffi/_loader.py`. The
+loader rejects any libwirelog whose reported version is older than that
+floor with `WirelogVersionError`.
 
-- Patch releases inside the series (e.g. `0.43.0`, `0.43.1`, `0.43.99`)
-  are accepted interchangeably.
-- A different minor (e.g. `0.42.x`, `0.44.x`) or major is rejected,
-  even if the ABI happens to match.
+- The minimum and newer releases are accepted, including main-branch
+  snapshots such as `0.43.99`.
+- Older releases are rejected because they may lack parser behavior or
+  public symbols PyreWire now relies on.
 
 ## Why
 
-wirelog's ABI is not yet stable. PyreWire validates against a single
-minor series at a time; mixing in releases from a different series
-is undefined behaviour. The loader check enforces this end-to-end:
+wirelog's ABI is not yet stable. PyreWire validates CI and wheels
+against an exact wirelog source ref, while the loader keeps the lower
+bound explicit so developers can run newer main builds locally:
 
-- `WIRELOG_VERSION` in CI pins the exact tag CI builds and tests
+- `WIRELOG_VERSION` in CI pins the exact wirelog ref CI builds and tests
   against.
-- `COMPATIBLE_WIRELOG_SERIES` in the loader rejects out-of-series
-  builds at import time.
+- `MINIMUM_WIRELOG_VERSION` in the loader rejects too-old builds at
+  import time.
 - Wheels bundle a matching `libwirelog.so.X` via `auditwheel` /
   `delocate` / `delvewheel`.
 
 ## PyreWire-only changes
 
 A PyreWire-only fix (Python-side bug that does not need a new
-wirelog) is a plain PyreWire patch bump; the supported wirelog
-series is unaffected.
+wirelog) is a plain PyreWire patch bump; the supported wirelog floor is
+unaffected.
 
 ## Moving to a new wirelog series
 
-When PyreWire is rebuilt and re-validated against a new wirelog
-minor series:
+When PyreWire is rebuilt and re-validated against a new wirelog ref:
 
 1. Update `WIRELOG_VERSION` in CI / `pyproject.toml` cibuildwheel
-   sections to the new tag.
-2. Update `COMPATIBLE_WIRELOG_SERIES` in `_loader.py` to the new
-   `(major, minor)`.
+   sections to the new tag, branch, or commit SHA.
+2. Update `MINIMUM_WIRELOG_VERSION` in `_loader.py` only if the new
+   PyreWire code stops supporting older wirelog builds.
 3. Record the change in the CHANGELOG.
 
 PyreWire's own `__version__` is bumped only when there is a PyreWire
@@ -52,9 +50,9 @@ release to publish; it is **not** tied to the wirelog change.
 
 ## Compatibility table
 
-| PyreWire        | Supported wirelog series | Notes                       |
-| --------------- | ------------------------ | --------------------------- |
-| `0.41.99`       | `0.43.x`                 | Independent versioning.     |
+| PyreWire        | Minimum wirelog | Validated wirelog ref                      | Notes                   |
+| --------------- | --------------- | ------------------------------------------ | ----------------------- |
+| `0.41.99`       | `0.43.0`        | `68eb9c9599907e35e3a5a149859c9ec1b3c90b05` | Independent versioning. |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).

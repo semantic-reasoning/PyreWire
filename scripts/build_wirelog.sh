@@ -2,7 +2,7 @@
 # Build wirelog from source at the matching tag.
 #
 # Inputs (env):
-#   WIRELOG_VERSION  - tag / branch name to check out (default: 0.40.99)
+#   WIRELOG_VERSION  - tag / branch name / commit SHA to check out (default: main)
 #   WIRELOG_PREFIX   - install prefix (default: /wirelog-install)
 #   WIRELOG_REPO     - git URL (default: https://github.com/semantic-reasoning/wirelog)
 #   WIRELOG_SRC      - working source dir (default: $TMPDIR/wirelog-src or /tmp/wirelog-src)
@@ -14,7 +14,7 @@
 # further by the wheel-build pipeline (#30).
 set -euo pipefail
 
-WIRELOG_VERSION="${WIRELOG_VERSION:-0.40.99}"
+WIRELOG_VERSION="${WIRELOG_VERSION:-main}"
 WIRELOG_PREFIX="${WIRELOG_PREFIX:-/wirelog-install}"
 WIRELOG_REPO="${WIRELOG_REPO:-https://github.com/semantic-reasoning/wirelog}"
 WIRELOG_SRC="${WIRELOG_SRC:-${TMPDIR:-/tmp}/wirelog-src}"
@@ -22,7 +22,13 @@ WIRELOG_SRC="${WIRELOG_SRC:-${TMPDIR:-/tmp}/wirelog-src}"
 echo "wirelog: version=$WIRELOG_VERSION prefix=$WIRELOG_PREFIX"
 
 rm -rf "$WIRELOG_SRC"
-git clone --depth 1 --branch "$WIRELOG_VERSION" "$WIRELOG_REPO" "$WIRELOG_SRC"
+if git ls-remote --exit-code --heads --tags "$WIRELOG_REPO" "$WIRELOG_VERSION" >/dev/null 2>&1; then
+    git clone --depth 1 --branch "$WIRELOG_VERSION" "$WIRELOG_REPO" "$WIRELOG_SRC"
+else
+    git clone --filter=blob:none --no-checkout "$WIRELOG_REPO" "$WIRELOG_SRC"
+    git -C "$WIRELOG_SRC" fetch --depth 1 origin "$WIRELOG_VERSION"
+    git -C "$WIRELOG_SRC" checkout --detach FETCH_HEAD
+fi
 
 meson setup "$WIRELOG_SRC/builddir" "$WIRELOG_SRC" \
     --prefix="$WIRELOG_PREFIX" \

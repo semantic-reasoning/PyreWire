@@ -7,7 +7,7 @@ wheel-bundling regression would silently break:
 
 - The library is the one bundled inside `pyrewire/_lib/`, not some
   system copy that happened to be on the loader path.
-- The runtime wirelog version matches `pyrewire.__version__`.
+- The runtime wirelog version satisfies the loader's compatibility floor.
 - A non-trivial recursive datalog program produces the expected
   closure — proves the bundled binary is actually functional, not
   just present.
@@ -53,12 +53,13 @@ ancestor(P, C) :- parent(P, X), ancestor(X, C).
 """
 
 
-def test_pyrewire_version_matches_loaded_wirelog():
-    """The loader's strict version check would have raised at import
-    time if these didn't match. Assert it loud and clear for the
-    workflow log."""
-    base = pyrewire.__version__.split("+")[0]
-    assert pyrewire.wirelog_version() == base
+def test_loaded_wirelog_satisfies_minimum_version():
+    """The loader's version check would have raised at import time if
+    this runtime were too old. Assert it loud and clear for the workflow
+    log."""
+    from pyrewire._ffi._loader import MINIMUM_WIRELOG_VERSION, _parse_version
+
+    assert _parse_version(pyrewire.wirelog_version()) >= MINIMUM_WIRELOG_VERSION
 
 
 def test_bundled_library_is_wheel_local():
