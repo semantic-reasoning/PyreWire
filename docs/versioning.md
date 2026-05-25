@@ -12,7 +12,7 @@ loader rejects any libwirelog whose reported version is older than that
 floor with `WirelogVersionError`.
 
 - The minimum and newer releases are accepted, including main-branch
-  snapshots such as `0.43.99`.
+  snapshots such as `0.44.99`.
 - Older releases are rejected because they may lack parser behavior or
   public symbols PyreWire now relies on.
 
@@ -52,7 +52,7 @@ release to publish; it is **not** tied to the wirelog change.
 
 | PyreWire        | Minimum wirelog | Validated wirelog ref                      | Notes                   |
 | --------------- | --------------- | ------------------------------------------ | ----------------------- |
-| `0.41.99`       | `0.43.0`        | `68eb9c9599907e35e3a5a149859c9ec1b3c90b05` | Independent versioning. |
+| `0.41.99`       | `0.44.0`        | `5bebc8d40bbb850179fbb091807964762df5a814` | Pins wirelog `v0.44.0`. |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).

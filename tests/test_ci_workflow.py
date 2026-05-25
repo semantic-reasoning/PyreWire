@@ -23,7 +23,7 @@ def _workflow() -> dict[str, Any]:
 def test_ci_default_wirelog_version_is_exact_sha():
     env = _workflow()["jobs"]["test"]["env"]
     default = str(env["WIRELOG_VERSION"])
-    assert "68eb9c9599907e35e3a5a149859c9ec1b3c90b05" in default
+    assert "5bebc8d40bbb850179fbb091807964762df5a814" in default
 
 
 def test_ci_workflow_has_least_privilege_permissions():

@@ -9,10 +9,10 @@ supported wirelog `MAJOR.MINOR` series (see
 ## [Unreleased]
 
 ### Notes
-- Adds `EasySession.step` / `set_delta_callback` and the matching
-  `Async*` mirror methods once wirelog cuts a release tag that
-  includes wirelog#852 (recursive aggregation residue fix).
-  Tracked in wirelog#859.
+- Pins validated wirelog builds to the `v0.44.0` release commit
+  (`5bebc8d40bbb850179fbb091807964762df5a814`), which includes
+  wirelog#852 (recursive aggregation residue fix), and raises the
+  runtime minimum to wirelog `0.44.0`. Tracked in wirelog#859.
 
 ## [0.41.0] - 2026-05-21
 
