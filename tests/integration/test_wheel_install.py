@@ -12,8 +12,8 @@ wheel-bundling regression would silently break:
   closure — proves the bundled binary is actually functional, not
   just present.
 
-The retraction-specific assertion that PyreWire #12 spec calls for
-is deferred until `EasySession.step` ships (wirelog#852 / wirelog#859).
+Example-level retraction behavior is covered by
+`tests/integration/test_retraction_basics.py`.
 """
 
 from __future__ import annotations
