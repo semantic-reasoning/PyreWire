@@ -42,9 +42,11 @@ def _import_example(name: str) -> Any:
         ("02_reachability", "reach", 1),
         ("03_bitwise", "result", 1),
         ("04_hash_functions", "unique_record", 4),
+        ("05_crc32_checksum", "frame_crc", 6),
         ("06_timestamp_lww", "latest", 1),
         ("07_multi_source_analysis", "integrated", 10),
         ("12_batch_vs_session", "batch_reach", 1),
+        ("csv_adapter_reachability", "reach", 6),
     ],
 )
 def test_example_returns_nonempty_relation(
@@ -63,6 +65,33 @@ def test_example_returns_nonempty_relation(
         f"{module_name}.run()[{expected_relation!r}] returned only "
         f"{len(rows)} rows; expected at least {min_rows}"
     )
+
+
+def test_hash_functions_example_validates_stored_checksums() -> None:
+    mod = _import_example("04_hash_functions")
+    out = mod.run()
+    assert set(out["valid_record"]) == {
+        (1, "alice"),
+        (2, "bob"),
+        (3, "carol"),
+        (4, "alice_dup"),
+        (6, "bob_dup"),
+    }
+    assert set(out["corrupted_record"]) == {(5, "dave", 1234567890123456789, -8213464378072455284)}
+
+
+def test_crc32_checksum_example_reports_current_main_head_behavior() -> None:
+    mod = _import_example("05_crc32_checksum")
+    out = mod.run()
+    assert out["valid_frame"] == []
+    assert set(out["corrupt_frame"]) == {
+        ("F001", 3838819244, 2844319735),
+        ("F002", 250819451, 3954038922),
+        ("F003", 1661565857, 767742221),
+        ("F004", 9999999999, 1877464688),
+        ("F005", 2259087609, 2054014018),
+        ("F006", 1234567890, 944292671),
+    }
 
 
 def _wirelog_ver() -> tuple[int, ...]:

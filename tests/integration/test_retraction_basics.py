@@ -45,8 +45,7 @@ def _import_example() -> object:
 
 def test_retraction_basics_runs_through_three_phases():
     """The example's `run()` must return all three phases as lists of
-    tuples. The detailed delta-shape assertions are deferred until
-    wirelog cuts a tag with wirelog#852 included."""
+    tuples."""
     run = _import_example()
     phases = run()  # type: ignore[operator]
     assert set(phases) == {
@@ -61,11 +60,8 @@ def test_retraction_basics_runs_through_three_phases():
 
 
 def test_retraction_emits_negative_diffs_when_supported():
-    """If the build is recent enough to emit deltas, phase 3 must
-    contain at least one `-1` (retraction) entry."""
+    """Phase 3 must contain at least one `-1` (retraction) entry."""
     run = _import_example()
     phases = run()  # type: ignore[operator]
     p3 = phases["phase3_retraction"]
-    if not p3:
-        pytest.skip("wirelog build did not emit retraction deltas — see wirelog#859")
     assert any(d[2] < 0 for d in p3), f"phase 3 must include at least one negative diff; got {p3!r}"
