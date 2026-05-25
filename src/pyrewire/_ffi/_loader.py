@@ -1,11 +1,11 @@
 """libwirelog discovery, loading, and runtime version verification.
 
-PyreWire and wirelog version independently. PyreWire declares a single
-compatible wirelog `MAJOR.MINOR` series in `COMPATIBLE_WIRELOG_SERIES`;
-any patch release within that series is accepted, everything else is
-rejected. When `wirelog_version_string` is exported (the default since
-semantic-reasoning/wirelog#841 landed) the series is compared against
-its reported value. Pre-#841 builds that omit the symbol cause a
+PyreWire and wirelog version independently. PyreWire declares the oldest
+libwirelog version it can run against in `MINIMUM_WIRELOG_VERSION`; newer
+wirelog builds, including main-branch snapshots, are accepted. When
+`wirelog_version_string` is exported (the default since
+semantic-reasoning/wirelog#841 landed) the reported value is checked
+against that floor. Pre-#841 builds that omit the symbol cause a
 `WirelogVersionUnavailableWarning` and the load proceeds with library
 presence confirmed via a sentinel-symbol probe.
 """
@@ -27,19 +27,18 @@ from pathlib import Path
 _SENTINEL_SYMBOL = "wirelog_easy_open"
 
 
-COMPATIBLE_WIRELOG_SERIES: tuple[int, int] = (0, 43)
-"""The single wirelog `MAJOR.MINOR` series this PyreWire build supports.
+MINIMUM_WIRELOG_VERSION: tuple[int, int, int] = (0, 43, 0)
+"""Oldest libwirelog version this PyreWire build supports.
 
-PyreWire pins to one wirelog minor series at a time. Patch releases
-within the series are accepted; any other release (older or newer
-minor) is rejected. Bump this when PyreWire is rebuilt and re-tested
-against a new wirelog minor series — independently of PyreWire's own
-version number.
+PyreWire CI builds against a pinned wirelog main-branch commit, so the
+loader must not reject newer main snapshots merely because the minor
+version advanced. Older runtimes remain unsupported because they lack
+symbols and parser behavior PyreWire now relies on.
 """
 
 
 class WirelogVersionError(Exception):
-    """Raised when libwirelog's reported version is outside COMPATIBLE_WIRELOG_SERIES."""
+    """Raised when libwirelog's reported version is too old for this PyreWire build."""
 
 
 class WirelogVersionUnavailableWarning(UserWarning):
@@ -159,19 +158,19 @@ def _parse_version(version: str) -> tuple[int, int, int]:
 
 
 def _verify_version(handle: ctypes.CDLL) -> None:
-    """Reject libwirelog builds outside COMPATIBLE_WIRELOG_SERIES.
+    """Reject libwirelog builds older than MINIMUM_WIRELOG_VERSION.
 
     Pre-#841 builds without `wirelog_version_string` emit
     `WirelogVersionUnavailableWarning` and skip the comparison.
     """
-    series = "{}.{}.x".format(*COMPATIBLE_WIRELOG_SERIES)
+    minimum = "{}.{}.{}".format(*MINIMUM_WIRELOG_VERSION)
     try:
         fn = handle.wirelog_version_string
     except AttributeError:
         warnings.warn(
             "libwirelog does not export wirelog_version_string; cannot "
-            f"verify the loaded library is in the supported wirelog "
-            f"{series} series. Upgrade libwirelog to a post-#841 build.",
+            f"verify the loaded library is at least wirelog {minimum}. "
+            "Upgrade libwirelog to a post-#841 build.",
             WirelogVersionUnavailableWarning,
             stacklevel=2,
         )
@@ -187,11 +186,11 @@ def _verify_version(handle: ctypes.CDLL) -> None:
         )
         return
     actual = _pep440_base(raw.decode())
-    major, minor, _patch = _parse_version(actual)
-    if (major, minor) != COMPATIBLE_WIRELOG_SERIES:
+    parsed = _parse_version(actual)
+    if parsed < MINIMUM_WIRELOG_VERSION:
         raise WirelogVersionError(
-            f"libwirelog version {actual!r} is outside the supported "
-            f"wirelog {series} series. Install a compatible libwirelog "
+            f"libwirelog version {actual!r} is older than the supported "
+            f"minimum wirelog {minimum}. Install a compatible libwirelog "
             "or set WIRELOG_LIB to a supported library."
         )
 

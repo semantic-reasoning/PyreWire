@@ -21,7 +21,7 @@ import pytest
 import pyrewire._ffi._loader as loader
 from pyrewire._ffi import LIB
 from pyrewire._ffi._loader import (
-    COMPATIBLE_WIRELOG_SERIES,
+    MINIMUM_WIRELOG_VERSION,
     WirelogVersionError,
     WirelogVersionUnavailableWarning,
     _candidate_paths,
@@ -76,14 +76,14 @@ def test_verify_version_warns_when_symbol_unavailable():
     ), f"expected WirelogVersionUnavailableWarning, got {[w.category for w in caught]}"
 
 
-def test_verify_version_raises_outside_supported_series():
-    """Any wirelog outside COMPATIBLE_WIRELOG_SERIES (older minor, newer
-    minor, or different major) is rejected with WirelogVersionError."""
-    major, minor = COMPATIBLE_WIRELOG_SERIES
+def test_verify_version_raises_below_minimum():
+    """Any wirelog older than MINIMUM_WIRELOG_VERSION is rejected with
+    WirelogVersionError."""
+    major, minor, patch = MINIMUM_WIRELOG_VERSION
     out_of_range = [
-        f"{major}.{minor - 1}.0".encode() if minor > 0 else None,
-        f"{major}.{minor + 1}.0".encode(),
-        f"{major + 1}.0.0".encode(),
+        f"{major}.{minor}.{patch - 1}".encode() if patch > 0 else None,
+        f"{major}.{minor - 1}.99".encode() if minor > 0 else None,
+        f"{major - 1}.99.99".encode() if major > 0 else None,
     ]
     for reported in filter(None, out_of_range):
         fake = MagicMock()
@@ -95,12 +95,18 @@ def test_verify_version_raises_outside_supported_series():
         assert reported.decode() in str(excinfo.value)
 
 
-def test_verify_version_accepts_any_patch_in_series():
-    """Every patch release inside COMPATIBLE_WIRELOG_SERIES is accepted —
-    pyrewire.__version__ is irrelevant to the comparison."""
-    major, minor = COMPATIBLE_WIRELOG_SERIES
-    for patch in (0, 1, 99):
-        reported = f"{major}.{minor}.{patch}".encode()
+def test_verify_version_accepts_minimum_and_newer_versions():
+    """The loader accepts the minimum version and newer wirelog builds,
+    including future minor releases and main-branch snapshots."""
+    major, minor, patch = MINIMUM_WIRELOG_VERSION
+    versions = [
+        f"{major}.{minor}.{patch}",
+        f"{major}.{minor}.{patch + 1}",
+        f"{major}.{minor + 1}.0",
+        f"{major + 1}.0.0",
+    ]
+    for version in versions:
+        reported = version.encode()
         fake = MagicMock()
         fake.wirelog_version_string = lambda r=reported: r
         fake.wirelog_version_string.restype = None

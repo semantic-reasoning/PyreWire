@@ -44,12 +44,11 @@ jobs:
         os: [ubuntu-22.04, macos-14, windows-2022]
         python: ["3.10", "3.11", "3.12", "3.13"]
     env:
-      # PyreWire pins to a single wirelog MAJOR.MINOR series — see
-      # COMPATIBLE_WIRELOG_SERIES in src/pyrewire/_ffi/_loader.py.
-      # WIRELOG_VERSION here is the exact tag CI builds against; bump
-      # it (and the loader's series constant if the minor changes)
-      # independently of PyreWire's own __version__.
-      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'v0.43.0' }}
+      # WIRELOG_VERSION here is the exact wirelog ref CI builds against.
+      # The default is pinned to the wirelog main HEAD this PR was
+      # validated against; override the repository variable to test a
+      # newer main commit before updating this fallback.
+      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || '68eb9c9599907e35e3a5a149859c9ec1b3c90b05' }}
       # `runner.temp` is NOT available in job-level `env:` (only in
       # step-level contexts) — using it here caused the whole workflow
       # to fail at startup (#114). `github.workspace` IS resolvable at
