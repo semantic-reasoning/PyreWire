@@ -27,11 +27,11 @@ from pathlib import Path
 _SENTINEL_SYMBOL = "wirelog_easy_open"
 
 
-MINIMUM_WIRELOG_VERSION: tuple[int, int, int] = (0, 43, 0)
+MINIMUM_WIRELOG_VERSION: tuple[int, int, int] = (0, 44, 0)
 """Oldest libwirelog version this PyreWire build supports.
 
-PyreWire CI builds against a pinned wirelog main-branch commit, so the
-loader must not reject newer main snapshots merely because the minor
+PyreWire CI builds against a pinned wirelog release commit, so the loader
+must not reject newer releases or main snapshots merely because the minor
 version advanced. Older runtimes remain unsupported because they lack
 symbols and parser behavior PyreWire now relies on.
 """
@@ -61,18 +61,19 @@ def _soname() -> str:
 def _candidate_paths() -> list[str]:
     """Return libwirelog candidate paths in priority order.
 
-    The order is:
-      1. `$WIRELOG_LIB` (absolute path)
-      2. wheel-bundled `<pkg>/_lib/<soname>`
-      3. `pkg-config --variable=libdir wirelog` + `/<soname>`
-      4. `ctypes.util.find_library('wirelog')`
+    If `$WIRELOG_LIB` is set, it is treated as an explicit override and
+    no fallback candidates are tried. Otherwise the order is:
+
+      1. wheel-bundled `<pkg>/_lib/<soname>`
+      2. `pkg-config --variable=libdir wirelog` + `/<soname>`
+      3. `ctypes.util.find_library('wirelog')`
     """
     out: list[str] = []
     soname = _soname()
 
     env = os.environ.get("WIRELOG_LIB", "").strip()
     if env:
-        out.append(env)
+        return [env]
 
     # Wheel-bundled: src/pyrewire/_lib/<soname>
     bundled = Path(__file__).resolve().parent.parent / "_lib" / soname

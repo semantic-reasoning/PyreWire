@@ -44,16 +44,17 @@ def test_lib_exposes_sentinel_symbol():
     assert fn is not None
 
 
-def test_candidate_paths_includes_env_override(monkeypatch, tmp_path):
-    """When WIRELOG_LIB is set, it appears first in the candidate list."""
+def test_candidate_paths_uses_env_override_exclusively(monkeypatch, tmp_path):
+    """When WIRELOG_LIB is set, only that explicit path is tried."""
     fake = tmp_path / "libwirelog.so.1"
     monkeypatch.setenv("WIRELOG_LIB", str(fake))
     paths = _candidate_paths()
-    assert paths[0] == str(fake)
+    assert paths == [str(fake)]
 
 
-def test_candidate_paths_includes_wheel_bundled_slot():
-    """The wheel-bundled `src/pyrewire/_lib/<soname>` path is always tried."""
+def test_candidate_paths_includes_wheel_bundled_slot(monkeypatch):
+    """Without WIRELOG_LIB, the wheel-bundled `<pkg>/_lib/<soname>` path is tried."""
+    monkeypatch.delenv("WIRELOG_LIB", raising=False)
     paths = _candidate_paths()
     assert any(p.endswith(os.path.join("_lib", _soname())) for p in paths)
 
@@ -142,10 +143,8 @@ def test_missing_library_raises_oserror_listing_candidates(tmp_path):
     )
     env = {**os.environ}
     env.pop("WIRELOG_LIB", None)
-    # Hide any system-installed libwirelog so ctypes.util.find_library
-    # cannot rescue the subprocess. Clear LD_LIBRARY_PATH (Linux),
-    # DYLD_LIBRARY_PATH / DYLD_FALLBACK_LIBRARY_PATH (macOS), and
-    # PATH so the dynamic linker has no fallback search dirs.
+    # WIRELOG_LIB is an explicit override, so the loader must not fall
+    # back to any system-installed libwirelog after this path fails.
     env["LD_LIBRARY_PATH"] = ""
     env["DYLD_LIBRARY_PATH"] = ""
     env["DYLD_FALLBACK_LIBRARY_PATH"] = ""
@@ -166,3 +165,4 @@ def test_missing_library_raises_oserror_listing_candidates(tmp_path):
     assert (
         str(nonexistent) in result.stderr
     ), f"candidate path missing from error message; stderr={result.stderr!r}"
+    assert os.path.join("_lib", _soname()) not in result.stderr
