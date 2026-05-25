@@ -923,41 +923,39 @@
 number tracks PyreWire's own release cadence; the wirelog releases
 it can run against are declared separately.</p>
 <h2 id="how-compatibility-is-declared">How compatibility is declared<a class="headerlink" href="#how-compatibility-is-declared" title="Permanent link">&para;</a></h2>
-<p>Each PyreWire build supports exactly one wirelog <code>MAJOR.MINOR</code> series.
-The series is encoded in <code>COMPATIBLE_WIRELOG_SERIES</code> inside
-<code>src/pyrewire/_ffi/_loader.py</code>. The loader rejects any libwirelog
-whose reported version falls outside that series with
-<code>WirelogVersionError</code>.</p>
+<p>Each PyreWire build declares the oldest wirelog version it supports in
+<code>MINIMUM_WIRELOG_VERSION</code> inside <code>src/pyrewire/_ffi/_loader.py</code>. The
+loader rejects any libwirelog whose reported version is older than that
+floor with <code>WirelogVersionError</code>.</p>
 <ul>
-<li>Patch releases inside the series (e.g. <code>0.43.0</code>, <code>0.43.1</code>, <code>0.43.99</code>)
-  are accepted interchangeably.</li>
-<li>A different minor (e.g. <code>0.42.x</code>, <code>0.44.x</code>) or major is rejected,
-  even if the ABI happens to match.</li>
+<li>The minimum and newer releases are accepted, including main-branch
+  snapshots such as <code>0.43.99</code>.</li>
+<li>Older releases are rejected because they may lack parser behavior or
+  public symbols PyreWire now relies on.</li>
 </ul>
 <h2 id="why">Why<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
-<p>wirelog's ABI is not yet stable. PyreWire validates against a single
-minor series at a time; mixing in releases from a different series
-is undefined behaviour. The loader check enforces this end-to-end:</p>
+<p>wirelog's ABI is not yet stable. PyreWire validates CI and wheels
+against an exact wirelog source ref, while the loader keeps the lower
+bound explicit so developers can run newer main builds locally:</p>
 <ul>
-<li><code>WIRELOG_VERSION</code> in CI pins the exact tag CI builds and tests
+<li><code>WIRELOG_VERSION</code> in CI pins the exact wirelog ref CI builds and tests
   against.</li>
-<li><code>COMPATIBLE_WIRELOG_SERIES</code> in the loader rejects out-of-series
-  builds at import time.</li>
+<li><code>MINIMUM_WIRELOG_VERSION</code> in the loader rejects too-old builds at
+  import time.</li>
 <li>Wheels bundle a matching <code>libwirelog.so.X</code> via <code>auditwheel</code> /
   <code>delocate</code> / <code>delvewheel</code>.</li>
 </ul>
 <h2 id="pyrewire-only-changes">PyreWire-only changes<a class="headerlink" href="#pyrewire-only-changes" title="Permanent link">&para;</a></h2>
 <p>A PyreWire-only fix (Python-side bug that does not need a new
-wirelog) is a plain PyreWire patch bump; the supported wirelog
-series is unaffected.</p>
+wirelog) is a plain PyreWire patch bump; the supported wirelog floor is
+unaffected.</p>
 <h2 id="moving-to-a-new-wirelog-series">Moving to a new wirelog series<a class="headerlink" href="#moving-to-a-new-wirelog-series" title="Permanent link">&para;</a></h2>
-<p>When PyreWire is rebuilt and re-validated against a new wirelog
-minor series:</p>
+<p>When PyreWire is rebuilt and re-validated against a new wirelog ref:</p>
 <ol>
 <li>Update <code>WIRELOG_VERSION</code> in CI / <code>pyproject.toml</code> cibuildwheel
-   sections to the new tag.</li>
-<li>Update <code>COMPATIBLE_WIRELOG_SERIES</code> in <code>_loader.py</code> to the new
-   <code>(major, minor)</code>.</li>
+   sections to the new tag, branch, or commit SHA.</li>
+<li>Update <code>MINIMUM_WIRELOG_VERSION</code> in <code>_loader.py</code> only if the new
+   PyreWire code stops supporting older wirelog builds.</li>
 <li>Record the change in the CHANGELOG.</li>
 </ol>
 <p>PyreWire's own <code>__version__</code> is bumped only when there is a PyreWire
@@ -967,14 +965,16 @@ release to publish; it is <strong>not</strong> tied to the wirelog change.</p>
 <thead>
 <tr>
 <th>PyreWire</th>
-<th>Supported wirelog series</th>
+<th>Minimum wirelog</th>
+<th>Validated wirelog ref</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>0.41.99</code></td>
-<td><code>0.43.x</code></td>
+<td><code>0.43.0</code></td>
+<td><code>68eb9c9599907e35e3a5a149859c9ec1b3c90b05</code></td>
 <td>Independent versioning.</td>
 </tr>
 </tbody>
