@@ -26,6 +26,10 @@ def test_ci_default_wirelog_version_is_exact_sha():
     assert "68eb9c9599907e35e3a5a149859c9ec1b3c90b05" in default
 
 
+def test_ci_workflow_has_least_privilege_permissions():
+    assert _workflow()["permissions"] == {"contents": "read"}
+
+
 def test_ci_wirelog_sha_resolver_accepts_exact_sha():
     text = _workflow_text()
     assert "^[0-9a-fA-F]{40}$" in text
