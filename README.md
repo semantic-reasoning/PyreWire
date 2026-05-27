@@ -18,7 +18,11 @@ PyreWire provides a Pythonic interface to wirelog, enabling you to write datalog
 pip install pyrewire
 ```
 
-**Requirements:** Python 3.11 or later
+**Requirements:** CPython 3.11, 3.12, 3.13, or 3.14.
+
+See the [support matrix](docs/support.md) for v1.0 wheel targets and
+source-install requirements, including supported OS/architecture
+combinations and `libwirelog` handling.
 
 ## Quick Start
 
