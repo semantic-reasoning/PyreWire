@@ -67,6 +67,11 @@ def test_windows_cibuildwheel_arch_is_amd64_only():
     assert pyproject["tool"]["cibuildwheel"]["windows"]["archs"] == ["AMD64"]
 
 
+def test_macos_cibuildwheel_arch_is_arm64_only():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    assert pyproject["tool"]["cibuildwheel"]["macos"]["archs"] == ["arm64"]
+
+
 def test_windows_cibuildwheel_uses_forward_slash_paths():
     pyproject = tomllib.loads(_read("pyproject.toml"))
     windows = pyproject["tool"]["cibuildwheel"]["windows"]
@@ -83,6 +88,32 @@ def test_wheels_build_matrix_uses_current_hosted_runners():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     matrix = wf["jobs"]["build_wheels"]["strategy"]["matrix"]
     assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
+
+
+def test_macos_wheels_still_use_macos_15_runner():
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    matrix = wf["jobs"]["build_wheels"]["strategy"]["matrix"]
+    assert "macos-15" in matrix["os"]
+
+
+def test_wheel_config_comments_do_not_overpromise_macos_arch_support():
+    comment_text = "\n".join(
+        line
+        for path in ("pyproject.toml", ".github/workflows/wheels.yml")
+        for line in _read(path).splitlines()
+        if line.lstrip().startswith("#")
+    ).lower()
+    b = "bo" + "th"
+    x64 = "x86" + "_64"
+    a = "ar" + "ch"
+    forbidden_claims = (
+        "universal" + "2",
+        f"{b} arm64 and {x64}",
+        f"{b}-{a}",
+        f"{b} {a}",
+    )
+    for claim in forbidden_claims:
+        assert claim not in comment_text
 
 
 def test_wheels_workflow_uses_node24_actions():

@@ -21,8 +21,8 @@ jobs:
       fail-fast: false
       matrix:
         # ubuntu-24.04 produces manylinux_2_28 via cibuildwheel docker.
-        # macos-15 is the stable Apple Silicon (arm64) runner; cibuildwheel's
-        # macos config builds for both arm64 and x86_64 from there.
+        # macos-15 is the stable Apple Silicon runner; PyreWire v1.0
+        # macOS wheels target Apple Silicon arm64.
         # windows-2025-vs2026 covers MSVC + delvewheel.
         os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
 
