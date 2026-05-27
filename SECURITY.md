@@ -4,9 +4,10 @@
 
 | Version | Supported |
 |---------|-----------|
-| v0.1.x  | ✓ (current, alpha) |
+| v1.0.x  | ✓ |
+| < v1.0  | ✗ |
 
-PyreWire is an early-stage alpha project. We do our best to address security issues promptly, but please be aware that maintenance resources are limited at this stage of development.
+PyreWire v1.0 is the first stable support line. We do our best to address security issues promptly, but please be aware that maintenance resources are limited.
 
 ## Reporting a Vulnerability
 
@@ -26,7 +27,7 @@ Your report should include:
 
 ## Response Timeline
 
-Given our alpha-stage team size:
+Given current maintainer capacity:
 
 - **Initial acknowledgment:** within 48 hours of your report
 - **Initial assessment:** within 7 days
@@ -53,4 +54,4 @@ If you discover a vulnerability in the upstream wirelog dataflow engine, please 
 
 ## PGP / Encrypted Communication
 
-We do not currently provide a PGP key for encrypted communication. At the alpha stage, email via the address above is sufficient. If you require encrypted communication, please mention this in your initial email and we will work something out.
+We do not currently provide a PGP key for encrypted communication. For now, email via the address above is sufficient. If you require encrypted communication, please mention this in your initial email and we will work something out.

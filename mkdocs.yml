@@ -51,6 +51,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Quickstart: quickstart.md
+  - Support: support.md
   - Versioning: versioning.md
   - Semantics:
       - Z-set & retraction: semantics/zset.md
