@@ -74,7 +74,7 @@ def test_nightly_files_failure_issue_on_failure():
 
 @pytest.mark.skipif(
     sys.platform == "win32",
-    reason="POSIX-only: NTFS has no executable bit; the nightly workflow only runs on ubuntu-22.04",
+    reason="POSIX-only: NTFS has no executable bit; the nightly workflow only runs on ubuntu-24.04",
 )
 def test_failure_script_exists_and_is_executable():
     script = _repo_root() / "scripts" / "ci" / "open_nightly_failure_issue.sh"

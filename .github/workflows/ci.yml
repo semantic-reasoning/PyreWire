@@ -11,7 +11,7 @@ permissions:
 jobs:
   lint:
     name: lint
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,14 +38,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # macos-14 is the ARM (Apple Silicon) runner. Intel macos-13 is
+        # macos-15 is the stable Apple Silicon runner. Intel macOS is
         # often heavily queued; ARM has more capacity in the GitHub-hosted
         # pool and is also the architecture wheels target for new Macs.
-        # windows-2022 covers the MSVC toolchain that wheels.yml already
+        # windows-2025 covers the MSVC toolchain that wheels.yml already
         # exercises via cibuildwheel; this matrix entry catches MSVC
         # regressions on every PR instead of only at tag time.
-        os: [ubuntu-22.04, macos-14, windows-2022]
-        python: ["3.11", "3.12", "3.13"]
+        os: [ubuntu-24.04, macos-15, windows-2025]
+        python: ["3.11", "3.12", "3.13", "3.14"]
     env:
       # WIRELOG_VERSION here is the exact wirelog ref CI builds against.
       # The default is pinned to the wirelog v0.44.0 release commit;
@@ -104,7 +104,7 @@ jobs:
       # edit or a wirelog-side commit invalidates entries automatically.
       # The matrix.os axis keeps Linux / macOS / Windows caches separate
       # (binary incompatible). Python-version is NOT in the key because
-      # the install is pure C; one cache entry serves every py3.11–3.13
+      # the install is pure C; one cache entry serves every py3.11–3.14
       # matrix slot on the same OS.
       - name: cache wirelog install
         id: cache-wirelog

@@ -7,12 +7,12 @@ body:
     id: python_version
     attributes:
       label: "Python Version"
-      placeholder: "3.11, 3.12, 3.13, etc."
+      placeholder: "3.11, 3.12, 3.13, 3.14, etc."
   - type: textarea
     id: os
     attributes:
       label: "Operating System"
-      placeholder: "e.g., macOS 13.2, Ubuntu 22.04"
+      placeholder: "e.g., macOS 13.2, Ubuntu 24.04"
   - type: textarea
     id: steps_to_reproduce
     attributes:

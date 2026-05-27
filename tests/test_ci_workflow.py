@@ -29,7 +29,12 @@ def test_ci_default_wirelog_version_is_exact_sha():
 def test_ci_matrix_drops_python_310():
     matrix = _workflow()["jobs"]["test"]["strategy"]["matrix"]
     pythons = matrix["python"]
-    assert pythons == ["3.11", "3.12", "3.13"]
+    assert pythons == ["3.11", "3.12", "3.13", "3.14"]
+
+
+def test_ci_matrix_uses_current_hosted_runners():
+    matrix = _workflow()["jobs"]["test"]["strategy"]["matrix"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025"]
 
 
 def test_ci_workflow_has_least_privilege_permissions():

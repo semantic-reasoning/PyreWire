@@ -38,8 +38,15 @@ def test_install_test_matrix_covers_supported_pythons():
         "3.11",
         "3.12",
         "3.13",
-    }, f"install_test matrix must cover py3.11-3.13, got {pythons}"
+        "3.14",
+    }, f"install_test matrix must cover py3.11-3.14, got {pythons}"
     assert "3.10" not in pythons
+
+
+def test_install_test_matrix_uses_current_hosted_runners():
+    wf = _workflow()
+    matrix = wf["jobs"]["install_test"]["strategy"]["matrix"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025"]
 
 
 def test_install_test_downloads_built_wheels():
