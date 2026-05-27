@@ -45,9 +45,7 @@ jobs:
             exit /b 1
           )
           call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64
-          for %%p in ("%PATH:;=" "%") do (
-            if not "%%~p"=="" echo %%~p>>"%GITHUB_PATH%"
-          )
+          echo PATH=%PATH%>>"%GITHUB_ENV%"
           for %%v in (
             INCLUDE LIB LIBPATH
             VCToolsInstallDir VCToolsRedistDir VCINSTALLDIR VSINSTALLDIR

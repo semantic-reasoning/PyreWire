@@ -175,13 +175,16 @@ def test_wheels_workflow_initializes_msvc_before_cibuildwheel():
     assert "vswhere.exe" in run
     assert "VsDevCmd.bat" in run
     assert "GITHUB_ENV" in run
-    assert "GITHUB_PATH" in run
-    assert "('set')" not in run
+    assert "GITHUB_PATH" not in run
+    assert "call set " not in run
     assert "tokens=1,* delims==" not in run
+    assert "%PATH:;=" not in run
+    assert "echo PATH=%PATH%" in run
     assert "INCLUDE LIB LIBPATH" in run
     assert "VCToolsInstallDir" in run
     assert "VCINSTALLDIR" in run
     assert "WindowsSdkDir" in run
+    assert "echo %%v=%%%%v%%>>\"%GITHUB_ENV%\"" in run
     msvc_idx = steps.index(msvc_step)
     cibw_idx = next(i for i, s in enumerate(steps) if "pypa/cibuildwheel" in s.get("uses", ""))
     assert msvc_idx < cibw_idx
