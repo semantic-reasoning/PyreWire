@@ -10,11 +10,11 @@ locally must NOT produce a tarball that smuggles it through.
 
 from __future__ import annotations
 
-import importlib.util
 import re
 import subprocess
 import sys
 import tarfile
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -26,7 +26,16 @@ def _build_available() -> bool:
     global _BUILD_AVAILABLE
     if _BUILD_AVAILABLE is not None:
         return _BUILD_AVAILABLE
-    _BUILD_AVAILABLE = importlib.util.find_spec("build.__main__") is not None
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _BUILD_AVAILABLE = (
+            subprocess.run(
+                [sys.executable, "-m", "build", "--help"],
+                check=False,
+                capture_output=True,
+                cwd=tmpdir,
+            ).returncode
+            == 0
+        )
     return _BUILD_AVAILABLE
 
 
