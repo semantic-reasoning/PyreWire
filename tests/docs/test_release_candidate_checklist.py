@@ -161,7 +161,8 @@ def test_release_security_baseline_and_provenance_scope_are_documented():
         "release tag or frozen RC commit SHA",
         "artifact filenames",
         "SHA256 hashes",
-        "successful `gh attestation verify` output showing enforced signer workflow and source identity",
+        "successful `gh attestation verify` output showing enforced signer workflow "
+        "and source identity",
         "requires signer workflow and source identity constraints",
         "repo-only verification is not treated as sufficient provenance evidence",
         "does not independently attest upstream wirelog builds",
