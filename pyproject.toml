@@ -113,6 +113,7 @@ repair-wheel-command = "pip install delvewheel && delvewheel repair -w {dest_dir
 # consult these rules in slightly different orders, so we list them in
 # both places. See #51 for the rationale.
 [tool.setuptools.package-data]
+"pyrewire" = ["py.typed"]
 "pyrewire._lib" = ["*.so", "*.so.*", "*.dylib", "*.dll", "*.pyd"]
 
 [tool.black]
