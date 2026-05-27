@@ -16,12 +16,18 @@ keys (where semantically equivalent) is allowed.
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 yaml = pytest.importorskip("yaml")
+
+skip_on_windows = pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="release publish artifact verification is a bash script run on Ubuntu",
+)
 
 
 def _workflow() -> dict[str, Any]:
@@ -215,6 +221,7 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
         assert py_tag in check_run
 
 
+@skip_on_windows
 def test_publish_artifact_verify_accepts_auditwheel_linux_multi_platform_tags(tmp_path):
     _write_complete_release_artifacts(tmp_path / "dist")
 
@@ -225,6 +232,7 @@ def test_publish_artifact_verify_accepts_auditwheel_linux_multi_platform_tags(tm
     )
 
 
+@skip_on_windows
 def test_publish_artifact_verify_rejects_duplicate_linux_wheel(tmp_path):
     dist = tmp_path / "dist"
     _write_complete_release_artifacts(dist)
