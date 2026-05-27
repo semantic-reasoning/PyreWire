@@ -53,6 +53,7 @@ nav:
   - Quickstart: quickstart.md
   - Support: support.md
   - Versioning: versioning.md
+  - API stability: api-stability.md
   - Semantics:
       - Z-set & retraction: semantics/zset.md
       - Step vs snapshot: semantics/step-vs-snapshot.md
