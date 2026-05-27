@@ -153,3 +153,16 @@ def test_build_wirelog_bash_script_exists():
     sh = _repo_root() / "scripts" / "build_wirelog.sh"
     assert sh.is_file()
     assert sh.stat().st_mode & 0o111, "build_wirelog.sh must be executable"
+
+
+def test_macos_cibuildwheel_uses_home_wirelog_prefix():
+    """macOS wheels should install and repair wirelog from a user-writable prefix."""
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    macos = pyproject["tool"]["cibuildwheel"]["macos"]
+    assert macos["environment"]["WIRELOG_PREFIX"] == "$HOME/wirelog-install"
+    assert macos["environment"]["WIRELOG_LIB"] == "$HOME/wirelog-install/lib/libwirelog.1.dylib"
+    assert macos["environment"]["DYLD_LIBRARY_PATH"] == "$HOME/wirelog-install/lib"
+    assert "$HOME/wirelog-install" in macos["before-all"]
+    assert "DYLD_LIBRARY_PATH=$HOME/wirelog-install/lib" in macos["repair-wheel-command"]
+    assert "/usr/local/wirelog-install" not in macos["before-all"]
+    assert "/usr/local/wirelog-install" not in macos["repair-wheel-command"]
