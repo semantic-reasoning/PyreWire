@@ -70,9 +70,42 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($pathValue)) {
             throw "VsDevCmd.bat did not produce PATH"
           }
-          $pathValue -split ";" |
-            Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-            ForEach-Object { $_ | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append }
+
+          $preferredGitBash = "C:\Program Files\Git\bin\bash.exe"
+          if (Test-Path $preferredGitBash) {
+            $bashPath = $preferredGitBash
+          } else {
+            $bashCommand = Get-Command bash.exe -ErrorAction SilentlyContinue |
+              Where-Object { $_.Source -and $_.Source -notlike "*\Microsoft\WindowsApps\bash.exe" } |
+              Select-Object -First 1
+            if (-not $bashCommand) {
+              throw "Could not locate Git Bash bash.exe"
+            }
+            $bashPath = $bashCommand.Source
+          }
+          Write-Host "Using bash.exe from $bashPath"
+
+          $bashDir = Split-Path -Parent $bashPath
+          $normalizedBashDir = $bashDir.TrimEnd("\")
+          $pathEntries = @(
+            $pathValue -split ";" |
+              Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+              Where-Object { $_.TrimEnd("\") -ine $normalizedBashDir }
+          )
+          $orderedPathEntries = [System.Collections.Generic.List[string]]::new()
+          $insertedGitBash = $false
+          foreach ($entry in $pathEntries) {
+            if (-not $insertedGitBash -and $entry -like "*\Microsoft\WindowsApps") {
+              [void]$orderedPathEntries.Add($bashDir)
+              $insertedGitBash = $true
+            }
+            [void]$orderedPathEntries.Add($entry)
+          }
+          if (-not $insertedGitBash) {
+            [void]$orderedPathEntries.Insert(0, $bashDir)
+          }
+          $orderedPath = [string]::Join(";", $orderedPathEntries)
+          "PATH=$orderedPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
           $msvcEnvVars = @(
             "INCLUDE", "LIB", "LIBPATH",
