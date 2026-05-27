@@ -26,8 +26,10 @@ bound explicit so developers can run newer main builds locally:
   against.
 - `MINIMUM_WIRELOG_VERSION` in the loader rejects too-old builds at
   import time.
-- Wheels bundle a matching `libwirelog.so.X` via `auditwheel` /
-  `delocate` / `delvewheel`.
+- Source distributions do not ship a wirelog binary; source installs use
+  the same loader check against the libwirelog found at runtime.
+- Wheels bundle a `libwirelog` built from the validated ref via
+  `auditwheel` / `delocate` / `delvewheel`.
 
 ## PyreWire-only changes
 
@@ -52,6 +54,7 @@ release to publish; it is **not** tied to the wirelog change.
 
 | PyreWire        | Minimum wirelog | Validated wirelog ref                      | Notes                   |
 | --------------- | --------------- | ------------------------------------------ | ----------------------- |
+| `1.0.0`         | `0.44.0`        | `5bebc8d40bbb850179fbb091807964762df5a814` | Freezes compatibility at wirelog `v0.44.0` (peeled tag SHA). |
 | `0.41.99`       | `0.44.0`        | `5bebc8d40bbb850179fbb091807964762df5a814` | Pins wirelog `v0.44.0`. |
 
 The table grows with every release; the source of truth is the
