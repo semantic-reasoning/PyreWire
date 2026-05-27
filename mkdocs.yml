@@ -54,6 +54,7 @@ nav:
   - Support: support.md
   - Versioning: versioning.md
   - API stability: api-stability.md
+  - Release candidate checklist: release-candidate-checklist.md
   - Semantics:
       - Z-set & retraction: semantics/zset.md
       - Step vs snapshot: semantics/step-vs-snapshot.md
