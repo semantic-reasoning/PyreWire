@@ -1009,6 +1009,13 @@ Freeze the release commit first:</p>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
+<td>Artifact attestation verification</td>
+<td>Release manager</td>
+<td>Workflow: <code>.github/workflows/release.yml</code> publish job generates release artifact attestations using <code>actions/attest@v4</code>. For tagged release artifacts, command: <code>gh attestation verify &lt;artifact&gt; -R semantic-reasoning/PyreWire --signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml --source-ref refs/tags/v1.0.0</code> for every release wheel (<code>dist/pyrewire-*.whl</code>) and the sdist (<code>dist/pyrewire-*.tar.gz</code>). For RC/frozen-commit validation before the final tag exists, also verify with <code>--source-digest &lt;frozen-sha&gt;</code>. Repo-only <code>-R</code> verification alone is not sufficient for this gate.</td>
+<td>Successful <code>release.yml</code> run URL, release tag or frozen RC commit SHA, artifact filenames, SHA256 hashes for each wheel/sdist, and successful <code>gh attestation verify</code> output showing enforced signer workflow and source identity (<code>--source-ref refs/tags/v1.0.0</code> or <code>--source-digest &lt;frozen-sha&gt;</code>) for each verified artifact.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
 <td>Wheel dynamic-link check</td>
 <td>Packaging owner</td>
 <td>Command: <code>python scripts/ci/check_dynamic_link.py wheelhouse/*.whl</code>.</td>
@@ -1038,7 +1045,8 @@ Freeze the release commit first:</p>
 </tr>
 </tbody>
 </table>
-<p>Artifact attestations/provenance for release artifacts are tracked separately by #133. The v1.0 RC checklist above must not claim that attestations/provenance are already implemented until #133 lands.</p>
+<p>Attestation verification for this gate requires signer workflow and source identity constraints; repo-only verification is not treated as sufficient provenance evidence for PyreWire release artifacts.
+This does not independently attest upstream wirelog builds. For bundled wirelog traceability, rely on the pinned wirelog v0.44.0 SHA <code>5bebc8d40bbb850179fbb091807964762df5a814</code> in release configuration and docs, plus the wheel dynamic-link and clean-install gates above.</p>
 
 
 
