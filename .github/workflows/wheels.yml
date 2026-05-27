@@ -20,11 +20,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ubuntu-22.04 produces manylinux_2_28 via cibuildwheel docker.
-        # macos-14 is the Apple Silicon (arm64) runner; cibuildwheel's
+        # ubuntu-24.04 produces manylinux_2_28 via cibuildwheel docker.
+        # macos-15 is the stable Apple Silicon (arm64) runner; cibuildwheel's
         # macos config builds for both arm64 and x86_64 from there.
-        # windows-2022 covers MSVC + delvewheel.
-        os: [ubuntu-22.04, macos-14, windows-2022]
+        # windows-2025 covers MSVC + delvewheel.
+        os: [ubuntu-24.04, macos-15, windows-2025]
 
     steps:
       - uses: actions/checkout@v4
@@ -63,8 +63,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-14, windows-2022]
-        python: ["3.11", "3.12", "3.13"]
+        os: [ubuntu-24.04, macos-15, windows-2025]
+        python: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
 

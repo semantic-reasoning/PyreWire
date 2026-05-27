@@ -41,13 +41,20 @@ def test_pyproject_declares_python_311_plus():
     assert "Programming Language :: Python :: 3.10" not in project["classifiers"]
     assert "Programming Language :: Python :: 3.11" in project["classifiers"]
     assert "Programming Language :: Python :: 3.13" in project["classifiers"]
+    assert "Programming Language :: Python :: 3.14" in project["classifiers"]
 
 
 def test_cibuildwheel_drops_cp310():
     pyproject = tomllib.loads(_read("pyproject.toml"))
     build = pyproject["tool"]["cibuildwheel"]["build"]
     assert "cp310" not in build
-    assert build == "cp311-* cp312-* cp313-*"
+    assert build == "cp311-* cp312-* cp313-* cp314-*"
+
+
+def test_wheels_build_matrix_uses_current_hosted_runners():
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    matrix = wf["jobs"]["build_wheels"]["strategy"]["matrix"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025"]
 
 
 def test_each_platform_has_repair_wheel_command():
