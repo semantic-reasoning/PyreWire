@@ -53,9 +53,10 @@ def test_install_test_downloads_built_wheels():
     wf = _workflow()
     steps = wf["jobs"]["install_test"]["steps"]
     uses = [s.get("uses", "") for s in steps]
-    assert any(
-        "download-artifact" in u for u in uses
-    ), "install_test must `download-artifact` the wheels-* artifact"
+    assert (
+        "actions/download-artifact@v8.0.1" in uses
+    ), "install_test must download the wheels-* artifact with the Node24 artifact action"
+    assert "actions/download-artifact@v4" not in uses
 
 
 def test_install_test_sets_opt_in_env():

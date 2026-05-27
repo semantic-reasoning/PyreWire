@@ -157,9 +157,10 @@ def test_wheels_workflow_uploads_artifacts():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     steps = wf["jobs"]["build_wheels"]["steps"]
     uses = [s.get("uses", "") for s in steps]
-    assert any(
-        "upload-artifact" in u for u in uses
-    ), "wheels workflow must upload built wheels as artifacts"
+    assert (
+        "actions/upload-artifact@v7.0.1" in uses
+    ), "wheels workflow must upload built wheels with the Node24 artifact action"
+    assert "actions/upload-artifact@v4" not in uses
 
 
 def test_wheels_workflow_initializes_msvc_before_cibuildwheel():

@@ -55,6 +55,8 @@ def test_all_workflows_use_node24_core_actions():
         assert "actions/checkout@v4" not in text, path
         assert "actions/setup-python@v5" not in text, path
         assert "actions/cache@v4" not in text, path
+        assert "actions/upload-artifact@v4" not in text, path
+        assert "actions/download-artifact@v4" not in text, path
         assert "ilammy/msvc-dev-cmd" not in text, path
 
 

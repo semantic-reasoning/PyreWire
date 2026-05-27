@@ -41,7 +41,7 @@ jobs:
         # Until that pipeline is wired into this workflow, the
         # release ships the sdist only. Flip the `if:` to `true`
         # once #30 / #31 land.
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           pattern: wheels-*
           path: dist
