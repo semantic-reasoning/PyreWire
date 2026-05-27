@@ -1,5 +1,10 @@
 # PyreWire - Python wrapper for wirelog
 
+> **Name:** The project is **PyreWire** — *Pyre* + *Wire* (a pyre wired to
+> wirelog). It is **not** "py-rewire" / "Py" + "rewire". The import and
+> distribution name is `pyrewire` (one lowercase word, no hyphen). Spell
+> it `PyreWire` in prose and never split it as `Py-reWire` or `py rewire`.
+
 Python FFI bindings for [wirelog](https://github.com/semantic-reasoning/wirelog), a declarative dataflow analysis engine.
 
 - **wirelog** (`../wirelog`): C11 engine library (LGPL-3.0, Meson build) — what PyreWire wraps
