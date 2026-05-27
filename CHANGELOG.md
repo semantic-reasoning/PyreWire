@@ -22,6 +22,7 @@ supported wirelog `MAJOR.MINOR` series (see
   badges with the actual `ci` / `docs` workflows (#122).
 
 ### Notes
+- Drops Python 3.10 support; PyreWire now supports Python 3.11+.
 - Pins validated wirelog builds to the `v0.44.0` release commit
   (`5bebc8d40bbb850179fbb091807964762df5a814`), which includes
   wirelog#852 (recursive aggregation residue fix), and raises the
@@ -64,7 +65,7 @@ supported wirelog `MAJOR.MINOR` series (see
 - mkdocs-material documentation site with mkdocstrings auto-rendered
   reference (#34) and a four-page semantics guide (#36).
 - CI: lint gate (black / isort / flake8 / ruff / mypy) → test matrix
-  (Ubuntu / macOS-14 × py3.10-3.13) → 90 % coverage floor (#38 / #39 / #40).
+  (Ubuntu / macOS-14 × py3.11-3.13) → 90 % coverage floor (#38 / #39 / #40).
 - Distribution: MANIFEST.in excludes wirelog binaries from sdists
   (#51); wheel-bundling matrix and cibuildwheel config tracked in
   #30 / #31 / #32 / #33.

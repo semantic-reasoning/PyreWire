@@ -35,11 +35,11 @@ def test_install_test_matrix_covers_supported_pythons():
     matrix = wf["jobs"]["install_test"]["strategy"]["matrix"]
     pythons = matrix.get("python") or []
     assert set(pythons) >= {
-        "3.10",
         "3.11",
         "3.12",
         "3.13",
-    }, f"install_test matrix must cover py3.10-3.13, got {pythons}"
+    }, f"install_test matrix must cover py3.11-3.13, got {pythons}"
+    assert "3.10" not in pythons
 
 
 def test_install_test_downloads_built_wheels():

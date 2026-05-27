@@ -7,7 +7,7 @@ name = "pyrewire"
 version = "0.41.99"
 description = "Python wrapper for wirelog - declarative dataflow analysis"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0 OR GPL-3.0-or-later"
 license-files = ["LICENSE", "LICENSE-APACHE", "LICENSE-GPL"]
 authors = [
@@ -18,9 +18,9 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries",
     "Topic :: Scientific/Engineering",
 ]
@@ -63,7 +63,7 @@ package-dir = {"" = "src"}
 # Match the project's supported Pythons. PyPy / musllinux are skipped
 # because PyreWire's ctypes path has only been validated on CPython
 # glibc + macOS + Windows MSVC.
-build = "cp310-* cp311-* cp312-* cp313-*"
+build = "cp311-* cp312-* cp313-*"
 skip = "*-musllinux_* pp* *_i686 *_ppc64le *_s390x"
 test-command = "pytest -q {project}/tests/integration"
 test-requires = ["pytest", "pytest-cov"]
@@ -110,14 +110,14 @@ repair-wheel-command = "delvewheel repair -w {dest_dir} --add-path C:\\wirelog-i
 
 [tool.black]
 line-length = 100
-target-version = ["py310", "py311", "py312"]
+target-version = ["py311", "py312"]
 
 [tool.isort]
 profile = "black"
 line_length = 100
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
@@ -133,19 +133,11 @@ disallow_untyped_defs = true
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 ignore = ["E501"]   # line length owned by black
-
-[tool.ruff.lint.isort]
-# ruff's default target-version is the same as `tool.ruff.target-version`
-# (py310), so `tomllib` would be classified as third-party even though
-# it ships in the Python 3.11+ stdlib. Mark it stdlib explicitly so the
-# `I001` rule agrees with the `[tool.isort]` profile = "black" settings
-# the rest of the repo uses.
-extra-standard-library = ["tomllib"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
