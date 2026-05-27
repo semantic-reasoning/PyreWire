@@ -202,8 +202,17 @@ def test_github_release_uses_extracted_changelog_section():
     assert release_with.get("generate_release_notes") is False
 
 
-def test_id_token_write_for_oidc():
+def test_release_workflow_top_level_permissions_are_read_only():
     perms = _workflow().get("permissions", {})
-    assert (
-        perms.get("id-token") == "write"
-    ), "release workflow needs `id-token: write` for PyPI trusted publishing"
+    assert perms == {"contents": "read"}
+
+
+def test_only_publish_job_has_write_and_oidc_permissions():
+    jobs = _workflow()["jobs"]
+    publish_perms = jobs["publish"].get("permissions", {})
+    assert publish_perms == {"contents": "write", "id-token": "write"}
+
+    for job_name in ("build_wheels", "install_test", "build_sdist"):
+        assert "permissions" not in jobs[job_name], (
+            f"{job_name} should inherit top-level read-only permissions"
+        )

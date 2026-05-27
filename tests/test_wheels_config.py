@@ -190,6 +190,11 @@ def test_wheels_workflow_triggers_on_v_tags_and_dispatch():
     assert "workflow_dispatch" in on
 
 
+def test_wheels_workflow_permissions_are_top_level_read_only():
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    assert wf.get("permissions") == {"contents": "read"}
+
+
 def test_wheels_workflow_uploads_artifacts():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     steps = wf["jobs"]["build_wheels"]["steps"]

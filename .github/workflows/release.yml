@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  id-token: write   # PyPI trusted publishing (OIDC)
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -235,6 +234,9 @@ jobs:
   publish:
     needs: [install_test, build_sdist]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write   # PyPI trusted publishing (OIDC)
     steps:
       - uses: actions/checkout@v5
         with:
