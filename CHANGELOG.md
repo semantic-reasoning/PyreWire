@@ -8,6 +8,19 @@ supported wirelog `MAJOR.MINOR` series (see
 
 ## [Unreleased]
 
+### Added
+- `EasySession.step` / `snapshot` / `set_delta_callback` are now
+  available, unblocked by the `v0.44.0` wirelog pin (wirelog#852). The
+  `step` / `snapshot` mirrors on `AsyncEasySession` are live as well.
+
+### Changed
+- Refreshed the README quickstart and `docs/` to match the current
+  public API: `BatchProgram` for one-shot closure and `EasySession` /
+  `Session` for incremental step/snapshot work. Replaced the obsolete
+  `Program`-builder examples and the stale future-work notes for the
+  now-shipped `step` / `snapshot` methods, and aligned the README
+  badges with the actual `ci` / `docs` workflows (#122).
+
 ### Notes
 - Pins validated wirelog builds to the `v0.44.0` release commit
   (`5bebc8d40bbb850179fbb091807964762df5a814`), which includes
@@ -26,8 +39,9 @@ supported wirelog `MAJOR.MINOR` series (see
   allocator helper (#41).
 - `EasySession` (#9): lifecycle, intern table, `insert` / `remove`,
   and the variadic `insert_sym` / `remove_sym` wrappers (#44).
-  `set_delta_callback` / `step` / `snapshot` deferred to the next
-  release; tracked alongside wirelog#852.
+  `set_delta_callback` / `step` / `snapshot` were not part of 0.41.0;
+  they required wirelog#852 and became available once wirelog `0.44.0`
+  was pinned (see [Unreleased]).
 - `Session` (advanced, #21): backend selection, worker count,
   batched `insert` / `remove`, `step`, `snapshot`, `set_delta_callback`,
   one-way mode machine, NumPy zero-copy `insert_batch` / `remove_batch`
@@ -63,8 +77,8 @@ supported wirelog `MAJOR.MINOR` series (see
   Tracked in #50.
 - `EasySession.step` / `snapshot` and the `step` / `snapshot`
   mirrors on `AsyncEasySession` are not in 0.41.0 — they require
-  wirelog#852 (merged on wirelog `main`, awaiting a tag release).
-  Tracked in wirelog#859.
+  wirelog#852. They became available after the `v0.44.0` wirelog pin
+  (see [Unreleased]). Tracked in wirelog#859.
 
 [Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...HEAD
 [0.41.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v0.41.0

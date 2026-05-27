@@ -1,12 +1,10 @@
 # PyreWire
 
-**Linting Status:**
-| Tool | Status |
-|------|--------|
-| Black | [![Black](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=black)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
-| isort | [![isort](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=isort)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
-| Flake8 | [![Flake8](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=flake8)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
-| mypy | [![mypy](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml/badge.svg?job=mypy)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/lint-push-main.yml) |
+[![CI](https://github.com/semantic-reasoning/PyreWire/actions/workflows/ci.yml/badge.svg)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/ci.yml)
+[![Docs](https://github.com/semantic-reasoning/PyreWire/actions/workflows/docs.yml/badge.svg)](https://github.com/semantic-reasoning/PyreWire/actions/workflows/docs.yml)
+
+The `ci` workflow runs the full lint gate (black, isort, flake8, mypy)
+and the test matrix; `docs` builds and publishes the documentation site.
 
 A Python wrapper for [wirelog](https://github.com/semantic-reasoning/wirelog) - a declarative dataflow analysis engine.
 
@@ -24,35 +22,77 @@ pip install pyrewire
 
 ## Quick Start
 
+PyreWire programs are written in wirelog's datalog dialect and driven
+through one of the high-level surfaces below.
+
+### One-shot evaluation with `BatchProgram`
+
+Use `BatchProgram` to parse a program, optimize it, and compute the full
+IDB closure in a single pass:
+
 ```python
-from pyrewire import Program
+from pyrewire import BatchProgram
 
-# Create a new program
-program = Program()
+# A tiny reachability program: two edges plus a transitive-closure rule.
+src = """
+.decl edge(x: int32, y: int32)
+.decl reach(x: int32, y: int32)
+edge(1, 2). edge(2, 3).
+reach(X, Y) :- edge(X, Y).
+reach(X, Z) :- reach(X, Y), edge(Y, Z).
+"""
 
-# Define relations
-program.declare_relation("edge", [("x", "int32"), ("y", "int32")])
-program.declare_relation("reach", [("x", "int32")])
-
-# Add facts
-program.add_fact("edge", [1, 2])
-program.add_fact("edge", [2, 3])
-
-# Add rules
-program.add_rule("reach(1).")
-program.add_rule("reach(Y) :- reach(X), edge(X, Y).")
-
-# Execute
-results = program.evaluate()
-print(results.get_relation("reach"))
+with BatchProgram.from_string(src) as program:
+    program.optimize()
+    result = program.evaluate()
+    try:
+        print(result.cardinality("reach"))   # 3
+        print(result.relation("reach"))      # [(1, 2), (2, 3), (1, 3)]
+    finally:
+        result.close()
 ```
+
+### Incremental work with `EasySession`
+
+`EasySession` interns strings automatically and lets you `insert` /
+`remove` facts, then either `snapshot` a relation's full contents or
+`step` the engine for incremental deltas. A session commits to a single
+mode the first time you query it, so use a fresh session per mode:
+
+```python
+from pyrewire import EasySession
+
+SRC = """
+.decl friend(a: symbol, b: symbol)
+.decl mutual(a: symbol, b: symbol)
+mutual(A, B) :- friend(A, B), friend(B, A).
+"""
+
+# snapshot(): read a relation's full IDB contents.
+with EasySession(SRC) as s:
+    s.insert("friend", ["alice", "bob"])
+    s.insert("friend", ["bob", "alice"])
+    print(s.snapshot("mutual"))   # [('alice', 'bob'), ('bob', 'alice')]
+
+# step(): drive one fixpoint step and read the incremental deltas.
+with EasySession(SRC) as s:
+    s.insert("friend", ["alice", "bob"])
+    s.insert("friend", ["bob", "alice"])
+    for relation, row, diff in s.step():
+        print(relation, row, diff)   # e.g. mutual ('alice', 'bob') 1
+```
+
+For caller-owned programs, backend selection, and NumPy zero-copy
+inserts, see `Session`; for asyncio integration see `AsyncEasySession`,
+`AsyncSession`, and `AsyncBatchProgram`. The
+[Quickstart](docs/quickstart.md) walks through each surface.
 
 ## Features
 
-- 🎯 Easy-to-use Python API
-- 📊 Support for declarative dataflow analysis
-- ⚡ Efficient evaluation engine via wirelog
-- 🔄 Integration with Python data structures
+- Pythonic API over wirelog's declarative dataflow engine
+- Batch closure (`BatchProgram`) and incremental sessions (`EasySession`, `Session`)
+- NumPy zero-copy batched inserts on the advanced `Session` API
+- asyncio wrappers that satisfy wirelog's single-threaded call invariant
 
 ## Development
 
@@ -60,7 +100,7 @@ print(results.get_relation("reach"))
 
 ```bash
 git clone https://github.com/semantic-reasoning/PyreWire
-cd pyrewire
+cd PyreWire
 pip install -e ".[dev]"
 ```
 

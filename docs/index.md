@@ -7,9 +7,9 @@ dataflow engine.
 PyreWire wraps wirelog's public C API through `ctypes`, exposing four
 high-level surfaces:
 
-- **`EasySession`** — interactive `insert` / `remove` / (forthcoming
-  `step` / `snapshot`) with automatic string interning. Best for
-  ad-hoc experimentation and small workloads.
+- **`EasySession`** — interactive `insert` / `remove` / `step` /
+  `snapshot` with automatic string interning. Best for ad-hoc
+  experimentation and small workloads.
 - **`Session`** — the advanced API. Caller-owned `Program`, backend
   selection, batched zero-copy NumPy inserts, explicit mode machine.
 - **`BatchProgram`** + **`Result`** — `optimize → evaluate → CSV` for
