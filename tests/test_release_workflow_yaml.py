@@ -139,11 +139,15 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     pypa_idx = next(
         i for i, step in enumerate(steps) if "pypa/gh-action-pypi-publish" in step.get("uses", "")
     )
+    gh_release_idx = next(
+        i for i, step in enumerate(steps) if "softprops/action-gh-release" in step.get("uses", "")
+    )
     check_idx = next(
         i
         for i, step in enumerate(steps)
         if step.get("name") == "verify release artifacts before publish"
     )
+    attest_idx = next(i for i, step in enumerate(steps) if step.get("uses") == "actions/attest@v4")
     wheel_downloads = [
         (i, s)
         for i, s in enumerate(steps)
@@ -152,7 +156,8 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     ]
     assert wheel_downloads
     wheel_download_idx, wheel_download = wheel_downloads[0]
-    assert wheel_download_idx < check_idx < pypa_idx
+    assert wheel_download_idx < check_idx < attest_idx < pypa_idx
+    assert attest_idx < gh_release_idx
     assert wheel_download["with"]["path"] == "dist"
     assert wheel_download["with"]["merge-multiple"] is True
 
@@ -163,6 +168,14 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     assert "win_amd64" in check_run
     for py_tag in ("cp311", "cp312", "cp313", "cp314"):
         assert py_tag in check_run
+
+
+def test_publish_attestation_subject_paths_cover_wheels_and_sdist():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    attest_step = next(step for step in steps if step.get("uses") == "actions/attest@v4")
+    subject_path = str(attest_step.get("with", {}).get("subject-path", ""))
+    assert "dist/pyrewire-*.whl" in subject_path
+    assert "dist/pyrewire-*.tar.gz" in subject_path
 
 
 def test_release_is_not_sdist_only():
@@ -210,7 +223,11 @@ def test_release_workflow_top_level_permissions_are_read_only():
 def test_only_publish_job_has_write_and_oidc_permissions():
     jobs = _workflow()["jobs"]
     publish_perms = jobs["publish"].get("permissions", {})
-    assert publish_perms == {"contents": "write", "id-token": "write"}
+    assert publish_perms == {
+        "contents": "write",
+        "id-token": "write",
+        "attestations": "write",
+    }
 
     for job_name in ("build_wheels", "install_test", "build_sdist"):
         assert (
