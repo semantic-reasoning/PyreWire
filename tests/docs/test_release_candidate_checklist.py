@@ -100,6 +100,7 @@ def test_required_workflows_and_release_workflow_guards_are_documented():
         ".github/workflows/wheels.yml",
         ".github/workflows/release.yml",
         ".github/dependabot.yml",
+        "actions/attest@v4",
     ):
         assert workflow in text
 
@@ -151,7 +152,21 @@ def test_release_security_baseline_and_provenance_scope_are_documented():
     for required in (
         "code-scanning alerts are clean (no open alerts)",
         "Dependabot is configured for both `github-actions` and `pip` at `/` on a regular schedule",
-        "Artifact attestations/provenance for release artifacts are tracked separately by #133",
-        "must not claim that attestations/provenance are already implemented until #133 lands",
+        "gh attestation verify <artifact> -R semantic-reasoning/PyreWire",
+        "release.yml` run URL",
+        "release tag or frozen RC commit SHA",
+        "artifact filenames",
+        "SHA256 hashes",
+        "successful `gh attestation verify` output",
+        "provenance for each PyreWire release artifact digest",
+        "source repository/ref and release workflow run",
+        "does not independently attest upstream wirelog builds",
+        "wirelog v0.44.0",
+        "5bebc8d40bbb850179fbb091807964762df5a814",
+        "wheel dynamic-link and clean-install gates",
     ):
         assert required in text
+
+    assert "#133" not in text
+    assert "tracked separately" not in text
+    assert "must not claim that attestations/provenance are already implemented" not in text
