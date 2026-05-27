@@ -4,6 +4,12 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      publish-testpypi:
+        description: Publish verified release artifacts to TestPyPI (trusted publishing)
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -299,6 +305,12 @@ jobs:
           subject-path: |
             dist/pyrewire-*.whl
             dist/pyrewire-*.tar.gz
+
+      - name: publish to TestPyPI (trusted publishing)
+        if: github.event_name == 'workflow_dispatch' && inputs['publish-testpypi'] == true
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
       - name: extract GitHub Release notes
         if: startsWith(github.ref, 'refs/tags/v')
