@@ -37,25 +37,56 @@ jobs:
 
       - name: setup Visual Studio toolchain (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
+        shell: pwsh
         run: |
-          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
-          if "%VSINSTALL%"=="" (
-            echo Could not locate a Visual Studio installation with MSVC tools
-            exit /b 1
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+          if (-not (Test-Path $vswhere)) {
+            throw "Could not locate vswhere.exe at $vswhere"
+          }
+
+          $vsInstall = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ([string]::IsNullOrWhiteSpace($vsInstall)) {
+            throw "Could not locate a Visual Studio installation with MSVC tools"
+          }
+
+          $vsDevCmd = Join-Path $vsInstall "Common7\Tools\VsDevCmd.bat"
+          if (-not (Test-Path $vsDevCmd)) {
+            throw "Could not locate VsDevCmd.bat at $vsDevCmd"
+          }
+
+          $cmdOutput = & cmd.exe /s /c "`"$vsDevCmd`" -arch=x64 && set"
+          if ($LASTEXITCODE -ne 0) {
+            throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"
+          }
+
+          $envMap = @{}
+          foreach ($line in $cmdOutput) {
+            if ($line -match "^([^=]+)=(.*)$") {
+              $envMap[$matches[1]] = $matches[2]
+            }
+          }
+
+          $pathValue = $envMap["PATH"]
+          if ([string]::IsNullOrWhiteSpace($pathValue)) {
+            throw "VsDevCmd.bat did not produce PATH"
+          }
+          $pathValue -split ";" |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+            ForEach-Object { $_ | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append }
+
+          $msvcEnvVars = @(
+            "INCLUDE", "LIB", "LIBPATH",
+            "VCToolsInstallDir", "VCToolsRedistDir", "VCINSTALLDIR", "VSINSTALLDIR",
+            "WindowsLibPath", "WindowsSdkBinPath", "WindowsSdkDir", "WindowsSDKLibVersion",
+            "WindowsSdkVerBinPath", "WindowsSDKVersion",
+            "UCRTVersion", "UniversalCRTSdkDir",
+            "VSCMD_ARG_HOST_ARCH", "VSCMD_ARG_TGT_ARCH", "VSCMD_VER"
           )
-          call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64
-          echo PATH=%PATH%>>"%GITHUB_ENV%"
-          for %%v in (
-            INCLUDE LIB LIBPATH
-            VCToolsInstallDir VCToolsRedistDir VCINSTALLDIR VSINSTALLDIR
-            WindowsLibPath WindowsSdkBinPath WindowsSdkDir WindowsSDKLibVersion
-            WindowsSdkVerBinPath WindowsSDKVersion
-            UCRTVersion UniversalCRTSdkDir
-            VSCMD_ARG_HOST_ARCH VSCMD_ARG_TGT_ARCH VSCMD_VER
-          ) do (
-            call if not "%%%%v%%"=="" echo %%v=%%%%v%%>>"%GITHUB_ENV%"
-          )
+          foreach ($name in $msvcEnvVars) {
+            if ($envMap.ContainsKey($name) -and -not [string]::IsNullOrWhiteSpace($envMap[$name])) {
+              "$name=$($envMap[$name])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
 
       - name: build wheels
         uses: pypa/cibuildwheel@v3.4.1
