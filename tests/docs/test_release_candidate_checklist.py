@@ -131,6 +131,36 @@ def test_wheel_and_clean_install_checks_are_documented():
         assert required in text
 
 
+def test_testpypi_dry_run_gate_and_evidence_requirements_are_documented():
+    text = _checklist()
+    for required in (
+        "TestPyPI dry run evidence",
+        ".github/workflows/release.yml",
+        "publish-testpypi: true",
+        "frozen RC commit",
+        "workflow run URL",
+        "TestPyPI project/version URL",
+        "artifact filenames",
+        "candidate version",
+        "SHA256 hashes",
+        "successful TestPyPI upload logs",
+        "Linux/macOS/Windows",
+        "pyrewire.__version__",
+        "pyrewire.wirelog_version()",
+        "bundled `libwirelog`",
+        "no system `libwirelog`",
+        "sdist behavior",
+        "python -m pip install --index-url https://test.pypi.org/simple/ "
+        "--extra-index-url https://pypi.org/simple pyrewire==<candidate-version>",
+        "Production PyPI release remains gated on this dry-run evidence",
+        "TestPyPI trusted publishing must be configured",
+        "workflow identity",
+        "If TestPyPI requires an environment for trusted publishing, the workflow "
+        "configuration must match that environment",
+    ):
+        assert required in text
+
+
 def test_release_notes_and_consistency_checks_are_documented():
     text = _checklist()
     for required in (
