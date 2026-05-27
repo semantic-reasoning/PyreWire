@@ -166,9 +166,7 @@ def test_wheels_workflow_initializes_msvc_before_cibuildwheel():
     text = _read(".github/workflows/wheels.yml")
     wf = yaml.safe_load(text)
     steps = wf["jobs"]["build_wheels"]["steps"]
-    msvc_steps = [
-        s for s in steps if "Visual Studio toolchain" in str(s.get("name", ""))
-    ]
+    msvc_steps = [s for s in steps if "Visual Studio toolchain" in str(s.get("name", ""))]
     assert msvc_steps, "build_wheels should initialize MSVC on Windows"
     msvc_step = msvc_steps[0]
     assert msvc_step.get("if") == "runner.os == 'Windows'"
@@ -185,9 +183,7 @@ def test_wheels_workflow_initializes_msvc_before_cibuildwheel():
     assert "VCINSTALLDIR" in run
     assert "WindowsSdkDir" in run
     msvc_idx = steps.index(msvc_step)
-    cibw_idx = next(
-        i for i, s in enumerate(steps) if "pypa/cibuildwheel" in s.get("uses", "")
-    )
+    cibw_idx = next(i for i, s in enumerate(steps) if "pypa/cibuildwheel" in s.get("uses", ""))
     assert msvc_idx < cibw_idx
 
 
