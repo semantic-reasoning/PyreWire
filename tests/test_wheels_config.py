@@ -207,6 +207,14 @@ def test_cibuildwheel_test_requires_pytest_cov():
     assert "pytest-cov" in requires
 
 
+def test_cibuildwheel_test_command_clears_pytest_addopts():
+    """Wheels tests should clear repository addopts so CI-wide coverage rules
+    don't leak into the integration-only wheel checks."""
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    test_command = pyproject["tool"]["cibuildwheel"]["test-command"]
+    assert "-o addopts=" in test_command
+
+
 def test_wheel_install_workflow_installs_pytest_cov():
     """The wheel install smoke test also runs pytest against this repo's
     pyproject, whose addopts require pytest-cov."""
