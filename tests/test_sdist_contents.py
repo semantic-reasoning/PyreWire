@@ -98,3 +98,14 @@ def test_sdist_keeps_lib_init_placeholder(tmp_path: Path):
     assert any(
         n.endswith("src/pyrewire/_lib/__init__.py") for n in names
     ), "sdist must keep the _lib/__init__.py placeholder"
+
+
+@pytest.mark.skipif(not _build_available(), reason="`build` not installed")
+def test_sdist_includes_pep561_marker(tmp_path: Path):
+    """The source distribution must advertise PyreWire as a typed package."""
+    archive = _build_sdist(tmp_path)
+    with tarfile.open(archive, "r:gz") as tf:
+        names = tf.getnames()
+    assert any(
+        n.endswith("src/pyrewire/py.typed") for n in names
+    ), "sdist must include the PEP 561 py.typed marker"

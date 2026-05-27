@@ -157,6 +157,12 @@ def test_wheel_package_data_includes_wirelog_binaries():
     assert "*.dll" in pyrewire_lib_data
 
 
+def test_package_data_includes_pep561_marker():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    package_data = pyproject["tool"]["setuptools"]["package-data"]
+    assert package_data["pyrewire"] == ["py.typed"]
+
+
 def test_windows_repair_installs_delvewheel():
     """Windows repair needs delvewheel installed explicitly."""
     pyproject = tomllib.loads(_read("pyproject.toml"))
