@@ -201,6 +201,12 @@ def test_wheels_workflow_uses_cibuildwheel_action():
     assert any("pypa/cibuildwheel" in s.get("uses", "") for s in steps)
 
 
+def test_wheels_workflow_uses_cibuildwheel_v3_4_1():
+    text = _read(".github/workflows/wheels.yml")
+    assert "pypa/cibuildwheel@v3.4.1" in text
+    assert "pypa/cibuildwheel@v2.21.3" not in text
+
+
 def test_cibuildwheel_test_requires_pytest_cov():
     """cibuildwheel runs pytest from a fresh env, so it must install the
     plugin required by pyproject's coverage addopts."""
