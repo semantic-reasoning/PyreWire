@@ -1009,6 +1009,13 @@ Freeze the release commit first:</p>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
+<td>TestPyPI dry run evidence</td>
+<td>Release manager + Packaging owner</td>
+<td>Manual verification: on the frozen RC commit, manually dispatch <code>.github/workflows/release.yml</code> with <code>publish-testpypi: true</code> and complete a TestPyPI end-to-end dry run before any production tag push. Use install command shape: <code>python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple pyrewire==&lt;candidate-version&gt;</code>.</td>
+<td>Frozen commit SHA, successful <code>release.yml</code> workflow run URL, TestPyPI project/version URL, artifact filenames and candidate version, SHA256 hashes, successful TestPyPI upload logs, clean install command logs/results for Linux/macOS/Windows supported Python versions, import smoke output for <code>pyrewire.__version__</code> and <code>pyrewire.wirelog_version()</code>, confirmation wheel install uses bundled <code>libwirelog</code> with no system <code>libwirelog</code>, and documented sdist behavior if any sdist install behavior is intentional. Production PyPI release remains gated on this dry-run evidence.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
 <td>Artifact attestation verification</td>
 <td>Release manager</td>
 <td>Workflow: <code>.github/workflows/release.yml</code> publish job generates release artifact attestations using <code>actions/attest@v4</code>. For tagged release artifacts, command: <code>gh attestation verify &lt;artifact&gt; -R semantic-reasoning/PyreWire --signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml --source-ref refs/tags/v1.0.0</code> for every release wheel (<code>dist/pyrewire-*.whl</code>) and the sdist (<code>dist/pyrewire-*.tar.gz</code>). For RC/frozen-commit validation before the final tag exists, also verify with <code>--source-digest &lt;frozen-sha&gt;</code>. Repo-only <code>-R</code> verification alone is not sufficient for this gate.</td>
@@ -1046,7 +1053,8 @@ Freeze the release commit first:</p>
 </tbody>
 </table>
 <p>Attestation verification for this gate requires signer workflow and source identity constraints; repo-only verification is not treated as sufficient provenance evidence for PyreWire release artifacts.
-This does not independently attest upstream wirelog builds. For bundled wirelog traceability, rely on the pinned wirelog v0.44.0 SHA <code>5bebc8d40bbb850179fbb091807964762df5a814</code> in release configuration and docs, plus the wheel dynamic-link and clean-install gates above.</p>
+This does not independently attest upstream wirelog builds. For bundled wirelog traceability, rely on the pinned wirelog v0.44.0 SHA <code>5bebc8d40bbb850179fbb091807964762df5a814</code> in release configuration and docs, plus the wheel dynamic-link and clean-install gates above.
+External blocker for the TestPyPI dry run gate: TestPyPI trusted publishing must be configured for the <code>.github/workflows/release.yml</code> workflow identity before dry-run uploads can pass. If TestPyPI requires an environment for trusted publishing, the workflow configuration must match that environment.</p>
 
 
 
