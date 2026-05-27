@@ -890,9 +890,9 @@ dataflow engine.</p>
 <p>PyreWire wraps wirelog's public C API through <code>ctypes</code>, exposing four
 high-level surfaces:</p>
 <ul>
-<li><strong><code>EasySession</code></strong> — interactive <code>insert</code> / <code>remove</code> / (forthcoming
-  <code>step</code> / <code>snapshot</code>) with automatic string interning. Best for
-  ad-hoc experimentation and small workloads.</li>
+<li><strong><code>EasySession</code></strong> — interactive <code>insert</code> / <code>remove</code> / <code>step</code> /
+  <code>snapshot</code> with automatic string interning. Best for ad-hoc
+  experimentation and small workloads.</li>
 <li><strong><code>Session</code></strong> — the advanced API. Caller-owned <code>Program</code>, backend
   selection, batched zero-copy NumPy inserts, explicit mode machine.</li>
 <li><strong><code>BatchProgram</code></strong> + <strong><code>Result</code></strong> — <code>optimize → evaluate → CSV</code> for
