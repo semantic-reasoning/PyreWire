@@ -170,21 +170,52 @@ def test_wheels_workflow_initializes_msvc_before_cibuildwheel():
     assert msvc_steps, "build_wheels should initialize MSVC on Windows"
     msvc_step = msvc_steps[0]
     assert msvc_step.get("if") == "runner.os == 'Windows'"
-    assert msvc_step.get("shell") == "cmd"
+    assert msvc_step.get("shell") == "pwsh"
     run = msvc_step.get("run", "")
     assert "vswhere.exe" in run
     assert "VsDevCmd.bat" in run
+    assert "cmd.exe" in run
+    assert "-arch=x64 && set" in run
+    assert "GITHUB_PATH" in run
     assert "GITHUB_ENV" in run
-    assert "GITHUB_PATH" not in run
+    assert "$pathValue -split" in run
+    assert "Out-File -FilePath $env:GITHUB_PATH" in run
+    assert "$msvcEnvVars = @(" in run
+    assert "$envMap.ContainsKey($name)" in run
+    assert "Out-File -FilePath $env:GITHUB_ENV" in run
+    for name in (
+        "INCLUDE",
+        "LIB",
+        "LIBPATH",
+        "VCToolsInstallDir",
+        "VCToolsRedistDir",
+        "VCINSTALLDIR",
+        "VSINSTALLDIR",
+        "WindowsLibPath",
+        "WindowsSdkBinPath",
+        "WindowsSdkDir",
+        "WindowsSDKLibVersion",
+        "WindowsSdkVerBinPath",
+        "WindowsSDKVersion",
+        "UCRTVersion",
+        "UniversalCRTSdkDir",
+        "VSCMD_ARG_HOST_ARCH",
+        "VSCMD_ARG_TGT_ARCH",
+        "VSCMD_VER",
+    ):
+        assert f'"{name}"' in run
+    assert "shell: cmd" not in text
+    assert "for %%" not in run
+    assert "call if" not in run
+    assert "%%%%v%%" not in run
+    assert "%PATH:;=" not in run
     assert "call set " not in run
     assert "tokens=1,* delims==" not in run
-    assert "%PATH:;=" not in run
-    assert "echo PATH=%PATH%" in run
-    assert "INCLUDE LIB LIBPATH" in run
-    assert "VCToolsInstallDir" in run
-    assert "VCINSTALLDIR" in run
-    assert "WindowsSdkDir" in run
-    assert 'echo %%v=%%%%v%%>>"%GITHUB_ENV%"' in run
+    assert "echo PATH=%PATH%" not in run
+    assert not re.search(r"set\s*>>", run)
+    assert not re.search(r">>\s*\"?%GITHUB_ENV%\"?", run)
+    assert not re.search(r"\$cmdOutput\s*\|\s*Out-File[^\n]+GITHUB_ENV", run)
+    assert not re.search(r"Out-File[^\n]+GITHUB_ENV[^\n]+\$cmdOutput", run)
     msvc_idx = steps.index(msvc_step)
     cibw_idx = next(i for i, s in enumerate(steps) if "pypa/cibuildwheel" in s.get("uses", ""))
     assert msvc_idx < cibw_idx
