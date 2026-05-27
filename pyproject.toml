@@ -67,7 +67,7 @@ package-dir = {"" = "src"}
 build = "cp311-* cp312-* cp313-* cp314-*"
 dependency-versions = "latest"
 skip = "*-musllinux_* pp* *_i686 *_ppc64le *_s390x"
-test-command = "pytest -q {project}/tests/integration"
+test-command = "pytest -q -o addopts= {project}/tests/integration"
 test-requires = ["pytest", "pytest-cov"]
 # Copy the freshly built libwirelog into the package before `bdist_wheel`,
 # so repair tools can vendor it and its shared dependencies.
