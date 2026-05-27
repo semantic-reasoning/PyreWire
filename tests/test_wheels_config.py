@@ -62,6 +62,23 @@ def test_cibuildwheel_dependency_versions_is_latest():
     assert pyproject["tool"]["cibuildwheel"]["dependency-versions"] == "latest"
 
 
+def test_windows_cibuildwheel_arch_is_amd64_only():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    assert pyproject["tool"]["cibuildwheel"]["windows"]["archs"] == ["AMD64"]
+
+
+def test_windows_cibuildwheel_uses_forward_slash_paths():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    windows = pyproject["tool"]["cibuildwheel"]["windows"]
+    assert windows["environment"]["WIRELOG_PREFIX"] == "C:/wirelog-install"
+    assert windows["environment"]["WIRELOG_LIB"] == "C:/wirelog-install/bin/wirelog-1.dll"
+    repair_cmd = windows["repair-wheel-command"]
+    assert "--add-path C:/wirelog-install/bin" in repair_cmd
+    assert "C:\\wirelog-install" not in windows["environment"]["WIRELOG_PREFIX"]
+    assert "C:\\wirelog-install" not in windows["environment"]["WIRELOG_LIB"]
+    assert "C:\\wirelog-install" not in repair_cmd
+
+
 def test_wheels_build_matrix_uses_current_hosted_runners():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     matrix = wf["jobs"]["build_wheels"]["strategy"]["matrix"]
@@ -143,6 +160,40 @@ def test_wheels_workflow_uploads_artifacts():
     assert any(
         "upload-artifact" in u for u in uses
     ), "wheels workflow must upload built wheels as artifacts"
+
+
+def test_wheels_workflow_initializes_msvc_before_cibuildwheel():
+    text = _read(".github/workflows/wheels.yml")
+    wf = yaml.safe_load(text)
+    steps = wf["jobs"]["build_wheels"]["steps"]
+    msvc_steps = [
+        s for s in steps if "Visual Studio toolchain" in str(s.get("name", ""))
+    ]
+    assert msvc_steps, "build_wheels should initialize MSVC on Windows"
+    msvc_step = msvc_steps[0]
+    assert msvc_step.get("if") == "runner.os == 'Windows'"
+    assert msvc_step.get("shell") == "cmd"
+    run = msvc_step.get("run", "")
+    assert "vswhere.exe" in run
+    assert "VsDevCmd.bat" in run
+    assert "GITHUB_ENV" in run
+    assert "GITHUB_PATH" in run
+    assert "('set')" not in run
+    assert "tokens=1,* delims==" not in run
+    assert "INCLUDE LIB LIBPATH" in run
+    assert "VCToolsInstallDir" in run
+    assert "VCINSTALLDIR" in run
+    assert "WindowsSdkDir" in run
+    msvc_idx = steps.index(msvc_step)
+    cibw_idx = next(
+        i for i, s in enumerate(steps) if "pypa/cibuildwheel" in s.get("uses", "")
+    )
+    assert msvc_idx < cibw_idx
+
+
+def test_wheels_workflow_avoids_node20_action():
+    text = _read(".github/workflows/wheels.yml")
+    assert "ilammy/msvc-dev-cmd" not in text
 
 
 def test_wheels_workflow_uses_cibuildwheel_action():

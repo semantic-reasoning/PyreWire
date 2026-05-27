@@ -35,6 +35,30 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: setup Visual Studio toolchain (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
+          if "%VSINSTALL%"=="" (
+            echo Could not locate a Visual Studio installation with MSVC tools
+            exit /b 1
+          )
+          call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64
+          for %%p in ("%PATH:;=" "%") do (
+            if not "%%~p"=="" echo %%~p>>"%GITHUB_PATH%"
+          )
+          for %%v in (
+            INCLUDE LIB LIBPATH
+            VCToolsInstallDir VCToolsRedistDir VCINSTALLDIR VSINSTALLDIR
+            WindowsLibPath WindowsSdkBinPath WindowsSdkDir WindowsSDKLibVersion
+            WindowsSdkVerBinPath WindowsSDKVersion
+            UCRTVersion UniversalCRTSdkDir
+            VSCMD_ARG_HOST_ARCH VSCMD_ARG_TGT_ARCH VSCMD_VER
+          ) do (
+            call if not "%%%%v%%"=="" echo %%v=%%%%v%%>>"%GITHUB_ENV%"
+          )
+
       - name: build wheels
         uses: pypa/cibuildwheel@v2.21.3
         env:
