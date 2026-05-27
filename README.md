@@ -20,7 +20,7 @@ PyreWire provides a Pythonic interface to wirelog, enabling you to write datalog
 pip install pyrewire
 ```
 
-**Requirements:** Python 3.10 or later
+**Requirements:** Python 3.11 or later
 
 ## Quick Start
 

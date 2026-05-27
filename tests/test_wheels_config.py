@@ -34,6 +34,22 @@ def test_pyproject_has_cibuildwheel_table():
     assert "[tool.cibuildwheel.windows]" in text
 
 
+def test_pyproject_declares_python_311_plus():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    project = pyproject["project"]
+    assert project["requires-python"] == ">=3.11"
+    assert "Programming Language :: Python :: 3.10" not in project["classifiers"]
+    assert "Programming Language :: Python :: 3.11" in project["classifiers"]
+    assert "Programming Language :: Python :: 3.13" in project["classifiers"]
+
+
+def test_cibuildwheel_drops_cp310():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    build = pyproject["tool"]["cibuildwheel"]["build"]
+    assert "cp310" not in build
+    assert build == "cp311-* cp312-* cp313-*"
+
+
 def test_each_platform_has_repair_wheel_command():
     """The wheel-repair step (#31) is what bundles libwirelog into the
     wheel. Missing it on any platform breaks `pip install pyrewire`."""

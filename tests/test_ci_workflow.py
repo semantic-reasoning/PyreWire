@@ -26,6 +26,12 @@ def test_ci_default_wirelog_version_is_exact_sha():
     assert "5bebc8d40bbb850179fbb091807964762df5a814" in default
 
 
+def test_ci_matrix_drops_python_310():
+    matrix = _workflow()["jobs"]["test"]["strategy"]["matrix"]
+    pythons = matrix["python"]
+    assert pythons == ["3.11", "3.12", "3.13"]
+
+
 def test_ci_workflow_has_least_privilege_permissions():
     assert _workflow()["permissions"] == {"contents": "read"}
 

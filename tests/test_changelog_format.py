@@ -19,8 +19,7 @@ def _repo_root() -> Path:
 
 _HEADING_RE = re.compile(r"^##\s+\[([^\]]+)\](?:\s+-\s+\S+)?\s*$", re.MULTILINE)
 # pyproject.toml is structured; parse only the `version = "..."` field so
-# we don't depend on `tomllib` (Python 3.11+) — py3.10 in the test
-# matrix would otherwise ImportError-fail this whole module.
+# this test stays independent of optional TOML parser availability.
 _VERSION_RE = re.compile(r'^version\s*=\s*"([^"]+)"\s*$', re.MULTILINE)
 
 
