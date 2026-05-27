@@ -29,13 +29,30 @@ def _workflow() -> dict[str, Any]:
     return yaml.safe_load(path.read_text())
 
 
-def test_triggers_on_v_tags():
+def _on_block() -> dict[str, Any]:
     wf = _workflow()
     on = wf.get("on") or wf.get(True)  # PyYAML sometimes parses "on:" as True
-    assert on is not None, "missing `on:` block"
-    push = on.get("push") if isinstance(on, dict) else None
+    assert isinstance(on, dict), "missing `on:` block"
+    return on
+
+
+def test_triggers_on_v_tags():
+    push = _on_block().get("push")
     tags = (push or {}).get("tags") or []
     assert any(t.startswith("v") for t in tags), f"release must trigger on v* tags, got {tags}"
+
+
+def test_workflow_dispatch_publish_testpypi_input_is_boolean_default_false():
+    workflow_dispatch = _on_block().get("workflow_dispatch") or {}
+    inputs = workflow_dispatch.get("inputs") or {}
+    publish_testpypi = inputs.get("publish-testpypi") or {}
+
+    assert publish_testpypi
+    assert publish_testpypi.get("type") == "boolean"
+    assert publish_testpypi.get("default") is False
+    assert publish_testpypi.get("required") is False
+    assert "testpypi" in publish_testpypi.get("description", "").lower()
+    assert "publish" in publish_testpypi.get("description", "").lower()
 
 
 def test_has_publish_job_with_ubuntu():
@@ -136,8 +153,10 @@ def test_release_install_test_downloads_matching_wheels_and_runs_integration_tes
 
 def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     steps = _workflow()["jobs"]["publish"]["steps"]
-    pypa_idx = next(
-        i for i, step in enumerate(steps) if "pypa/gh-action-pypi-publish" in step.get("uses", "")
+    pypa_prod_idx = next(
+        i
+        for i, step in enumerate(steps)
+        if step.get("name") == "publish to PyPI (trusted publishing)"
     )
     gh_release_idx = next(
         i for i, step in enumerate(steps) if "softprops/action-gh-release" in step.get("uses", "")
@@ -156,7 +175,7 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     ]
     assert wheel_downloads
     wheel_download_idx, wheel_download = wheel_downloads[0]
-    assert wheel_download_idx < check_idx < attest_idx < pypa_idx
+    assert wheel_download_idx < check_idx < attest_idx < pypa_prod_idx
     assert attest_idx < gh_release_idx
     assert wheel_download["with"]["path"] == "dist"
     assert wheel_download["with"]["merge-multiple"] is True
@@ -168,6 +187,41 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     assert "win_amd64" in check_run
     for py_tag in ("cp311", "cp312", "cp313", "cp314"):
         assert py_tag in check_run
+
+
+def test_publish_has_manual_testpypi_step_with_explicit_gate_and_repository_url():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    step = next(s for s in steps if s.get("name") == "publish to TestPyPI (trusted publishing)")
+    step_if = str(step.get("if", ""))
+    assert step.get("uses") == "pypa/gh-action-pypi-publish@release/v1"
+    assert step.get("with", {}).get("repository-url") == "https://test.pypi.org/legacy/"
+    assert "workflow_dispatch" in step_if
+    assert "publish-testpypi" in step_if
+    assert "github.event_name" in step_if
+
+
+def test_testpypi_publish_runs_after_verify_and_attest_steps():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    verify_idx = next(
+        i
+        for i, step in enumerate(steps)
+        if step.get("name") == "verify release artifacts before publish"
+    )
+    attest_idx = next(i for i, step in enumerate(steps) if step.get("uses") == "actions/attest@v4")
+    testpypi_idx = next(
+        i
+        for i, step in enumerate(steps)
+        if step.get("name") == "publish to TestPyPI (trusted publishing)"
+    )
+
+    assert verify_idx < attest_idx < testpypi_idx
+
+
+def test_production_pypi_publish_remains_tag_gated_and_not_testpypi():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    step = next(s for s in steps if s.get("name") == "publish to PyPI (trusted publishing)")
+    assert step.get("if") == "startsWith(github.ref, 'refs/tags/v')"
+    assert "repository-url" not in (step.get("with") or {})
 
 
 def test_publish_attestation_subject_paths_cover_wheels_and_sdist():
@@ -192,6 +246,10 @@ def test_creates_github_release():
     assert any(
         "softprops/action-gh-release" in u for u in uses
     ), "release workflow must create a GitHub Release"
+    release_step = next(
+        step for step in steps if "softprops/action-gh-release" in step.get("uses", "")
+    )
+    assert release_step.get("if") == "startsWith(github.ref, 'refs/tags/v')"
 
 
 def test_github_release_uses_extracted_changelog_section():
