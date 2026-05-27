@@ -217,10 +217,10 @@ def test_testpypi_publish_runs_after_verify_and_attest_steps():
     assert verify_idx < attest_idx < testpypi_idx
 
 
-def test_production_pypi_publish_remains_tag_gated_and_not_testpypi():
+def test_production_pypi_publish_is_gated_to_tag_push_and_not_testpypi():
     steps = _workflow()["jobs"]["publish"]["steps"]
     step = next(s for s in steps if s.get("name") == "publish to PyPI (trusted publishing)")
-    assert step.get("if") == "startsWith(github.ref, 'refs/tags/v')"
+    assert step.get("if") == "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
     assert "repository-url" not in (step.get("with") or {})
 
 
@@ -249,7 +249,10 @@ def test_creates_github_release():
     release_step = next(
         step for step in steps if "softprops/action-gh-release" in step.get("uses", "")
     )
-    assert release_step.get("if") == "startsWith(github.ref, 'refs/tags/v')"
+    assert (
+        release_step.get("if")
+        == "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
+    )
 
 
 def test_github_release_uses_extracted_changelog_section():
@@ -271,6 +274,17 @@ def test_github_release_uses_extracted_changelog_section():
     assert release_with["body_path"] != "CHANGELOG.md"
     assert "release-notes.md" in release_with["body_path"]
     assert release_with.get("generate_release_notes") is False
+
+
+def test_release_notes_extraction_is_gated_to_tag_push():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    extract_step = next(
+        step for step in steps if step.get("name") == "extract GitHub Release notes"
+    )
+    assert (
+        extract_step.get("if")
+        == "github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')"
+    )
 
 
 def test_release_workflow_top_level_permissions_are_read_only():
