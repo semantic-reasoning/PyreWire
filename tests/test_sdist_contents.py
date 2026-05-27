@@ -10,6 +10,7 @@ locally must NOT produce a tarball that smuggles it through.
 
 from __future__ import annotations
 
+import importlib.util
 import re
 import subprocess
 import sys
@@ -25,12 +26,7 @@ def _build_available() -> bool:
     global _BUILD_AVAILABLE
     if _BUILD_AVAILABLE is not None:
         return _BUILD_AVAILABLE
-    try:
-        import build  # noqa: F401
-    except ImportError:
-        _BUILD_AVAILABLE = False
-    else:
-        _BUILD_AVAILABLE = True
+    _BUILD_AVAILABLE = importlib.util.find_spec("build.__main__") is not None
     return _BUILD_AVAILABLE
 
 
@@ -55,6 +51,7 @@ def _build_sdist(out_dir: Path) -> Path:
         ],
         check=True,
         capture_output=True,
+        cwd=str(out_dir),
     )
     archives = list(out_dir.glob("pyrewire-*.tar.gz"))
     assert len(archives) == 1, f"expected one sdist, found {archives}"
