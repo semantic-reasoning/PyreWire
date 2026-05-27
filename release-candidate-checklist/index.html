@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://semantic-reasoning.github.io/PyreWire/api-stability/">
+        <link rel="canonical" href="https://semantic-reasoning.github.io/PyreWire/release-candidate-checklist/">
       
       
-        <link rel="prev" href="../versioning/">
+        <link rel="prev" href="../api-stability/">
       
       
-        <link rel="next" href="../release-candidate-checklist/">
+        <link rel="next" href="../semantics/zset/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>API stability - PyreWire</title>
+        <title>Release candidate checklist - PyreWire</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-stability" class="md-skip">
+        <a href="#v100-release-candidate-checklist" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API stability
+              Release candidate checklist
             
           </span>
         </div>
@@ -369,37 +369,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API stability
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../api-stability/" class="md-nav__link">
         
   
   
@@ -415,175 +388,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#stable-public-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Stable public boundary
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Stable public boundary">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#sessions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sessions
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#batch-and-result" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Batch and result
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#program-schema-and-introspection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Program, schema, and introspection
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#async-wrappers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Async wrappers
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#io-adapters" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        IO adapters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#compounds" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compounds
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ir-wrapper-and-enums" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        IR wrapper and enums
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#exported-enums" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exported enums
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#exported-errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exported errors
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#helpers-and-utilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Helpers and utilities
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#non-public-boundary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Non-public boundary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deprecation-policy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deprecation policy
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -592,10 +396,19 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../release-candidate-checklist/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -611,6 +424,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1093,116 +907,123 @@
   
 
 
-<h1 id="api-stability">API stability<a class="headerlink" href="#api-stability" title="Permanent link">&para;</a></h1>
-<p>PyreWire v1.0 treats <code>pyrewire.__all__</code> as the stable public import boundary.
-Names listed there are the supported surface for
-<code>from pyrewire import ...</code> imports and are covered by the v1 API
-compatibility and deprecation policy.</p>
-<h2 id="stable-public-boundary">Stable public boundary<a class="headerlink" href="#stable-public-boundary" title="Permanent link">&para;</a></h2>
-<p>The v1 stable public API includes these exported names:</p>
-<h3 id="sessions">Sessions<a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>EasySession</code></li>
-<li><code>Session</code></li>
-</ul>
-<h3 id="batch-and-result">Batch and result<a class="headerlink" href="#batch-and-result" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>BatchProgram</code></li>
-<li><code>Result</code></li>
-</ul>
-<h3 id="program-schema-and-introspection">Program, schema, and introspection<a class="headerlink" href="#program-schema-and-introspection" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>Program</code></li>
-<li><code>Schema</code></li>
-<li><code>Column</code></li>
-<li><code>Stratum</code></li>
-</ul>
-<h3 id="async-wrappers">Async wrappers<a class="headerlink" href="#async-wrappers" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>AsyncEasySession</code></li>
-<li><code>AsyncSession</code></li>
-<li><code>AsyncBatchProgram</code></li>
-</ul>
-<h3 id="io-adapters">IO adapters<a class="headerlink" href="#io-adapters" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>IOContext</code></li>
-<li><code>register_adapter</code></li>
-<li><code>unregister_adapter</code></li>
-<li><code>registered_schemes</code></li>
-</ul>
-<h3 id="compounds">Compounds<a class="headerlink" href="#compounds" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>Compound</code></li>
-<li><code>CompoundArg</code></li>
-</ul>
-<h3 id="ir-wrapper-and-enums">IR wrapper and enums<a class="headerlink" href="#ir-wrapper-and-enums" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>IRNode</code></li>
-<li><code>IRNodeType</code></li>
-</ul>
-<h3 id="exported-enums">Exported enums<a class="headerlink" href="#exported-enums" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>ColumnType</code></li>
-<li><code>CompoundKind</code></li>
-<li><code>BackendKind</code></li>
-<li><code>CmpOp</code></li>
-<li><code>ArithOp</code></li>
-<li><code>AggFn</code></li>
-<li><code>StrFn</code></li>
-<li><code>ErrorCode</code></li>
-</ul>
-<h3 id="exported-errors">Exported errors<a class="headerlink" href="#exported-errors" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>WirelogError</code></li>
-<li><code>ParseError</code></li>
-<li><code>InvalidIRError</code></li>
-<li><code>ExecError</code></li>
-<li><code>WirelogMemoryError</code></li>
-<li><code>WirelogIOError</code></li>
-<li><code>CompoundSaturatedError</code></li>
-<li><code>CompoundBusyError</code></li>
-<li><code>WirelogVersionError</code></li>
-<li><code>WirelogModeError</code></li>
-<li><code>WirelogInternError</code></li>
-</ul>
-<h3 id="helpers-and-utilities">Helpers and utilities<a class="headerlink" href="#helpers-and-utilities" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>__version__</code></li>
-<li><code>Delta</code></li>
-<li><code>make_safe_print_delta</code></li>
-<li><code>is_wirelog_print_delta</code></li>
-<li><code>wirelog_version</code></li>
-<li><code>build_config</code></li>
-<li><code>cmp_op_name</code></li>
-<li><code>arith_op_name</code></li>
-<li><code>agg_fn_name</code></li>
-</ul>
-<h2 id="non-public-boundary">Non-public boundary<a class="headerlink" href="#non-public-boundary" title="Permanent link">&para;</a></h2>
-<p>Everything outside <code>pyrewire.__all__</code> is non-public unless a later
-stable policy explicitly promotes it. In particular, the following are
-not stable public API:</p>
-<ul>
-<li><code>pyrewire._ffi</code></li>
-<li><code>pyrewire._core</code></li>
-<li><code>pyrewire._lib</code></li>
-<li>raw <code>ctypes</code> handles and structures</li>
-<li>private attributes, including names beginning with <code>_</code></li>
-<li>non-exported internals in any PyreWire module</li>
-</ul>
-<p>These internals may change, move, or disappear in any release.</p>
-<h2 id="deprecation-policy">Deprecation policy<a class="headerlink" href="#deprecation-policy" title="Permanent link">&para;</a></h2>
-<p>When PyreWire needs to change a stable v1 API incompatibly, it will emit
-a <code>DeprecationWarning</code> where practical before removal or incompatible
-behavior changes. Public API removals should warn for at least one minor release
-before the incompatible removal.</p>
-<p>Incompatible removals are reserved for major releases except urgent security or correctness cases.
-If an urgent security or correctness fix
-requires faster action, the release notes will call out the exception
-and the affected API.</p>
-<p>Minor releases may add compatible public API surface, including new APIs,
-optional parameters, enum members, and exception subclasses. Code
-that handles PyreWire enums or exception hierarchies should therefore
-avoid assuming that the v1.0 set is permanently exhaustive.</p>
+<h1 id="v100-release-candidate-checklist">v1.0.0 release candidate checklist<a class="headerlink" href="#v100-release-candidate-checklist" title="Permanent link">&para;</a></h1>
+<p>The v1.0.0 tag must not be cut until every gate below passes on the exact release commit.
+Freeze the release commit first:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>rev-parse<span class="w"> </span>HEAD
+</code></pre></div>
+<p>Record that SHA in the release issue or release PR. The <code>v1.0.0</code> tag must point to that exact SHA before any publication step. If any gate fails, do not tag or publish; open or link a GitHub issue, PR, or follow-up task that captures the failure before retrying.</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Owner</th>
+<th>Verification</th>
+<th>Required evidence</th>
+<th>Failure action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release commit freeze</td>
+<td>Release manager</td>
+<td>Command: <code>git rev-parse HEAD</code>; manual verification that <code>v1.0.0</code> will be created at that SHA.</td>
+<td>Recorded release commit SHA and confirmation that the <code>v1.0.0</code> tag points to the same SHA.</td>
+<td>Link a GitHub issue, PR, or follow-up task and restart the checklist from the corrected commit.</td>
+</tr>
+<tr>
+<td>Formatting</td>
+<td>Release manager</td>
+<td>Command: <code>black --check .</code>; command: <code>isort --check-only .</code>.</td>
+<td>Passing command logs from the frozen release commit.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Lint and typing</td>
+<td>Release manager</td>
+<td>Command: <code>flake8 .</code>; command: <code>mypy src/pyrewire</code>.</td>
+<td>Passing command logs from the frozen release commit.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Test suite</td>
+<td>Release manager</td>
+<td>Command: <code>pytest -q</code>.</td>
+<td>Passing pytest log from the frozen release commit.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Documentation build</td>
+<td>Docs owner</td>
+<td>Command: <code>mkdocs build --strict</code>.</td>
+<td>Passing strict documentation build log from the frozen release commit.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Source distribution</td>
+<td>Packaging owner</td>
+<td>Command: <code>python -m build --sdist</code>.</td>
+<td>The generated <code>dist/pyrewire-*.tar.gz</code> path and command log.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>CI workflow</td>
+<td>Release manager</td>
+<td>Workflow: <code>.github/workflows/ci.yml</code> on the frozen release commit.</td>
+<td>Successful GitHub Actions run URL for <code>ci.yml</code>.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Docs workflow</td>
+<td>Docs owner</td>
+<td>Workflow: <code>.github/workflows/docs.yml</code> on the frozen release commit.</td>
+<td>Successful GitHub Actions run URL for <code>docs.yml</code>.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Wheel workflow</td>
+<td>Packaging owner</td>
+<td>Workflow: <code>.github/workflows/wheels.yml</code> on the frozen release commit.</td>
+<td>Successful GitHub Actions run URL for <code>wheels.yml</code>, including Python 3.11, 3.12, 3.13, and 3.14 wheel jobs.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Release workflow dry run review</td>
+<td>Release manager</td>
+<td>Manual verification of <code>.github/workflows/release.yml</code>: it builds wheels, runs dynamic-link verification, performs clean install tests, verifies artifacts, and publishes only after tag-triggered gates pass. Do not actually tag or publish during RC validation.</td>
+<td>Linked review note confirming the tag-triggered <code>release.yml</code> gates and no pre-tag publish occurred.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Wheel dynamic-link check</td>
+<td>Packaging owner</td>
+<td>Command: <code>python scripts/ci/check_dynamic_link.py wheelhouse/*.whl</code>.</td>
+<td>Passing command log for the release wheel artifacts.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Clean wheel install</td>
+<td>Bindings owner</td>
+<td>Manual verification in a clean environment with no system <code>libwirelog</code>: install the candidate wheel, import <code>pyrewire</code>, confirm PyreWire version, confirm bundled wirelog version, and run integration tests.</td>
+<td>Environment description, install command log, import/version log, wirelog version log, and integration test log.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Release notes and changelog</td>
+<td>Release manager</td>
+<td>Manual verification that the v1.0.0 changelog section is extractable and matches the GitHub Release body generated from <code>CHANGELOG.md</code>.</td>
+<td>Extracted release notes artifact or command log plus reviewer confirmation.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Metadata, API, support, and security consistency</td>
+<td>Release manager</td>
+<td>Manual verification that package metadata, public API stability, support matrix, and security policy all describe the same v1.0.0 contract.</td>
+<td>Linked review note covering <code>pyproject.toml</code>, API stability docs, support docs, and <code>SECURITY.md</code>.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+</tbody>
+</table>
 
 
 
