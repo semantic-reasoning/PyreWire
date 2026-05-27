@@ -942,8 +942,10 @@ bound explicit so developers can run newer main builds locally:</p>
   against.</li>
 <li><code>MINIMUM_WIRELOG_VERSION</code> in the loader rejects too-old builds at
   import time.</li>
-<li>Wheels bundle a matching <code>libwirelog.so.X</code> via <code>auditwheel</code> /
-  <code>delocate</code> / <code>delvewheel</code>.</li>
+<li>Source distributions do not ship a wirelog binary; source installs use
+  the same loader check against the libwirelog found at runtime.</li>
+<li>Wheels bundle a <code>libwirelog</code> built from the validated ref via
+  <code>auditwheel</code> / <code>delocate</code> / <code>delvewheel</code>.</li>
 </ul>
 <h2 id="pyrewire-only-changes">PyreWire-only changes<a class="headerlink" href="#pyrewire-only-changes" title="Permanent link">&para;</a></h2>
 <p>A PyreWire-only fix (Python-side bug that does not need a new
@@ -971,6 +973,12 @@ release to publish; it is <strong>not</strong> tied to the wirelog change.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>1.0.0</code></td>
+<td><code>0.44.0</code></td>
+<td><code>5bebc8d40bbb850179fbb091807964762df5a814</code></td>
+<td>Freezes compatibility at wirelog <code>v0.44.0</code> (peeled tag SHA).</td>
+</tr>
 <tr>
 <td><code>0.41.99</code></td>
 <td><code>0.44.0</code></td>
