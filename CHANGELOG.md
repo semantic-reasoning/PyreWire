@@ -8,6 +8,8 @@ supported wirelog `MAJOR.MINOR` series (see
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-27
+
 ### Added
 - `EasySession.step` / `snapshot` / `set_delta_callback` are now
   available, unblocked by the `v0.44.0` wirelog pin (wirelog#852). The
@@ -49,7 +51,7 @@ supported wirelog `MAJOR.MINOR` series (see
   and the variadic `insert_sym` / `remove_sym` wrappers (#44).
   `set_delta_callback` / `step` / `snapshot` were not part of 0.41.0;
   they required wirelog#852 and became available once wirelog `0.44.0`
-  was pinned (see [Unreleased]).
+  was pinned (see [1.0.0]).
 - `Session` (advanced, #21): backend selection, worker count,
   batched `insert` / `remove`, `step`, `snapshot`, `set_delta_callback`,
   one-way mode machine, NumPy zero-copy `insert_batch` / `remove_batch`
@@ -86,7 +88,8 @@ supported wirelog `MAJOR.MINOR` series (see
 - `EasySession.step` / `snapshot` and the `step` / `snapshot`
   mirrors on `AsyncEasySession` are not in 0.41.0 — they require
   wirelog#852. They became available after the `v0.44.0` wirelog pin
-  (see [Unreleased]). Tracked in wirelog#859.
+  (see [1.0.0]). Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v1.0.0
 [0.41.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v0.41.0

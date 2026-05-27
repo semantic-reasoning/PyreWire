@@ -1,6 +1,6 @@
 """PyreWire - Python wrapper for wirelog declarative dataflow analysis."""
 
-__version__ = "0.41.99"
+__version__ = "1.0.0"
 __author__ = "PyreWire Contributors"
 __license__ = "Apache-2.0 OR GPL-3.0-or-later"
 
