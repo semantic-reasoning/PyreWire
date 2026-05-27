@@ -88,7 +88,7 @@ jobs:
             ls dist/
             exit 1
           fi
-          python -m pip install "$WHL" pytest
+          python -m pip install "$WHL" pytest pytest-cov
 
       - name: pyrewire imports + uses wheel-bundled libwirelog
         shell: bash

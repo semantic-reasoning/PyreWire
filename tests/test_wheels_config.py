@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -69,6 +70,24 @@ def test_wheels_workflow_uses_cibuildwheel_action():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     steps = wf["jobs"]["build_wheels"]["steps"]
     assert any("pypa/cibuildwheel" in s.get("uses", "") for s in steps)
+
+
+def test_cibuildwheel_test_requires_pytest_cov():
+    """cibuildwheel runs pytest from a fresh env, so it must install the
+    plugin required by pyproject's coverage addopts."""
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    requires = pyproject["tool"]["cibuildwheel"]["test-requires"]
+    assert "pytest" in requires
+    assert "pytest-cov" in requires
+
+
+def test_wheel_install_workflow_installs_pytest_cov():
+    """The wheel install smoke test also runs pytest against this repo's
+    pyproject, whose addopts require pytest-cov."""
+    wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
+    steps = wf["jobs"]["install_test"]["steps"]
+    install_steps = [s for s in steps if "pip install" in str(s.get("run", ""))]
+    assert any("pytest-cov" in str(s.get("run", "")) for s in install_steps)
 
 
 def test_build_wirelog_powershell_script_exists():

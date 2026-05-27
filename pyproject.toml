@@ -66,7 +66,7 @@ package-dir = {"" = "src"}
 build = "cp310-* cp311-* cp312-* cp313-*"
 skip = "*-musllinux_* pp* *_i686 *_ppc64le *_s390x"
 test-command = "pytest -q {project}/tests/integration"
-test-requires = ["pytest"]
+test-requires = ["pytest", "pytest-cov"]
 # Pin the wirelog source ref here too so the environment matches the
 # `WIRELOG_VERSION` used by the test-matrix workflow.
 environment = { WIRELOG_VERSION = "5bebc8d40bbb850179fbb091807964762df5a814" }
