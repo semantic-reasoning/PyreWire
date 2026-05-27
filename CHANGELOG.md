@@ -13,7 +13,9 @@ supported wirelog `MAJOR.MINOR` series (see
 - Adds Python 3.14 to the CI and wheel-install matrices.
 - Moves GitHub Actions Ubuntu runners to `ubuntu-24.04`.
 - Moves GitHub Actions macOS and Windows matrix runners to `macos-15`
-  and `windows-2025`.
+  and `windows-2025-vs2026`.
+- Updates GitHub-maintained workflow actions to `actions/checkout@v5`
+  and `actions/setup-python@v6`.
 - Pins validated wirelog builds to the `v0.44.0` release commit
   (`5bebc8d40bbb850179fbb091807964762df5a814`), which includes
   wirelog#852 (recursive aggregation residue fix), and raises the
@@ -55,7 +57,7 @@ supported wirelog `MAJOR.MINOR` series (see
 - mkdocs-material documentation site with mkdocstrings auto-rendered
   reference (#34) and a four-page semantics guide (#36).
 - CI: lint gate (black / isort / flake8 / ruff / mypy) → test matrix
-  (Ubuntu 24.04 / macOS-15 / Windows 2025 × py3.11-3.14) → 90 % coverage floor (#38 / #39 / #40).
+  (Ubuntu 24.04 / macOS-15 / Windows 2025 VS 2026 × py3.11-3.14) → 90 % coverage floor (#38 / #39 / #40).
 - Distribution: MANIFEST.in excludes wirelog binaries from sdists
   (#51); wheel-bundling matrix and cibuildwheel config tracked in
   #30 / #31 / #32 / #33.

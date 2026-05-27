@@ -13,8 +13,8 @@ jobs:
     name: lint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: install lint deps
@@ -41,10 +41,10 @@ jobs:
         # macos-15 is the stable Apple Silicon runner. Intel macOS is
         # often heavily queued; ARM has more capacity in the GitHub-hosted
         # pool and is also the architecture wheels target for new Macs.
-        # windows-2025 covers the MSVC toolchain that wheels.yml already
+        # windows-2025-vs2026 covers the MSVC toolchain that wheels.yml already
         # exercises via cibuildwheel; this matrix entry catches MSVC
         # regressions on every PR instead of only at tag time.
-        os: [ubuntu-24.04, macos-15, windows-2025]
+        os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
         python: ["3.11", "3.12", "3.13", "3.14"]
     env:
       # WIRELOG_VERSION here is the exact wirelog ref CI builds against.
@@ -60,9 +60,9 @@ jobs:
       # APIs accept them, and the bash pytest step reads this verbatim.
       WIRELOG_PREFIX: ${{ github.workspace }}/wirelog-install
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
 
