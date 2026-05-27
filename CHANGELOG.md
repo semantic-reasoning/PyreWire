@@ -28,7 +28,8 @@ supported wirelog `MAJOR.MINOR` series (see
 - Moves GitHub Actions macOS and Windows matrix runners to `macos-15`
   and `windows-2025-vs2026`.
 - Updates GitHub-maintained workflow actions to `actions/checkout@v5`
-  and `actions/setup-python@v6`.
+  `actions/setup-python@v6`, and `actions/cache@v5`; replaces the
+  MSVC setup action with an in-step `VsDevCmd.bat` invocation.
 - Pins validated wirelog builds to the `v0.44.0` release commit
   (`5bebc8d40bbb850179fbb091807964762df5a814`), which includes
   wirelog#852 (recursive aggregation residue fix), and raises the

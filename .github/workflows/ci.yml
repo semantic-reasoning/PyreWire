@@ -66,12 +66,6 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      # Activate the MSVC 2022 environment (vcvars) so meson + ninja
-      # pick `cl.exe` instead of any stray clang/MinGW gcc on PATH.
-      - name: setup MSVC dev env
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-
       # Resolve WIRELOG_VERSION (a tag like `v0.44.0`, a branch ref
       # like `main`, or an exact commit SHA) to the underlying commit
       # SHA. The cache key uses the SHA — not the version label — so that:
@@ -108,7 +102,7 @@ jobs:
       # matrix slot on the same OS.
       - name: cache wirelog install
         id: cache-wirelog
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.WIRELOG_PREFIX }}
           key: wirelog-${{ matrix.os }}-${{ steps.wirelog-sha.outputs.sha }}-${{ hashFiles('scripts/build_wirelog.sh', 'scripts/build_wirelog.ps1') }}
@@ -124,8 +118,15 @@ jobs:
 
       - name: build wirelog from source (Windows / MSVC)
         if: steps.cache-wirelog.outputs.cache-hit != 'true' && runner.os == 'Windows'
-        shell: pwsh
-        run: pwsh scripts/build_wirelog.ps1
+        shell: cmd
+        run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
+          if "%VSINSTALL%"=="" (
+            echo Could not locate a Visual Studio installation with MSVC tools
+            exit /b 1
+          )
+          call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64
+          pwsh scripts/build_wirelog.ps1
 
       - name: install pyrewire
         run: pip install -e ".[dev]"
