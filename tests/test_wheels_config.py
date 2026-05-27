@@ -90,6 +90,43 @@ def test_each_platform_has_repair_wheel_command():
             assert "delvewheel repair" in section
 
 
+def test_cibuildwheel_copies_wirelog_before_build():
+    """The `before-build` hook must copy `WIRELOG_LIB` into
+    `src/pyrewire/_lib` before wheel packaging."""
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    before_build = pyproject["tool"]["cibuildwheel"].get("before-build", "")
+    assert before_build, "cibuildwheel before-build hook is required"
+    assert "bundle_libwirelog.py" in before_build
+    assert (_repo_root() / "scripts" / "bundle_libwirelog.py").is_file()
+
+
+def test_wheel_package_data_includes_wirelog_binaries():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    pyrewire_lib_data = pyproject["tool"]["setuptools"]["package-data"]["pyrewire._lib"]
+    assert "*.so" in pyrewire_lib_data
+    assert "*.so.*" in pyrewire_lib_data
+    assert "*.dylib" in pyrewire_lib_data
+    assert "*.dll" in pyrewire_lib_data
+
+
+def test_windows_repair_installs_delvewheel():
+    """Windows repair needs delvewheel installed explicitly."""
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    command = pyproject["tool"]["cibuildwheel"]["windows"]["repair-wheel-command"]
+    assert "pip install delvewheel" in command
+    assert command.index("pip install delvewheel") < command.index("delvewheel repair")
+    assert "--no-mangle-all" in command
+
+
+def test_setup_py_forces_platform_wheel():
+    """A pure wheel (`py3-none-any`) cannot run repair tooling."""
+    setup_py = _repo_root() / "setup.py"
+    assert setup_py.is_file(), "setup.py shim is required for platform-specific wheel tags"
+    text = setup_py.read_text()
+    assert "class _BinaryDistribution" in text
+    assert "def has_ext_modules" in text
+
+
 def test_wheels_workflow_triggers_on_v_tags_and_dispatch():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     on = wf.get("on") or wf.get(True)

@@ -98,6 +98,9 @@ def _candidate_paths() -> list[str]:
     return out
 
 
+_dll_dirs: list[object] = []
+
+
 def load_libwirelog() -> ctypes.CDLL:
     """Try each candidate path; return the first that loads.
 
@@ -107,6 +110,13 @@ def load_libwirelog() -> ctypes.CDLL:
     """
     errors: list[str] = []
     for candidate in _candidate_paths():
+        # On Windows the bundled libwirelog sits beside dependency DLLs.
+        # Register its directory for dependency resolution because modern
+        # Python versions do not always search the DLL's own directory.
+        if sys.platform == "win32":  # pragma: no cover - Windows-only branch
+            cand_dir = os.path.dirname(candidate)
+            if os.path.isdir(cand_dir):
+                _dll_dirs.append(os.add_dll_directory(cand_dir))
         try:
             handle = ctypes.CDLL(candidate, mode=ctypes.RTLD_GLOBAL)
         except OSError as exc:

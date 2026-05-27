@@ -1,8 +1,8 @@
-"""Wheel-bundled shared libraries live in this directory.
+"""Wheel-bundled shared libraries live in this package."""
 
-Populated by `auditwheel` / `delocate` / `delvewheel` during the wheel
-build (`pip install pyrewire`). PyreWire's loader
-(`pyrewire._ffi._loader`) prefers any `libwirelog` it finds here ahead
-of the system loader. Source distributions intentionally ship this
-package empty — the wirelog binary is never bundled into an sdist.
-"""
+from __future__ import annotations
+
+# During wheel builds, cibuildwheel executes
+# `scripts/bundle_libwirelog.py` to place `libwirelog` here before
+# repair. Source distributions intentionally keep this package empty so
+# they do not ship prebuilt binaries.

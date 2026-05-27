@@ -96,6 +96,41 @@ def test_verify_version_raises_below_minimum():
         assert reported.decode() in str(excinfo.value)
 
 
+def test_windows_load_registers_dependency_search_path(monkeypatch, tmp_path):
+    """Windows must register the DLL directory before `ctypes.CDLL` loads
+    `wirelog-1.dll`, otherwise sibling dependencies may not be found.
+    """
+    dll = tmp_path / "wirelog-1.dll"
+    dll.write_bytes(b"0")
+
+    registered: list[str] = []
+
+    class _Token:
+        def __init__(self, path: str) -> None:
+            self.path = path
+
+    def fake_add_dll_directory(path: str) -> _Token:
+        registered.append(path)
+        return _Token(path)
+
+    fake_handle = MagicMock()
+    setattr(fake_handle, "wirelog_easy_open", lambda: None)
+
+    def fake_cdll(candidate: str, mode: int | None = None) -> MagicMock:
+        return fake_handle
+
+    monkeypatch.setattr(loader.os, "add_dll_directory", fake_add_dll_directory, raising=False)
+    monkeypatch.setattr(loader, "ctypes", loader.ctypes)
+    monkeypatch.setattr(loader.ctypes, "CDLL", fake_cdll)
+    monkeypatch.setattr(loader.sys, "platform", "win32")
+    monkeypatch.setattr(loader, "_candidate_paths", lambda: [str(dll)])
+    loader._dll_dirs.clear()
+
+    lib = loader.load_libwirelog()
+    assert lib is fake_handle
+    assert registered == [str(dll.parent)]
+
+
 def test_verify_version_accepts_minimum_and_newer_versions():
     """The loader accepts the minimum version and newer wirelog builds,
     including future minor releases and main-branch snapshots."""
