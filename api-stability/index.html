@@ -10,31 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://semantic-reasoning.github.io/PyreWire/semantics/zset/">
+        <link rel="canonical" href="https://semantic-reasoning.github.io/PyreWire/api-stability/">
       
       
-        <link rel="prev" href="../../api-stability/">
+        <link rel="prev" href="../versioning/">
       
       
-        <link rel="next" href="../step-vs-snapshot/">
+        <link rel="next" href="../semantics/zset/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Z-set & retraction - PyreWire</title>
+        <title>API stability - PyreWire</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#z-set-multiplicity" class="md-skip">
+        <a href="#api-stability" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="PyreWire" class="md-header__button md-logo" aria-label="PyreWire" data-md-component="logo">
+    <a href=".." title="PyreWire" class="md-header__button md-logo" aria-label="PyreWire" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Z-set & retraction
+              API stability
             
           </span>
         </div>
@@ -234,7 +234,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="PyreWire" class="md-nav__button md-logo" aria-label="PyreWire" data-md-component="logo">
+    <a href=".." title="PyreWire" class="md-nav__button md-logo" aria-label="PyreWire" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -264,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -291,7 +291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../quickstart/" class="md-nav__link">
+      <a href="../quickstart/" class="md-nav__link">
         
   
   
@@ -318,7 +318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../support/" class="md-nav__link">
+      <a href="../support/" class="md-nav__link">
         
   
   
@@ -345,7 +345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../versioning/" class="md-nav__link">
+      <a href="../versioning/" class="md-nav__link">
         
   
   
@@ -369,87 +369,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api-stability/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API stability
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Semantics
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_6">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Semantics
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
     
   
   
@@ -469,7 +388,7 @@
   <span class="md-ellipsis">
     
   
-    Z-set & retraction
+    API stability
   
 
     
@@ -487,7 +406,7 @@
   <span class="md-ellipsis">
     
   
-    Z-set & retraction
+    API stability
   
 
     
@@ -513,10 +432,137 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-inline-fact-trap" class="md-nav__link">
+  <a href="#stable-public-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The inline-fact trap
+        Stable public boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stable public boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sessions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batch-and-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch and result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#program-schema-and-introspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Program, schema, and introspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-wrappers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async wrappers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io-adapters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IO adapters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ir-wrapper-and-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IR wrapper and enums
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exported-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exported enums
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exported-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exported errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helpers-and-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helpers and utilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-public-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-public boundary
       
     </span>
   </a>
@@ -524,21 +570,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recommended-pattern" class="md-nav__link">
+  <a href="#deprecation-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recommended pattern
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-wirelog-does-not-deduplicate-automatically" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why wirelog does not deduplicate automatically
+        Deprecation policy
       
     </span>
   </a>
@@ -552,6 +587,87 @@
     </li>
   
 
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Semantics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Semantics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../semantics/zset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Z-set & retraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -561,7 +677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-vs-snapshot/" class="md-nav__link">
+      <a href="../semantics/step-vs-snapshot/" class="md-nav__link">
         
   
   
@@ -589,7 +705,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../compounds/" class="md-nav__link">
+      <a href="../semantics/compounds/" class="md-nav__link">
         
   
   
@@ -617,7 +733,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../threading/" class="md-nav__link">
+      <a href="../semantics/threading/" class="md-nav__link">
         
   
   
@@ -706,7 +822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/sessions/" class="md-nav__link">
+      <a href="../reference/sessions/" class="md-nav__link">
         
   
   
@@ -734,7 +850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/async/" class="md-nav__link">
+      <a href="../reference/async/" class="md-nav__link">
         
   
   
@@ -762,7 +878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/program/" class="md-nav__link">
+      <a href="../reference/program/" class="md-nav__link">
         
   
   
@@ -790,7 +906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/batch/" class="md-nav__link">
+      <a href="../reference/batch/" class="md-nav__link">
         
   
   
@@ -818,7 +934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/compounds/" class="md-nav__link">
+      <a href="../reference/compounds/" class="md-nav__link">
         
   
   
@@ -846,7 +962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/ir/" class="md-nav__link">
+      <a href="../reference/ir/" class="md-nav__link">
         
   
   
@@ -874,7 +990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/io/" class="md-nav__link">
+      <a href="../reference/io/" class="md-nav__link">
         
   
   
@@ -902,7 +1018,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/errors/" class="md-nav__link">
+      <a href="../reference/errors/" class="md-nav__link">
         
   
   
@@ -950,79 +1066,116 @@
   
 
 
-<h1 id="z-set-multiplicity">Z-set multiplicity<a class="headerlink" href="#z-set-multiplicity" title="Permanent link">&para;</a></h1>
-<p>Every row in a wirelog relation carries an <strong>integer multiplicity</strong>.</p>
+<h1 id="api-stability">API stability<a class="headerlink" href="#api-stability" title="Permanent link">&para;</a></h1>
+<p>PyreWire v1.0 treats <code>pyrewire.__all__</code> as the stable public import boundary.
+Names listed there are the supported surface for
+<code>from pyrewire import ...</code> imports and are covered by the v1 API
+compatibility and deprecation policy.</p>
+<h2 id="stable-public-boundary">Stable public boundary<a class="headerlink" href="#stable-public-boundary" title="Permanent link">&para;</a></h2>
+<p>The v1 stable public API includes these exported names:</p>
+<h3 id="sessions">Sessions<a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a class="autorefs autorefs-internal" title="insert" href="../../reference/sessions/#pyrewire.session.EasySession.insert"><code>insert</code></a> raises the row's
-  multiplicity by <code>+1</code>.</li>
-<li><a class="autorefs autorefs-internal" title="remove" href="../../reference/sessions/#pyrewire.session.EasySession.remove"><code>remove</code></a> lowers it by <code>-1</code>.</li>
-<li>A row is observable while its multiplicity is <code>&gt; 0</code>.</li>
+<li><code>EasySession</code></li>
+<li><code>Session</code></li>
 </ul>
-<p>This is the <em>z-set</em> semantics that lets wirelog support efficient
-incremental updates: a <code>remove</code> is symmetric with <code>insert</code>, and an
-unchanged row's multiplicity is preserved across recomputation.</p>
-<h2 id="the-inline-fact-trap">The inline-fact trap<a class="headerlink" href="#the-inline-fact-trap" title="Permanent link">&para;</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>A program that <strong>declares an inline fact</strong> and a host that
-<strong>inserts the same row</strong> produces multiplicity <code>+2</code>. A single
-<code>remove()</code> leaves the row with multiplicity <code>+1</code> — still
-observable.</p>
-</div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># expected: row stays in `friend` even after one remove</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyrewire</span><span class="w"> </span><span class="kn">import</span> <span class="n">EasySession</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">SRC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="s2">.decl friend(a: symbol, b: symbol)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="s2">friend(&quot;alice&quot;, &quot;bob&quot;).</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">with</span> <span class="n">EasySession</span><span class="p">(</span><span class="n">SRC</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">s</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;friend&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">])</span>    <span class="c1"># multiplicity now +2</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">s</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;friend&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">])</span>    <span class="c1"># multiplicity now +1</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="c1"># `friend(&quot;alice&quot;, &quot;bob&quot;)` is still derived.</span>
-</code></pre></div>
-<h2 id="recommended-pattern">Recommended pattern<a class="headerlink" href="#recommended-pattern" title="Permanent link">&para;</a></h2>
-<p>Define EDB rows <strong>either</strong> in the source <strong>or</strong> via host calls — not
-both. When both must coexist, dedupe at the host boundary:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyrewire</span><span class="w"> </span><span class="kn">import</span> <span class="n">EasySession</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">SRC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="s2">.decl friend(a: symbol, b: symbol)</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="s2">friend(&quot;alice&quot;, &quot;bob&quot;).</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">incoming</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;carol&quot;</span><span class="p">)]</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">with</span> <span class="n">EasySession</span><span class="p">(</span><span class="n">SRC</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">already</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">preview_inline_facts</span><span class="p">(</span><span class="s2">&quot;friend&quot;</span><span class="p">)}</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">incoming</span><span class="p">:</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">already</span><span class="p">:</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>            <span class="n">s</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;friend&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="c1"># &quot;alice&quot;, &quot;bob&quot; multiplicity stays at +1.</span>
-</code></pre></div>
-<p>The shorthand
-<a class="autorefs autorefs-internal" title="insert_with_dedupe" href="../../reference/sessions/#pyrewire.session.EasySession.insert_with_dedupe"><code>insert_with_dedupe</code></a>
-collapses the membership test:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyrewire</span><span class="w"> </span><span class="kn">import</span> <span class="n">EasySession</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">SRC</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="s2">.decl friend(a: symbol, b: symbol)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="s2">friend(&quot;alice&quot;, &quot;bob&quot;).</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="k">with</span> <span class="n">EasySession</span><span class="p">(</span><span class="n">SRC</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">inserted_new</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">insert_with_dedupe</span><span class="p">(</span><span class="s2">&quot;friend&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">))</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="c1"># `inserted_new` is False — the row was already present.</span>
-</code></pre></div>
-<h2 id="why-wirelog-does-not-deduplicate-automatically">Why wirelog does not deduplicate automatically<a class="headerlink" href="#why-wirelog-does-not-deduplicate-automatically" title="Permanent link">&para;</a></h2>
-<p>wirelog must preserve multiplicities across iterative evaluation —
-the same row may legitimately enter with <code>+1</code> from two different
-rules, and aggregations care about the count. The choice is
-<strong>correctness over ergonomics</strong>: the engine never decides what the
-caller meant; PyreWire's deduplication helpers make the safe pattern
-the obvious one.</p>
+<h3 id="batch-and-result">Batch and result<a class="headerlink" href="#batch-and-result" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>BatchProgram</code></li>
+<li><code>Result</code></li>
+</ul>
+<h3 id="program-schema-and-introspection">Program, schema, and introspection<a class="headerlink" href="#program-schema-and-introspection" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Program</code></li>
+<li><code>Schema</code></li>
+<li><code>Column</code></li>
+<li><code>Stratum</code></li>
+</ul>
+<h3 id="async-wrappers">Async wrappers<a class="headerlink" href="#async-wrappers" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>AsyncEasySession</code></li>
+<li><code>AsyncSession</code></li>
+<li><code>AsyncBatchProgram</code></li>
+</ul>
+<h3 id="io-adapters">IO adapters<a class="headerlink" href="#io-adapters" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>IOContext</code></li>
+<li><code>register_adapter</code></li>
+<li><code>unregister_adapter</code></li>
+<li><code>registered_schemes</code></li>
+</ul>
+<h3 id="compounds">Compounds<a class="headerlink" href="#compounds" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Compound</code></li>
+<li><code>CompoundArg</code></li>
+</ul>
+<h3 id="ir-wrapper-and-enums">IR wrapper and enums<a class="headerlink" href="#ir-wrapper-and-enums" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>IRNode</code></li>
+<li><code>IRNodeType</code></li>
+</ul>
+<h3 id="exported-enums">Exported enums<a class="headerlink" href="#exported-enums" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>ColumnType</code></li>
+<li><code>CompoundKind</code></li>
+<li><code>BackendKind</code></li>
+<li><code>CmpOp</code></li>
+<li><code>ArithOp</code></li>
+<li><code>AggFn</code></li>
+<li><code>StrFn</code></li>
+<li><code>ErrorCode</code></li>
+</ul>
+<h3 id="exported-errors">Exported errors<a class="headerlink" href="#exported-errors" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>WirelogError</code></li>
+<li><code>ParseError</code></li>
+<li><code>InvalidIRError</code></li>
+<li><code>ExecError</code></li>
+<li><code>WirelogMemoryError</code></li>
+<li><code>WirelogIOError</code></li>
+<li><code>CompoundSaturatedError</code></li>
+<li><code>CompoundBusyError</code></li>
+<li><code>WirelogVersionError</code></li>
+<li><code>WirelogModeError</code></li>
+<li><code>WirelogInternError</code></li>
+</ul>
+<h3 id="helpers-and-utilities">Helpers and utilities<a class="headerlink" href="#helpers-and-utilities" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>__version__</code></li>
+<li><code>Delta</code></li>
+<li><code>make_safe_print_delta</code></li>
+<li><code>is_wirelog_print_delta</code></li>
+<li><code>wirelog_version</code></li>
+<li><code>build_config</code></li>
+<li><code>cmp_op_name</code></li>
+<li><code>arith_op_name</code></li>
+<li><code>agg_fn_name</code></li>
+</ul>
+<h2 id="non-public-boundary">Non-public boundary<a class="headerlink" href="#non-public-boundary" title="Permanent link">&para;</a></h2>
+<p>Everything outside <code>pyrewire.__all__</code> is non-public unless a later
+stable policy explicitly promotes it. In particular, the following are
+not stable public API:</p>
+<ul>
+<li><code>pyrewire._ffi</code></li>
+<li><code>pyrewire._core</code></li>
+<li><code>pyrewire._lib</code></li>
+<li>raw <code>ctypes</code> handles and structures</li>
+<li>private attributes, including names beginning with <code>_</code></li>
+<li>non-exported internals in any PyreWire module</li>
+</ul>
+<p>These internals may change, move, or disappear in any release.</p>
+<h2 id="deprecation-policy">Deprecation policy<a class="headerlink" href="#deprecation-policy" title="Permanent link">&para;</a></h2>
+<p>When PyreWire needs to change a stable v1 API incompatibly, it will emit
+a <code>DeprecationWarning</code> where practical before removal or incompatible
+behavior changes. Public API removals should warn for at least one minor release
+before the incompatible removal.</p>
+<p>Incompatible removals are reserved for major releases except urgent security or correctness cases.
+If an urgent security or correctness fix
+requires faster action, the release notes will call out the exception
+and the affected API.</p>
+<p>Minor releases may add compatible public API surface, including new APIs,
+optional parameters, enum members, and exception subclasses. Code
+that handles PyreWire enums or exception hierarchies should therefore
+avoid assuming that the v1.0 set is permanently exhaustive.</p>
 
 
 
@@ -1072,10 +1225,10 @@ the obvious one.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy", "toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
