@@ -53,6 +53,15 @@ jobs:
       - name: build sdist
         run: python -m build --sdist --outdir dist
 
+      - name: extract GitHub Release notes
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          python scripts/ci/extract_changelog_section.py \
+            CHANGELOG.md \
+            "$tag" \
+            "$RUNNER_TEMP/release-notes.md"
+
       - name: publish to PyPI (trusted publishing)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -62,5 +71,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
-          generate_release_notes: true
-          body_path: CHANGELOG.md
+          generate_release_notes: false
+          body_path: ${{ runner.temp }}/release-notes.md

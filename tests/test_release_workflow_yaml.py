@@ -74,6 +74,27 @@ def test_creates_github_release():
     ), "release workflow must create a GitHub Release"
 
 
+def test_github_release_uses_extracted_changelog_section():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    release_index = next(
+        i for i, step in enumerate(steps) if "softprops/action-gh-release" in step.get("uses", "")
+    )
+    extract_index = next(
+        i for i, step in enumerate(steps) if "extract_changelog_section.py" in step.get("run", "")
+    )
+
+    assert extract_index < release_index
+    extract_step = steps[extract_index]
+    assert "${GITHUB_REF_NAME#v}" in extract_step["run"]
+    assert "CHANGELOG.md" in extract_step["run"]
+    assert "release-notes.md" in extract_step["run"]
+
+    release_with = steps[release_index]["with"]
+    assert release_with["body_path"] != "CHANGELOG.md"
+    assert "release-notes.md" in release_with["body_path"]
+    assert release_with.get("generate_release_notes") is False
+
+
 def test_id_token_write_for_oidc():
     perms = _workflow().get("permissions", {})
     assert (
