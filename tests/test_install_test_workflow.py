@@ -76,8 +76,21 @@ def test_install_test_sets_opt_in_env():
         "install_test must set PYREWIRE_WHEEL_INSTALL_TEST=1 so the "
         "wheel-only assertions actually run"
     )
+    run = run_steps[0].get("run", "")
+    run_one_line = str(run).replace("\n", " ")
+    assert "tests/integration/test_retraction_basics.py" in run
+    assert "tests/integration/test_wheel_install.py" in run
+    assert "-o addopts=" in run_one_line, (
+        "install_test final pytest invocation should override project addopts to avoid "
+        "workflow-specific defaults"
+    )
 
 
 def test_wheel_install_test_file_exists():
     p = _repo_root() / "tests" / "integration" / "test_wheel_install.py"
+    assert p.is_file()
+
+
+def test_retraction_basics_test_in_install_workflow():
+    p = _repo_root() / "tests" / "integration" / "test_retraction_basics.py"
     assert p.is_file()
