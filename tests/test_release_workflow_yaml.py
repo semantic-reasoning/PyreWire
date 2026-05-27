@@ -15,6 +15,7 @@ keys (where semantically equivalent) is allowed.
 
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,31 @@ def _on_block() -> dict[str, Any]:
     on = wf.get("on") or wf.get(True)  # PyYAML sometimes parses "on:" as True
     assert isinstance(on, dict), "missing `on:` block"
     return on
+
+
+def _publish_artifact_verify_script() -> str:
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    return next(
+        step["run"]
+        for step in steps
+        if step.get("name") == "verify release artifacts before publish"
+    )
+
+
+def _write_complete_release_artifacts(dist: Path) -> None:
+    dist.mkdir()
+    (dist / "pyrewire-1.0.0.tar.gz").touch()
+    for py_tag in ("cp311", "cp312", "cp313", "cp314"):
+        (
+            dist
+            / (
+                f"pyrewire-1.0.0-{py_tag}-{py_tag}-"
+                "manylinux2014_x86_64.manylinux_2_17_x86_64."
+                "manylinux_2_28_x86_64.whl"
+            )
+        ).touch()
+        (dist / f"pyrewire-1.0.0-{py_tag}-{py_tag}-macosx_15_0_arm64.whl").touch()
+        (dist / f"pyrewire-1.0.0-{py_tag}-{py_tag}-win_amd64.whl").touch()
 
 
 def test_triggers_on_v_tags():
@@ -187,6 +213,41 @@ def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
     assert "win_amd64" in check_run
     for py_tag in ("cp311", "cp312", "cp313", "cp314"):
         assert py_tag in check_run
+
+
+def test_publish_artifact_verify_accepts_auditwheel_linux_multi_platform_tags(tmp_path):
+    _write_complete_release_artifacts(tmp_path / "dist")
+
+    subprocess.run(
+        ["bash", "-c", _publish_artifact_verify_script()],
+        cwd=tmp_path,
+        check=True,
+    )
+
+
+def test_publish_artifact_verify_rejects_duplicate_linux_wheel(tmp_path):
+    dist = tmp_path / "dist"
+    _write_complete_release_artifacts(dist)
+    (
+        dist
+        / (
+            "pyrewire-1.0.0.post1-cp311-cp311-"
+            "manylinux2014_x86_64.manylinux_2_17_x86_64."
+            "manylinux_2_28_x86_64.whl"
+        )
+    ).touch()
+
+    result = subprocess.run(
+        ["bash", "-c", _publish_artifact_verify_script()],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode != 0
+    assert "expected exactly one wheel matching" in result.stdout
+    assert "manylinux_2_28_x86_64.whl, found 2" in result.stdout
 
 
 def test_publish_has_manual_testpypi_step_with_explicit_gate_and_repository_url():

@@ -278,7 +278,7 @@ jobs:
 
           expected=()
           for py_tag in cp311 cp312 cp313 cp314; do
-            expected+=("pyrewire-*-${py_tag}-${py_tag}-manylinux_2_28_x86_64.whl")
+            expected+=("pyrewire-*-${py_tag}-${py_tag}-*manylinux_2_28_x86_64.whl")
             expected+=("pyrewire-*-${py_tag}-${py_tag}-macosx_*_arm64.whl")
             expected+=("pyrewire-*-${py_tag}-${py_tag}-win_amd64.whl")
           done
