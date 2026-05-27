@@ -59,6 +59,13 @@ def test_publish_step_uses_pypa_action():
     ), "release workflow must publish through pypa/gh-action-pypi-publish"
 
 
+def test_download_wheels_uses_node24_artifact_action():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    uses = [s.get("uses", "") for s in steps]
+    assert "actions/download-artifact@v8.0.1" in uses
+    assert "actions/download-artifact@v4" not in uses
+
+
 def test_creates_github_release():
     steps = _workflow()["jobs"]["publish"]["steps"]
     uses = [s.get("uses", "") for s in steps]
