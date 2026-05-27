@@ -176,10 +176,14 @@ def test_wheels_workflow_initializes_msvc_before_cibuildwheel():
     assert "VsDevCmd.bat" in run
     assert "cmd.exe" in run
     assert "-arch=x64 && set" in run
-    assert "GITHUB_PATH" in run
     assert "GITHUB_ENV" in run
-    assert "$pathValue -split" in run
-    assert "Out-File -FilePath $env:GITHUB_PATH" in run
+    assert "GITHUB_PATH" not in run
+    assert "Get-Command bash.exe" in run
+    assert "C:\\Program Files\\Git\\bin\\bash.exe" in run
+    assert 'Write-Host "Using bash.exe from $bashPath"' in run
+    assert '$entry -like "*\\Microsoft\\WindowsApps"' in run
+    assert "[void]$orderedPathEntries.Add($bashDir)" in run
+    assert '"PATH=$orderedPath" | Out-File -FilePath $env:GITHUB_ENV' in run
     assert "$msvcEnvVars = @(" in run
     assert "$envMap.ContainsKey($name)" in run
     assert "Out-File -FilePath $env:GITHUB_ENV" in run
