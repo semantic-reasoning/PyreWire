@@ -91,6 +91,7 @@ environment = { WIRELOG_VERSION = "5bebc8d40bbb850179fbb091807964762df5a814", WI
 repair-wheel-command = "LD_LIBRARY_PATH=/wirelog-install/lib auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
+archs = ["arm64"]
 before-all = """
   brew install ninja meson pkg-config && \
   WIRELOG_PREFIX=$HOME/wirelog-install bash {project}/scripts/build_wirelog.sh
