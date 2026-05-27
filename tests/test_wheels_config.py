@@ -51,6 +51,17 @@ def test_cibuildwheel_drops_cp310():
     assert build == "cp311-* cp312-* cp313-* cp314-*"
 
 
+def test_build_system_requires_packaging_24_2_minimum():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    requires = pyproject["build-system"]["requires"]
+    assert "packaging>=24.2" in requires
+
+
+def test_cibuildwheel_dependency_versions_is_latest():
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+    assert pyproject["tool"]["cibuildwheel"]["dependency-versions"] == "latest"
+
+
 def test_wheels_build_matrix_uses_current_hosted_runners():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     matrix = wf["jobs"]["build_wheels"]["strategy"]["matrix"]
