@@ -99,6 +99,7 @@ def test_required_workflows_and_release_workflow_guards_are_documented():
         ".github/workflows/docs.yml",
         ".github/workflows/wheels.yml",
         ".github/workflows/release.yml",
+        ".github/dependabot.yml",
     ):
         assert workflow in text
 
@@ -106,7 +107,10 @@ def test_required_workflows_and_release_workflow_guards_are_documented():
         "builds wheels",
         "runs dynamic-link verification",
         "performs clean install tests",
-        "verifies artifacts",
+        "verifies release-local wheels and sdist artifacts before publish",
+        "trusted publishing via OIDC",
+        "least-privilege top-level permissions",
+        "restricts `id-token: write` to the publish job",
         "publishes only after tag-triggered gates pass",
         "Do not actually tag or publish",
     ):
@@ -138,5 +142,16 @@ def test_release_notes_and_consistency_checks_are_documented():
         "security policy",
         "pyproject.toml",
         "SECURITY.md",
+    ):
+        assert required in text
+
+
+def test_release_security_baseline_and_provenance_scope_are_documented():
+    text = _checklist()
+    for required in (
+        "code-scanning alerts are clean (no open alerts)",
+        "Dependabot is configured for both `github-actions` and `pip` at `/` on a regular schedule",
+        "Artifact attestations/provenance for release artifacts are tracked separately by #133",
+        "must not claim that attestations/provenance are already implemented until #133 lands",
     ):
         assert required in text
