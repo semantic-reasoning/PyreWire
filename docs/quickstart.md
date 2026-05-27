@@ -11,15 +11,27 @@ SRC = """
 mutual(A, B) :- friend(A, B), friend(B, A).
 """
 
+# snapshot() reads a relation's full IDB contents.
 with EasySession(SRC) as s:
     s.insert("friend", ["alice", "bob"])
     s.insert("friend", ["bob", "alice"])
-    # `step()` / `snapshot()` arrive with #10 / #11.
+    print(s.snapshot("mutual"))   # [('alice', 'bob'), ('bob', 'alice')]
+
+# step() drives one fixpoint step and returns the incremental deltas as
+# (relation, row, diff) tuples. A session commits to a single mode the
+# first time it is queried, so step() and snapshot() each need a fresh
+# session.
+with EasySession(SRC) as s:
+    s.insert("friend", ["alice", "bob"])
+    s.insert("friend", ["bob", "alice"])
+    for relation, row, diff in s.step():
+        print(relation, row, diff)   # e.g. mutual ('alice', 'bob') 1
 ```
 
 String values are auto-interned through a per-session intern table;
 subsequent `intern()` calls for the same string return the cached id
-without crossing the FFI boundary.
+without crossing the FFI boundary. See
+[step vs snapshot](semantics/step-vs-snapshot.md) for the mode machine.
 
 ## Batch program: one-shot evaluation
 
@@ -62,11 +74,21 @@ with Session(prog, backend=BackendKind.COLUMNAR, num_workers=4) as s:
 import asyncio
 from pyrewire import AsyncBatchProgram
 
+SRC = """
+.decl edge(x: int32, y: int32)
+.decl reach(x: int32)
+edge(1, 2). edge(2, 3).
+reach(X) :- edge(X, _).
+"""
+
 async def main() -> None:
-    async with AsyncBatchProgram(src=open("ancestors.dl").read()) as bp:
+    async with AsyncBatchProgram(src=SRC) as bp:
         await bp.optimize()
         res = await bp.evaluate()
-        res.close()
+        try:
+            print(res.cardinality("reach"))   # 2
+        finally:
+            res.close()
 
 asyncio.run(main())
 ```
@@ -81,6 +103,14 @@ raises its multiplicity to `+2`; a single `remove()` will not retract
 it. Use `preview_inline_facts(rel)` to detect this before it happens:
 
 ```python
+from pyrewire import EasySession
+
+src = """
+.decl friend(a: symbol, b: symbol)
+friend("alice", "bob").
+"""
+incoming = [["alice", "bob"], ["carol", "dave"]]
+
 with EasySession(src) as s:
     already = {tuple(r) for r in s.preview_inline_facts("friend")}
     for row in incoming:
@@ -91,6 +121,13 @@ with EasySession(src) as s:
 Or use the shorthand:
 
 ```python
+from pyrewire import EasySession
+
+src = """
+.decl friend(a: symbol, b: symbol)
+friend("alice", "bob").
+"""
+
 with EasySession(src) as s:
-    inserted = s.insert_with_dedupe("friend", row)
+    inserted = s.insert_with_dedupe("friend", ["alice", "bob"])
 ```
