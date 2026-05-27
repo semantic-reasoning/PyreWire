@@ -988,10 +988,24 @@ Freeze the release commit first:</p>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
+<td>Code scanning alerts</td>
+<td>Security owner</td>
+<td>Manual verification in GitHub Security that code-scanning alerts are clean (no open alerts) for the default branch and frozen release commit.</td>
+<td>Linked screenshot or URL showing no open code-scanning alerts at RC time.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
+<td>Dependabot coverage</td>
+<td>Release manager</td>
+<td>Manual verification of <code>.github/dependabot.yml</code>: Dependabot is configured for both <code>github-actions</code> and <code>pip</code> at <code>/</code> on a regular schedule.</td>
+<td>Linked review note referencing the merged <code>.github/dependabot.yml</code> and both ecosystems.</td>
+<td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
+</tr>
+<tr>
 <td>Release workflow dry run review</td>
 <td>Release manager</td>
-<td>Manual verification of <code>.github/workflows/release.yml</code>: it builds wheels, runs dynamic-link verification, performs clean install tests, verifies artifacts, and publishes only after tag-triggered gates pass. Do not actually tag or publish during RC validation.</td>
-<td>Linked review note confirming the tag-triggered <code>release.yml</code> gates and no pre-tag publish occurred.</td>
+<td>Manual verification of <code>.github/workflows/release.yml</code>: it builds wheels, runs dynamic-link verification, performs clean install tests, verifies release-local wheels and sdist artifacts before publish, uses trusted publishing via OIDC, keeps least-privilege top-level permissions, restricts <code>id-token: write</code> to the publish job, and publishes only after tag-triggered gates pass. Do not actually tag or publish during RC validation.</td>
+<td>Linked review note confirming the tag-triggered <code>release.yml</code> gates, least-privilege/OIDC scope, and no pre-tag publish occurred.</td>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
@@ -1024,6 +1038,7 @@ Freeze the release commit first:</p>
 </tr>
 </tbody>
 </table>
+<p>Artifact attestations/provenance for release artifacts are tracked separately by #133. The v1.0 RC checklist above must not claim that attestations/provenance are already implemented until #133 lands.</p>
 
 
 
