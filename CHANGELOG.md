@@ -11,31 +11,61 @@ supported wirelog `MAJOR.MINOR` series (see
 ## [1.0.0] - 2026-05-27
 
 ### Added
-- `EasySession.step` / `snapshot` / `set_delta_callback` are now
-  available, unblocked by the `v0.44.0` wirelog pin (wirelog#852). The
-  `step` / `snapshot` mirrors on `AsyncEasySession` are live as well.
+- PyreWire 1.0.0 is the first stable release of the Python wrapper for
+  wirelog. It establishes the supported public API boundary for the
+  `pyrewire` package and marks v1.0.x as the security-supported release
+  line.
+- Stable top-level exports now include:
+  - incremental session classes: `EasySession` and `Session`;
+  - batch execution classes: `BatchProgram` and `Result`;
+  - program and introspection wrappers: `Program`, `Schema`, `Column`,
+    `Stratum`, and `IRNode`;
+  - async wrappers: `AsyncEasySession`, `AsyncSession`, and
+    `AsyncBatchProgram`;
+  - IO adapter exports: `IOContext`, `register_adapter`,
+    `unregister_adapter`, and `registered_schemes`;
+  - compound wrappers: `Compound` and `CompoundArg`;
+  - exported enums, errors, and helpers, including `ErrorCode`,
+    `ColumnType`, `CompoundKind`, `IRNodeType`, `WirelogError`
+    subclasses, `wirelog_version`, `build_config`, `Delta`, and
+    `make_safe_print_delta`.
+- Incremental session capabilities are validated against wirelog
+  v0.44.0. `EasySession` and `Session` support step/snapshot workflows,
+  and `AsyncSession` provides the async incremental session surface.
 
 ### Changed
-- Refreshed the README quickstart and `docs/` to match the current
-  public API: `BatchProgram` for one-shot closure and `EasySession` /
-  `Session` for incremental step/snapshot work. Replaced the obsolete
-  `Program`-builder examples and the stale future-work notes for the
-  now-shipped `step` / `snapshot` methods, and aligned the README
-  badges with the actual `ci` / `docs` workflows (#122).
+- Package metadata is now versioned as `1.0.0` with the
+  `Development Status :: 5 - Production/Stable` classifier.
+- PyreWire follows semantic-versioning expectations for the stable
+  public API. Backward-incompatible changes require a new major version;
+  deprecated public APIs will remain available for at least one minor
+  release before removal unless a security or correctness issue makes
+  that impossible.
+- The README quickstart and `docs/` now describe the v1 public API:
+  `BatchProgram` for one-shot closure and `EasySession` / `Session` for
+  incremental step/snapshot work. The old `Program`-builder examples
+  were replaced with the supported APIs, and the README badges now
+  match the `ci` and `docs` workflows (#122).
+- GitHub release automation extracts this exact tagged changelog section
+  for release notes instead of publishing the full changelog body.
 
-### Notes
-- Drops Python 3.10 support; PyreWire now supports Python 3.11+.
-- Adds Python 3.14 to the CI and wheel-install matrices.
-- Moves GitHub Actions Ubuntu runners to `ubuntu-24.04`.
-- Moves GitHub Actions macOS and Windows matrix runners to `macos-15`
-  and `windows-2025-vs2026`.
-- Updates GitHub-maintained workflow actions to `actions/checkout@v5`
-  `actions/setup-python@v6`, and `actions/cache@v5`; replaces the
-  MSVC setup action with an in-step `VsDevCmd.bat` invocation.
-- Pins validated wirelog builds to the `v0.44.0` release commit
-  (`5bebc8d40bbb850179fbb091807964762df5a814`), which includes
-  wirelog#852 (recursive aggregation residue fix), and raises the
-  runtime minimum to wirelog `0.44.0`. Tracked in wirelog#859.
+### Support
+- Supported Python versions are CPython 3.11, 3.12, 3.13, and 3.14.
+  Python 3.10 is not supported by the v1.0 release line.
+- Published wheels are built for Linux `manylinux_2_28` `x86_64`,
+  macOS `arm64` only, and Windows `AMD64`.
+- Wheels bundle `libwirelog`, so wheel installs do not require a
+  separate wirelog installation.
+- Source distributions do not bundle `libwirelog`. Source installs need
+  a compatible system `libwirelog` discoverable by the loader, or an
+  explicit `WIRELOG_LIB` path.
+- PyreWire 1.0.0 is validated against wirelog v0.44.0 at peeled SHA
+  `5bebc8d40bbb850179fbb091807964762df5a814`; the minimum compatible
+  runtime wirelog version is 0.44.0. This wirelog release includes the
+  recursive aggregation residue fix needed for the stable
+  step/snapshot API.
+- Release, test, and wheel automation runs on `ubuntu-24.04`,
+  `macos-15`, and `windows-2025-vs2026` with Python 3.11-3.14.
 
 ## [0.41.0] - 2026-05-21
 
@@ -91,5 +121,5 @@ supported wirelog `MAJOR.MINOR` series (see
   (see [1.0.0]). Tracked in wirelog#859.
 
 [Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v1.0.0
+[1.0.0]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...v1.0.0
 [0.41.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v0.41.0
