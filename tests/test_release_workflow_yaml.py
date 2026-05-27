@@ -213,6 +213,6 @@ def test_only_publish_job_has_write_and_oidc_permissions():
     assert publish_perms == {"contents": "write", "id-token": "write"}
 
     for job_name in ("build_wheels", "install_test", "build_sdist"):
-        assert "permissions" not in jobs[job_name], (
-            f"{job_name} should inherit top-level read-only permissions"
-        )
+        assert (
+            "permissions" not in jobs[job_name]
+        ), f"{job_name} should inherit top-level read-only permissions"
