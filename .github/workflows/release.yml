@@ -14,12 +14,197 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
+  build_wheels:
+    name: ${{ matrix.os }} wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # ubuntu-24.04 produces manylinux_2_28 via cibuildwheel docker.
+        # macos-15 is the stable Apple Silicon runner; PyreWire v1.0
+        # macOS wheels target Apple Silicon arm64.
+        # windows-2025-vs2026 covers MSVC + delvewheel.
+        os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: setup Visual Studio toolchain (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
+          if (-not (Test-Path $vswhere)) {
+            throw "Could not locate vswhere.exe at $vswhere"
+          }
+
+          $vsInstall = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ([string]::IsNullOrWhiteSpace($vsInstall)) {
+            throw "Could not locate a Visual Studio installation with MSVC tools"
+          }
+
+          $vsDevCmd = Join-Path $vsInstall "Common7\Tools\VsDevCmd.bat"
+          if (-not (Test-Path $vsDevCmd)) {
+            throw "Could not locate VsDevCmd.bat at $vsDevCmd"
+          }
+
+          $cmdOutput = & cmd.exe /s /c "`"$vsDevCmd`" -arch=x64 && set"
+          if ($LASTEXITCODE -ne 0) {
+            throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"
+          }
+
+          $envMap = @{}
+          foreach ($line in $cmdOutput) {
+            if ($line -match "^([^=]+)=(.*)$") {
+              $envMap[$matches[1]] = $matches[2]
+            }
+          }
+
+          $pathValue = $envMap["PATH"]
+          if ([string]::IsNullOrWhiteSpace($pathValue)) {
+            throw "VsDevCmd.bat did not produce PATH"
+          }
+
+          $preferredGitBash = "C:\Program Files\Git\bin\bash.exe"
+          if (Test-Path $preferredGitBash) {
+            $bashPath = $preferredGitBash
+          } else {
+            $bashCommand = Get-Command bash.exe -ErrorAction SilentlyContinue |
+              Where-Object { $_.Source -and $_.Source -notlike "*\Microsoft\WindowsApps\bash.exe" } |
+              Select-Object -First 1
+            if (-not $bashCommand) {
+              throw "Could not locate Git Bash bash.exe"
+            }
+            $bashPath = $bashCommand.Source
+          }
+          Write-Host "Using bash.exe from $bashPath"
+
+          $bashDir = Split-Path -Parent $bashPath
+          $normalizedBashDir = $bashDir.TrimEnd("\")
+          $pathEntries = @(
+            $pathValue -split ";" |
+              Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+              Where-Object { $_.TrimEnd("\") -ine $normalizedBashDir }
+          )
+          $orderedPathEntries = [System.Collections.Generic.List[string]]::new()
+          $insertedGitBash = $false
+          foreach ($entry in $pathEntries) {
+            if (-not $insertedGitBash -and $entry -like "*\Microsoft\WindowsApps") {
+              [void]$orderedPathEntries.Add($bashDir)
+              $insertedGitBash = $true
+            }
+            [void]$orderedPathEntries.Add($entry)
+          }
+          if (-not $insertedGitBash) {
+            [void]$orderedPathEntries.Insert(0, $bashDir)
+          }
+          $orderedPath = [string]::Join(";", $orderedPathEntries)
+          "PATH=$orderedPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          $msvcEnvVars = @(
+            "INCLUDE", "LIB", "LIBPATH",
+            "VCToolsInstallDir", "VCToolsRedistDir", "VCINSTALLDIR", "VSINSTALLDIR",
+            "WindowsLibPath", "WindowsSdkBinPath", "WindowsSdkDir", "WindowsSDKLibVersion",
+            "WindowsSdkVerBinPath", "WindowsSDKVersion",
+            "UCRTVersion", "UniversalCRTSdkDir",
+            "VSCMD_ARG_HOST_ARCH", "VSCMD_ARG_TGT_ARCH", "VSCMD_VER"
+          )
+          foreach ($name in $msvcEnvVars) {
+            if ($envMap.ContainsKey($name) -and -not [string]::IsNullOrWhiteSpace($envMap[$name])) {
+              "$name=$($envMap[$name])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
+
+      - name: build wheels
+        uses: pypa/cibuildwheel@v3.4.1
+        env:
+          CIBW_BUILD_VERBOSITY: 1
+
+      - name: verify dynamic link (#32)
+        # Fails the build if a wheel ships libwirelog as a static
+        # archive (license boundary) or is missing the bundled
+        # library entirely (loader would fail at import time).
+        shell: bash
+        run: python scripts/ci/check_dynamic_link.py wheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+          if-no-files-found: error
+
+  install_test:
+    needs: build_wheels
+    name: install ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          name: wheels-${{ matrix.os }}
+          path: dist
+
+      - name: pip install local wheel
+        shell: bash
+        run: |
+          PY_TAG=$(python -c 'import sys; print(f"cp{sys.version_info.major}{sys.version_info.minor}")')
+          # Pick the wheel for this Python version; fail loudly if no match.
+          WHL=$(ls dist/pyrewire-*-${PY_TAG}-${PY_TAG}-*.whl | head -1 || true)
+          if [ -z "$WHL" ]; then
+            echo "no wheel matched dist/pyrewire-*-${PY_TAG}-${PY_TAG}-*.whl"
+            ls dist/
+            exit 1
+          fi
+          python -m pip install "$WHL" pytest pytest-cov
+
+      - name: pyrewire imports + uses wheel-bundled libwirelog
+        shell: bash
+        run: |
+          python -c "
+          import pyrewire
+          print('pyrewire version =', pyrewire.__version__)
+          print('wirelog version =', pyrewire.wirelog_version())
+          from pyrewire._ffi import LIB
+          path = getattr(LIB, '_name', '')
+          assert 'pyrewire' in path and '_lib' in path, (
+              f'expected wheel-bundled libwirelog, loader chose {path}'
+          )
+          "
+
+      - name: run wheel install integration tests
+        shell: bash
+        env:
+          # Opt-in flag the integration test checks before running its
+          # bundled-library assertions; without it the tests skip so
+          # that running `pytest` against the editable dev install
+          # doesn't trip on `WIRELOG_LIB` overrides.
+          PYREWIRE_WHEEL_INSTALL_TEST: "1"
+        run: |
+          pytest -q -o addopts= tests/integration/test_wheel_install.py tests/integration/test_retraction_basics.py
+
+  build_sdist:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -35,23 +220,75 @@ jobs:
           fi
           echo "tag $tag matches pyproject version $ver"
 
-      - name: download wheels artifact
-        if: ${{ false }}
-        # The wheel-build matrix (#30) uploads `wheels-*` artifacts.
-        # Until that pipeline is wired into this workflow, the
-        # release ships the sdist only. Flip the `if:` to `true`
-        # once #30 / #31 land.
-        uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: wheels-*
-          path: dist
-          merge-multiple: true
-
       - name: install build deps
         run: pip install build
 
       - name: build sdist
         run: python -m build --sdist --outdir dist
+
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: [install_test, build_sdist]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          name: sdist
+          path: dist
+
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: verify release artifacts before publish
+        shell: bash
+        run: |
+          shopt -s nullglob
+
+          sdists=(dist/pyrewire-*.tar.gz)
+          if [ "${#sdists[@]}" -ne 1 ]; then
+            echo "expected exactly one pyrewire sdist, found ${#sdists[@]}"
+            printf '%s\n' "${sdists[@]}"
+            exit 1
+          fi
+
+          expected=()
+          for py_tag in cp311 cp312 cp313 cp314; do
+            expected+=("pyrewire-*-${py_tag}-${py_tag}-manylinux_2_28_x86_64.whl")
+            expected+=("pyrewire-*-${py_tag}-${py_tag}-macosx_*_arm64.whl")
+            expected+=("pyrewire-*-${py_tag}-${py_tag}-win_amd64.whl")
+          done
+
+          for pattern in "${expected[@]}"; do
+            matches=(dist/$pattern)
+            if [ "${#matches[@]}" -ne 1 ]; then
+              echo "expected exactly one wheel matching $pattern, found ${#matches[@]}"
+              ls -la dist
+              exit 1
+            fi
+          done
+
+          wheels=(dist/pyrewire-*.whl)
+          if [ "${#wheels[@]}" -ne "${#expected[@]}" ]; then
+            echo "expected ${#expected[@]} wheels, found ${#wheels[@]}"
+            ls -la dist
+            exit 1
+          fi
 
       - name: extract GitHub Release notes
         if: startsWith(github.ref, 'refs/tags/v')

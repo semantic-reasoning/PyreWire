@@ -3,6 +3,8 @@
 A release pipeline must:
 - trigger on `v*` tags;
 - verify the tag matches the `pyproject.toml` version;
+- build and install-test wheels in the release workflow;
+- publish only after release-local wheels and sdist are verified;
 - publish to PyPI via trusted publishing;
 - create a GitHub Release.
 
@@ -42,10 +44,22 @@ def test_has_publish_job_with_ubuntu():
     assert "ubuntu" in str(publish.get("runs-on", "")).lower()
 
 
-def test_publish_job_has_verify_step():
+def test_release_workflow_has_build_install_publish_dag():
+    jobs = _workflow()["jobs"]
+    assert {"build_wheels", "install_test", "build_sdist", "publish"} <= set(jobs)
+
+    assert jobs["install_test"].get("needs") == "build_wheels" or "build_wheels" in (
+        jobs["install_test"].get("needs") or []
+    )
+    publish_needs = jobs["publish"].get("needs") or []
+    assert "install_test" in publish_needs
+    assert "build_sdist" in publish_needs
+
+
+def test_release_workflow_has_verify_step():
     """A step whose `name` mentions tag/version verification must exist."""
-    steps = _workflow()["jobs"]["publish"]["steps"]
-    names = [s.get("name", "").lower() for s in steps]
+    jobs = _workflow()["jobs"].values()
+    names = [s.get("name", "").lower() for job in jobs for s in job.get("steps", [])]
     assert any(
         "verify" in n and "tag" in n for n in names
     ), "release workflow must include a tag-vs-pyproject version check"
@@ -64,6 +78,99 @@ def test_download_wheels_uses_node24_artifact_action():
     uses = [s.get("uses", "") for s in steps]
     assert "actions/download-artifact@v8.0.1" in uses
     assert "actions/download-artifact@v4" not in uses
+
+
+def test_release_has_no_disabled_or_sdist_only_wheel_download():
+    text = (
+        Path(__file__).resolve().parent.parent / ".github" / "workflows" / "release.yml"
+    ).read_text()
+    assert "if: ${{ false }}" not in text
+    assert "sdist only" not in text.lower()
+
+
+def test_release_build_wheels_matrix_matches_supported_runners():
+    matrix = _workflow()["jobs"]["build_wheels"]["strategy"]["matrix"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
+
+
+def test_release_build_wheels_runs_dynamic_link_check_before_upload():
+    steps = _workflow()["jobs"]["build_wheels"]["steps"]
+    dynamic_idx = next(
+        i for i, step in enumerate(steps) if "check_dynamic_link.py" in step.get("run", "")
+    )
+    upload_idx = next(
+        i for i, step in enumerate(steps) if step.get("uses") == "actions/upload-artifact@v7.0.1"
+    )
+    upload_with = steps[upload_idx]["with"]
+
+    assert dynamic_idx < upload_idx
+    assert upload_with["name"] == "wheels-${{ matrix.os }}"
+    assert upload_with["path"] == "./wheelhouse/*.whl"
+    assert upload_with["if-no-files-found"] == "error"
+
+
+def test_release_install_test_gates_publish_and_uses_supported_matrix():
+    jobs = _workflow()["jobs"]
+    install_test = jobs["install_test"]
+    matrix = install_test["strategy"]["matrix"]
+
+    assert jobs["publish"]["needs"] == ["install_test", "build_sdist"]
+    assert install_test["needs"] == "build_wheels"
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
+    assert matrix["python"] == ["3.11", "3.12", "3.13", "3.14"]
+
+
+def test_release_install_test_downloads_matching_wheels_and_runs_integration_tests():
+    steps = _workflow()["jobs"]["install_test"]["steps"]
+    download_steps = [s for s in steps if s.get("uses") == "actions/download-artifact@v8.0.1"]
+    assert download_steps
+    assert download_steps[0]["with"]["name"] == "wheels-${{ matrix.os }}"
+    assert download_steps[0]["with"]["path"] == "dist"
+
+    combined_runs = "\n".join(str(s.get("run", "")) for s in steps)
+    assert "dist/pyrewire-*-${PY_TAG}-${PY_TAG}-*.whl" in combined_runs
+    assert "expected wheel-bundled libwirelog" in combined_runs
+    assert "tests/integration/test_wheel_install.py" in combined_runs
+    assert "tests/integration/test_retraction_basics.py" in combined_runs
+
+
+def test_publish_downloads_wheels_and_checks_artifacts_before_pypa_publish():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    pypa_idx = next(
+        i for i, step in enumerate(steps) if "pypa/gh-action-pypi-publish" in step.get("uses", "")
+    )
+    check_idx = next(
+        i
+        for i, step in enumerate(steps)
+        if step.get("name") == "verify release artifacts before publish"
+    )
+    wheel_downloads = [
+        (i, s)
+        for i, s in enumerate(steps)
+        if s.get("uses") == "actions/download-artifact@v8.0.1"
+        and s.get("with", {}).get("pattern") == "wheels-*"
+    ]
+    assert wheel_downloads
+    wheel_download_idx, wheel_download = wheel_downloads[0]
+    assert wheel_download_idx < check_idx < pypa_idx
+    assert wheel_download["with"]["path"] == "dist"
+    assert wheel_download["with"]["merge-multiple"] is True
+
+    check_run = steps[check_idx]["run"]
+    assert "dist/pyrewire-*.tar.gz" in check_run
+    assert "manylinux_2_28_x86_64" in check_run
+    assert "macosx_*_arm64" in check_run
+    assert "win_amd64" in check_run
+    for py_tag in ("cp311", "cp312", "cp313", "cp314"):
+        assert py_tag in check_run
+
+
+def test_release_is_not_sdist_only():
+    steps = _workflow()["jobs"]["publish"]["steps"]
+    download_with = [s.get("with", {}) for s in steps]
+    assert any(w.get("name") == "sdist" for w in download_with)
+    assert any(w.get("pattern") == "wheels-*" for w in download_with)
+    assert "install_test" in _workflow()["jobs"]["publish"]["needs"]
 
 
 def test_creates_github_release():
