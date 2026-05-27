@@ -112,4 +112,5 @@ jobs:
           # that running `pytest` against the editable dev install
           # doesn't trip on `WIRELOG_LIB` overrides.
           PYREWIRE_WHEEL_INSTALL_TEST: "1"
-        run: pytest -q tests/integration/test_wheel_install.py
+        run: |
+          pytest -q -o addopts= tests/integration/test_wheel_install.py tests/integration/test_retraction_basics.py
