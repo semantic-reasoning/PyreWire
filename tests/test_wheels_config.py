@@ -54,7 +54,15 @@ def test_cibuildwheel_drops_cp310():
 def test_wheels_build_matrix_uses_current_hosted_runners():
     wf = yaml.safe_load(_read(".github/workflows/wheels.yml"))
     matrix = wf["jobs"]["build_wheels"]["strategy"]["matrix"]
-    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
+
+
+def test_wheels_workflow_uses_node24_actions():
+    text = _read(".github/workflows/wheels.yml")
+    assert "actions/checkout@v4" not in text
+    assert "actions/setup-python@v5" not in text
+    assert "actions/checkout@v5" in text
+    assert "actions/setup-python@v6" in text
 
 
 def test_each_platform_has_repair_wheel_command():

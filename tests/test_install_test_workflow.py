@@ -46,7 +46,7 @@ def test_install_test_matrix_covers_supported_pythons():
 def test_install_test_matrix_uses_current_hosted_runners():
     wf = _workflow()
     matrix = wf["jobs"]["install_test"]["strategy"]["matrix"]
-    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
 
 
 def test_install_test_downloads_built_wheels():

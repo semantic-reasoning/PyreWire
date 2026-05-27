@@ -34,7 +34,23 @@ def test_ci_matrix_drops_python_310():
 
 def test_ci_matrix_uses_current_hosted_runners():
     matrix = _workflow()["jobs"]["test"]["strategy"]["matrix"]
-    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025"]
+    assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
+
+
+def test_ci_uses_node24_actions():
+    text = _workflow_text()
+    assert "actions/checkout@v4" not in text
+    assert "actions/setup-python@v5" not in text
+    assert "actions/checkout@v5" in text
+    assert "actions/setup-python@v6" in text
+
+
+def test_all_workflows_use_node24_core_actions():
+    workflow_dir = Path(__file__).resolve().parent.parent / ".github" / "workflows"
+    for path in workflow_dir.glob("*.yml"):
+        text = path.read_text()
+        assert "actions/checkout@v4" not in text, path
+        assert "actions/setup-python@v5" not in text, path
 
 
 def test_ci_workflow_has_least_privilege_permissions():
