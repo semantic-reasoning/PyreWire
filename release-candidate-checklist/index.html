@@ -1004,8 +1004,8 @@ Freeze the release commit first:</p>
 <tr>
 <td>Release workflow dry run review</td>
 <td>Release manager</td>
-<td>Manual verification of <code>.github/workflows/release.yml</code>: it builds wheels, runs dynamic-link verification, performs clean install tests, verifies release-local wheels and sdist artifacts before publish, uses trusted publishing via OIDC, keeps least-privilege top-level permissions, restricts <code>id-token: write</code> to the publish job, and publishes only after tag-triggered gates pass. Do not actually tag or publish during RC validation.</td>
-<td>Linked review note confirming the tag-triggered <code>release.yml</code> gates, least-privilege/OIDC scope, and no pre-tag publish occurred.</td>
+<td>Manual verification of <code>.github/workflows/release.yml</code>: it builds wheels, runs dynamic-link verification, performs clean install tests, verifies release-local wheels and sdist artifacts before publish, uses trusted publishing via OIDC, keeps least-privilege top-level permissions, restricts <code>id-token: write</code> to the publish jobs, separates TestPyPI and production PyPI trusted publishing into explicit <code>testpypi</code> and <code>pypi</code> GitHub environments, and publishes production only after tag-triggered gates pass. Do not actually tag or publish production during RC validation.</td>
+<td>Linked review note confirming the tag-triggered <code>release.yml</code> gates, least-privilege/OIDC scope, separate publish environments, and no pre-tag production publish occurred.</td>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
@@ -1018,7 +1018,7 @@ Freeze the release commit first:</p>
 <tr>
 <td>Artifact attestation verification</td>
 <td>Release manager</td>
-<td>Workflow: <code>.github/workflows/release.yml</code> publish job generates release artifact attestations using <code>actions/attest@v4</code>. For tagged release artifacts, command: <code>gh attestation verify &lt;artifact&gt; -R semantic-reasoning/PyreWire --signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml --source-ref refs/tags/v1.0.0</code> for every release wheel (<code>dist/pyrewire-*.whl</code>) and the sdist (<code>dist/pyrewire-*.tar.gz</code>). For RC/frozen-commit validation before the final tag exists, also verify with <code>--source-digest &lt;frozen-sha&gt;</code>. Repo-only <code>-R</code> verification alone is not sufficient for this gate.</td>
+<td>Workflow: <code>.github/workflows/release.yml</code> publish jobs generate release artifact attestations using <code>actions/attest@v4</code>. For tagged release artifacts, command: <code>gh attestation verify &lt;artifact&gt; -R semantic-reasoning/PyreWire --signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml --source-ref refs/tags/v1.0.0</code> for every release wheel (<code>dist/pyrewire-*.whl</code>) and the sdist (<code>dist/pyrewire-*.tar.gz</code>). For RC/frozen-commit validation before the final tag exists, also verify with <code>--source-digest &lt;frozen-sha&gt;</code>. Repo-only <code>-R</code> verification alone is not sufficient for this gate.</td>
 <td>Successful <code>release.yml</code> run URL, release tag or frozen RC commit SHA, artifact filenames, SHA256 hashes for each wheel/sdist, and successful <code>gh attestation verify</code> output showing enforced signer workflow and source identity (<code>--source-ref refs/tags/v1.0.0</code> or <code>--source-digest &lt;frozen-sha&gt;</code>) for each verified artifact.</td>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
@@ -1054,7 +1054,7 @@ Freeze the release commit first:</p>
 </table>
 <p>Attestation verification for this gate requires signer workflow and source identity constraints; repo-only verification is not treated as sufficient provenance evidence for PyreWire release artifacts.
 This does not independently attest upstream wirelog builds. For bundled wirelog traceability, rely on the pinned wirelog v0.50.0 SHA <code>272edf3a24b25676f12c4b843d55510f5048dd2f</code> in release configuration and docs, plus the wheel dynamic-link and clean-install gates above.
-External blocker for the TestPyPI dry run gate: TestPyPI trusted publishing must be configured for the <code>.github/workflows/release.yml</code> workflow identity before dry-run uploads can pass. If TestPyPI requires an environment for trusted publishing, the workflow configuration must match that environment.</p>
+External blocker for the TestPyPI dry run gate: TestPyPI trusted publishing must be configured for the <code>.github/workflows/release.yml</code> workflow identity with GitHub environment <code>testpypi</code> before dry-run uploads can pass.</p>
 
 
 
