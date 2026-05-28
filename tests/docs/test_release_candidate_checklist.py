@@ -196,8 +196,8 @@ def test_release_security_baseline_and_provenance_scope_are_documented():
         "requires signer workflow and source identity constraints",
         "repo-only verification is not treated as sufficient provenance evidence",
         "does not independently attest upstream wirelog builds",
-        "wirelog v0.44.0",
-        "5bebc8d40bbb850179fbb091807964762df5a814",
+        "wirelog v0.50.0",
+        "272edf3a24b25676f12c4b843d55510f5048dd2f",
         "wheel dynamic-link and clean-install gates",
     ):
         assert required in text

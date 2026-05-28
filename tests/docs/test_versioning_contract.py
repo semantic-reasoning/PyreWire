@@ -10,7 +10,7 @@ import pytest
 
 yaml = pytest.importorskip("yaml")
 
-WIRELOG_044_SHA = "5bebc8d40bbb850179fbb091807964762df5a814"
+PINNED_WIRELOG_SHA = "272edf3a24b25676f12c4b843d55510f5048dd2f"
 
 
 def _repo_root() -> Path:
@@ -28,12 +28,13 @@ def _versioning_row(version: str) -> list[str]:
     return [cell.strip() for cell in match.group(1).split("|")]
 
 
-def test_versioning_documents_100_wirelog_044_freeze():
+def test_versioning_documents_100_wirelog_pin_and_runtime_floor():
     minimum, validated_ref, notes = _versioning_row("1.0.0")
 
     assert minimum == "`0.44.0`"
-    assert validated_ref == f"`{WIRELOG_044_SHA}`"
-    assert "v0.44.0" in notes
+    assert validated_ref == f"`{PINNED_WIRELOG_SHA}`"
+    assert "v0.50.0" in notes
+    assert "runtime minimum remains `0.44.0`" in notes
     assert "peeled tag SHA" in notes
 
 
@@ -55,14 +56,14 @@ def test_wirelog_pins_and_loader_floor_match_100_contract():
 
     ci_wirelog_version = ci["jobs"]["test"]["env"]["WIRELOG_VERSION"]
     assert "vars.WIRELOG_VERSION" in ci_wirelog_version
-    assert WIRELOG_044_SHA in ci_wirelog_version
+    assert PINNED_WIRELOG_SHA in ci_wirelog_version
     assert "68eb9c" not in ci_wirelog_version
 
     cibw = pyproject["tool"]["cibuildwheel"]
-    assert cibw["environment"]["WIRELOG_VERSION"] == WIRELOG_044_SHA
-    assert cibw["linux"]["environment"]["WIRELOG_VERSION"] == WIRELOG_044_SHA
-    assert cibw["macos"]["environment"]["WIRELOG_VERSION"] == WIRELOG_044_SHA
-    assert cibw["windows"]["environment"]["WIRELOG_VERSION"] == WIRELOG_044_SHA
+    assert cibw["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
+    assert cibw["linux"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
+    assert cibw["macos"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
+    assert cibw["windows"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
 
     assert re.search(
         r"^MINIMUM_WIRELOG_VERSION:\s*tuple\[int, int, int\]\s*=\s*\(0,\s*44,\s*0\)",

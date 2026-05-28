@@ -2,8 +2,8 @@
 
 All notable changes to PyreWire are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). PyreWire and
-wirelog version independently; each PyreWire release declares a single
-supported wirelog `MAJOR.MINOR` series (see
+wirelog version independently; each PyreWire release declares a runtime
+wirelog floor and a validated wirelog ref (see
 [versioning rule](docs/versioning.md)).
 
 ## [Unreleased]
@@ -30,7 +30,7 @@ supported wirelog `MAJOR.MINOR` series (see
     subclasses, `wirelog_version`, `build_config`, `Delta`, and
     `make_safe_print_delta`.
 - Incremental session capabilities are validated against wirelog
-  v0.44.0. `EasySession` and `Session` support step/snapshot workflows,
+  v0.50.0. `EasySession` and `Session` support step/snapshot workflows,
   and `AsyncSession` provides the async incremental session surface.
 
 ### Changed
@@ -59,8 +59,8 @@ supported wirelog `MAJOR.MINOR` series (see
 - Source distributions do not bundle `libwirelog`. Source installs need
   a compatible system `libwirelog` discoverable by the loader, or an
   explicit `WIRELOG_LIB` path.
-- PyreWire 1.0.0 is validated against wirelog v0.44.0 at peeled SHA
-  `5bebc8d40bbb850179fbb091807964762df5a814`; the minimum compatible
+- PyreWire 1.0.0 is validated against wirelog v0.50.0 at peeled SHA
+  `272edf3a24b25676f12c4b843d55510f5048dd2f`; the minimum compatible
   runtime wirelog version is 0.44.0. This wirelog release includes the
   recursive aggregation residue fix needed for the stable
   step/snapshot API.
@@ -117,8 +117,8 @@ supported wirelog `MAJOR.MINOR` series (see
   Tracked in #50.
 - `EasySession.step` / `snapshot` and the `step` / `snapshot`
   mirrors on `AsyncEasySession` are not in 0.41.0 — they require
-  wirelog#852. They became available after the `v0.44.0` wirelog pin
-  (see [1.0.0]). Tracked in wirelog#859.
+  wirelog#852. They are available in the later [1.0.0] line, whose
+  validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
 [Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...v1.0.0
