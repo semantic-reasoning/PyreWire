@@ -80,8 +80,9 @@ wirelog floor and a validated wirelog ref (see
 - `EasySession` (#9): lifecycle, intern table, `insert` / `remove`,
   and the variadic `insert_sym` / `remove_sym` wrappers (#44).
   `set_delta_callback` / `step` / `snapshot` were not part of 0.41.0;
-  they required wirelog#852 and became available once wirelog `0.44.0`
-  was pinned (see [1.0.0]).
+  they require wirelog#852 and a runtime wirelog `0.44.0` or newer.
+  The later [1.0.0] release is validated against and bundles wirelog
+  v0.50.0.
 - `Session` (advanced, #21): backend selection, worker count,
   batched `insert` / `remove`, `step`, `snapshot`, `set_delta_callback`,
   one-way mode machine, NumPy zero-copy `insert_batch` / `remove_batch`
