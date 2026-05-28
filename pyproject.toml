@@ -74,7 +74,7 @@ test-requires = ["pytest", "pytest-cov"]
 before-build = "python {project}/scripts/bundle_libwirelog.py"
 # Pin the wirelog source ref here too so the environment matches the
 # `WIRELOG_VERSION` used by the test-matrix workflow.
-environment = { WIRELOG_VERSION = "5bebc8d40bbb850179fbb091807964762df5a814" }
+environment = { WIRELOG_VERSION = "272edf3a24b25676f12c4b843d55510f5048dd2f" }
 
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux_2_28"
@@ -83,7 +83,7 @@ before-all = """
   pip install meson && \
   WIRELOG_PREFIX=/wirelog-install bash {project}/scripts/build_wirelog.sh
 """
-environment = { WIRELOG_VERSION = "5bebc8d40bbb850179fbb091807964762df5a814", WIRELOG_PREFIX = "/wirelog-install", WIRELOG_LIB = "/wirelog-install/lib/libwirelog.so.1", LD_LIBRARY_PATH = "/wirelog-install/lib" }
+environment = { WIRELOG_VERSION = "272edf3a24b25676f12c4b843d55510f5048dd2f", WIRELOG_PREFIX = "/wirelog-install", WIRELOG_LIB = "/wirelog-install/lib/libwirelog.so.1", LD_LIBRARY_PATH = "/wirelog-install/lib" }
 # `auditwheel` bundles libwirelog.so.1 into the wheel and patches the
 # RPATH (#31). Without this every wheel would ship as a manylinux
 # wheel that immediately fails at import time on systems without the
@@ -96,7 +96,7 @@ before-all = """
   brew install ninja meson pkg-config && \
   WIRELOG_PREFIX=$HOME/wirelog-install bash {project}/scripts/build_wirelog.sh
 """
-environment = { WIRELOG_VERSION = "5bebc8d40bbb850179fbb091807964762df5a814", WIRELOG_PREFIX = "$HOME/wirelog-install", WIRELOG_LIB = "$HOME/wirelog-install/lib/libwirelog.1.dylib", DYLD_LIBRARY_PATH = "$HOME/wirelog-install/lib" }
+environment = { WIRELOG_VERSION = "272edf3a24b25676f12c4b843d55510f5048dd2f", WIRELOG_PREFIX = "$HOME/wirelog-install", WIRELOG_LIB = "$HOME/wirelog-install/lib/libwirelog.1.dylib", DYLD_LIBRARY_PATH = "$HOME/wirelog-install/lib" }
 # `delocate` is macOS's auditwheel equivalent — copies the dylib into
 # the wheel and rewrites install names so the bundled copy wins.
 repair-wheel-command = "DYLD_LIBRARY_PATH=$HOME/wirelog-install/lib delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
@@ -104,7 +104,7 @@ repair-wheel-command = "DYLD_LIBRARY_PATH=$HOME/wirelog-install/lib delocate-whe
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
 before-all = "powershell {project}\\scripts\\build_wirelog.ps1"
-environment = { WIRELOG_VERSION = "5bebc8d40bbb850179fbb091807964762df5a814", WIRELOG_PREFIX = "C:/wirelog-install", WIRELOG_LIB = "C:/wirelog-install/bin/wirelog-1.dll" }
+environment = { WIRELOG_VERSION = "272edf3a24b25676f12c4b843d55510f5048dd2f", WIRELOG_PREFIX = "C:/wirelog-install", WIRELOG_LIB = "C:/wirelog-install/bin/wirelog-1.dll" }
 # `delvewheel` is the Windows analogue. The bundled DLL ends up in
 # `pyrewire/_lib/` and the loader (#2) finds it ahead of system paths.
 repair-wheel-command = "pip install delvewheel && delvewheel repair -w {dest_dir} --no-mangle-all --add-path C:/wirelog-install/bin {wheel}"

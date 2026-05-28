@@ -48,10 +48,10 @@ jobs:
         python: ["3.11", "3.12", "3.13", "3.14"]
     env:
       # WIRELOG_VERSION here is the exact wirelog ref CI builds against.
-      # The default is pinned to the wirelog v0.44.0 release commit;
+      # The default is pinned to the wirelog v0.50.0 release commit;
       # override the repository variable to test another ref before
       # updating this fallback.
-      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || '5bebc8d40bbb850179fbb091807964762df5a814' }}
+      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || '272edf3a24b25676f12c4b843d55510f5048dd2f' }}
       # `runner.temp` is NOT available in job-level `env:` (only in
       # step-level contexts) — using it here caused the whole workflow
       # to fail at startup (#114). `github.workspace` IS resolvable at
@@ -66,7 +66,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      # Resolve WIRELOG_VERSION (a tag like `v0.44.0`, a branch ref
+      # Resolve WIRELOG_VERSION (a tag like `v0.50.0`, a branch ref
       # like `main`, or an exact commit SHA) to the underlying commit
       # SHA. The cache key uses the SHA — not the version label — so that:
       #   * a moving ref like `main` invalidates the cache each time
