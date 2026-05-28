@@ -243,6 +243,7 @@ jobs:
     runs-on: ubuntu-24.04
     environment: testpypi
     permissions:
+      contents: read
       id-token: write   # TestPyPI trusted publishing (OIDC)
       attestations: write
     steps:

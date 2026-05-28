@@ -384,6 +384,7 @@ def test_release_workflow_top_level_permissions_are_read_only():
 def test_publish_jobs_have_least_privilege_write_and_oidc_permissions():
     jobs = _workflow()["jobs"]
     assert jobs["publish_testpypi"].get("permissions", {}) == {
+        "contents": "read",
         "id-token": "write",
         "attestations": "write",
     }
