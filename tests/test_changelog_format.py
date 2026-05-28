@@ -147,6 +147,22 @@ def test_100_release_notes_include_publishable_contract_facts():
         assert stale not in section
 
 
+def test_changelog_distinguishes_wirelog_runtime_floor_from_validated_ref():
+    changelog = (_repo_root() / "CHANGELOG.md").read_text()
+    release_100 = _section(changelog, "1.0.0")
+    release_041 = _section(changelog, "0.41.0")
+    rendered_041 = re.sub(r"\s+", " ", release_041)
+
+    assert "became available once wirelog `0.44.0` was pinned" not in changelog
+    assert "runtime wirelog `0.44.0` or newer" in release_041
+    assert "validated against and bundles wirelog v0.50.0" in rendered_041
+    assert "wirelog v0.50.0" in release_100
+    assert "272edf3a24b25676f12c4b843d55510f5048dd2f" in release_100
+    assert "minimum compatible runtime wirelog version is 0.44.0" in re.sub(
+        r"\s+", " ", release_100
+    )
+
+
 def test_100_release_compare_links_are_tag_to_tag():
     changelog = (_repo_root() / "CHANGELOG.md").read_text()
 
