@@ -40,10 +40,11 @@ def test_ci_matrix_uses_current_hosted_runners():
 def test_ci_uses_node24_actions():
     text = _workflow_text()
     assert "actions/checkout@v4" not in text
+    assert "actions/checkout@v5" not in text
     assert "actions/setup-python@v5" not in text
     assert "actions/cache@v4" not in text
     assert "ilammy/msvc-dev-cmd" not in text
-    assert "actions/checkout@v5" in text
+    assert "actions/checkout@v6" in text
     assert "actions/setup-python@v6" in text
     assert "actions/cache@v5" in text
 
@@ -53,6 +54,7 @@ def test_all_workflows_use_node24_core_actions():
     for path in workflow_dir.glob("*.yml"):
         text = path.read_text()
         assert "actions/checkout@v4" not in text, path
+        assert "actions/checkout@v5" not in text, path
         assert "actions/setup-python@v5" not in text, path
         assert "actions/cache@v4" not in text, path
         assert "actions/upload-artifact@v4" not in text, path

@@ -32,7 +32,7 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -154,7 +154,7 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
         python: ["3.11", "3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v6
         with:
@@ -206,7 +206,7 @@ jobs:
   build_sdist:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -245,7 +245,7 @@ jobs:
       id-token: write   # PyPI trusted publishing (OIDC)
       attestations: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
