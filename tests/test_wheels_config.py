@@ -119,8 +119,9 @@ def test_wheel_config_comments_do_not_overpromise_macos_arch_support():
 def test_wheels_workflow_uses_node24_actions():
     text = _read(".github/workflows/wheels.yml")
     assert "actions/checkout@v4" not in text
+    assert "actions/checkout@v5" not in text
     assert "actions/setup-python@v5" not in text
-    assert "actions/checkout@v5" in text
+    assert "actions/checkout@v6" in text
     assert "actions/setup-python@v6" in text
 
 
