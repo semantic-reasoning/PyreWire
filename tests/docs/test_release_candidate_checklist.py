@@ -111,9 +111,11 @@ def test_required_workflows_and_release_workflow_guards_are_documented():
         "verifies release-local wheels and sdist artifacts before publish",
         "trusted publishing via OIDC",
         "least-privilege top-level permissions",
-        "restricts `id-token: write` to the publish job",
-        "publishes only after tag-triggered gates pass",
-        "Do not actually tag or publish",
+        "restricts `id-token: write` to the publish jobs",
+        "separates TestPyPI and production PyPI trusted publishing into explicit "
+        "`testpypi` and `pypi` GitHub environments",
+        "publishes production only after tag-triggered gates pass",
+        "Do not actually tag or publish production",
     ):
         assert release_guard in text
 
@@ -155,8 +157,7 @@ def test_testpypi_dry_run_gate_and_evidence_requirements_are_documented():
         "Production PyPI release remains gated on this dry-run evidence",
         "TestPyPI trusted publishing must be configured",
         "workflow identity",
-        "If TestPyPI requires an environment for trusted publishing, the workflow "
-        "configuration must match that environment",
+        "GitHub environment `testpypi`",
     ):
         assert required in text
 
