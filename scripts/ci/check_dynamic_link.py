@@ -82,9 +82,11 @@ def check_windows(wheel: Path) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory() as td:
         _extract(wheel, Path(td))
-        bundled = list(Path(td).rglob("wirelog*.dll"))
-        if not bundled:
-            errors.append(f"{wheel.name}: no wirelog DLL found")
+        bundled = {path.name.lower() for path in Path(td).rglob("*.dll")}
+        required = {"wirelog-1.dll", "nanoarrow.dll", "libxxhash.dll"}
+        missing = sorted(required - bundled)
+        if missing:
+            errors.append(f"{wheel.name}: missing Windows DLL(s): {', '.join(missing)}")
     return errors
 
 
