@@ -49,6 +49,40 @@ def test_script_rejects_missing_wheel(tmp_path: Path):
     assert "missing" in result.stderr.lower() or "no wheels" in result.stderr.lower()
 
 
+def test_script_rejects_windows_wheel_without_dependency_dlls(tmp_path: Path):
+    """A Windows wheel must include wirelog's runtime dependency DLLs."""
+    wheel = tmp_path / "pyrewire-1.0.0-cp312-cp312-win_amd64.whl"
+    with zipfile.ZipFile(wheel, "w") as zf:
+        zf.writestr("pyrewire/__init__.py", "")
+        zf.writestr("pyrewire/_lib/__init__.py", "")
+        zf.writestr("pyrewire/_lib/wirelog-1.dll", b"stub")
+    result = subprocess.run(
+        [sys.executable, str(_script()), str(wheel)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    assert "nanoarrow.dll" in result.stderr
+    assert "libxxhash.dll" in result.stderr
+
+
+def test_script_accepts_windows_wheel_with_runtime_dlls(tmp_path: Path):
+    """The Windows check is structural and can run on any host OS."""
+    wheel = tmp_path / "pyrewire-1.0.0-cp312-cp312-win_amd64.whl"
+    with zipfile.ZipFile(wheel, "w") as zf:
+        zf.writestr("pyrewire/__init__.py", "")
+        zf.writestr("pyrewire/_lib/__init__.py", "")
+        zf.writestr("pyrewire/_lib/wirelog-1.dll", b"stub")
+        zf.writestr("pyrewire/_lib/nanoarrow.dll", b"stub")
+        zf.writestr("pyrewire/_lib/libxxhash.dll", b"stub")
+    result = subprocess.run(
+        [sys.executable, str(_script()), str(wheel)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, f"stderr: {result.stderr}"
+
+
 @pytest.mark.skipif(sys.platform != "linux", reason="linux check path")
 def test_script_rejects_wheel_without_libwirelog(tmp_path: Path):
     """A wheel missing the bundled `libwirelog.so*` must fail the gate."""
