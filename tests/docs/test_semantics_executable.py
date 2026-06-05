@@ -69,7 +69,7 @@ def _block_param_id(page: Path, idx: int) -> str:
 
 _PARAMS: list[tuple[Path, int, str, str | None]] = []
 for _page in _semantics_pages():
-    for _idx, (_code, _expected) in enumerate(_extract_blocks(_page.read_text())):
+    for _idx, (_code, _expected) in enumerate(_extract_blocks(_page.read_text(encoding="utf-8"))):
         _PARAMS.append((_page, _idx, _code, _expected))
 
 

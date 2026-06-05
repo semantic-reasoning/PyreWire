@@ -94,6 +94,6 @@ def test_script_accepts_wheel_with_shared_object(tmp_path: Path):
 
 def test_wheels_workflow_runs_dynamic_link_check():
     """The dynamic-link script must run in the wheels.yml pipeline."""
-    wf = (_repo_root() / ".github" / "workflows" / "wheels.yml").read_text()
+    wf = (_repo_root() / ".github" / "workflows" / "wheels.yml").read_text(encoding="utf-8")
     assert "check_dynamic_link.py" in wf
     assert "verify dynamic link" in wf.lower()

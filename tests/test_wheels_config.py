@@ -23,7 +23,7 @@ def _repo_root() -> Path:
 
 
 def _read(path: str) -> str:
-    return (_repo_root() / path).read_text()
+    return (_repo_root() / path).read_text(encoding="utf-8")
 
 
 def test_pyproject_has_cibuildwheel_table():
@@ -177,7 +177,7 @@ def test_setup_py_forces_platform_wheel():
     """A pure wheel (`py3-none-any`) cannot run repair tooling."""
     setup_py = _repo_root() / "setup.py"
     assert setup_py.is_file(), "setup.py shim is required for platform-specific wheel tags"
-    text = setup_py.read_text()
+    text = setup_py.read_text(encoding="utf-8")
     assert "class _BinaryDistribution" in text
     assert "def has_ext_modules" in text
 
@@ -316,7 +316,7 @@ def test_build_wirelog_powershell_script_exists():
     """The Windows runner needs a PowerShell-flavoured build script."""
     ps1 = _repo_root() / "scripts" / "build_wirelog.ps1"
     assert ps1.is_file()
-    text = ps1.read_text()
+    text = ps1.read_text(encoding="utf-8")
     assert "meson" in text
     assert "WIRELOG_VERSION" in text
 

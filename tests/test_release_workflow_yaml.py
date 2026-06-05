@@ -33,7 +33,7 @@ skip_on_windows = pytest.mark.skipif(
 def _workflow() -> dict[str, Any]:
     path = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "release.yml"
     assert path.is_file(), f"release workflow missing: {path}"
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def _on_block() -> dict[str, Any]:
@@ -155,7 +155,7 @@ def test_download_wheels_uses_node24_artifact_action():
 def test_release_has_no_disabled_or_sdist_only_wheel_download():
     text = (
         Path(__file__).resolve().parent.parent / ".github" / "workflows" / "release.yml"
-    ).read_text()
+    ).read_text(encoding="utf-8")
     assert "if: ${{ false }}" not in text
     assert "sdist only" not in text.lower()
 

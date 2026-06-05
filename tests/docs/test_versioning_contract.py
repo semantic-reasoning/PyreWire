@@ -18,7 +18,7 @@ def _repo_root() -> Path:
 
 
 def _read(path: str) -> str:
-    return (_repo_root() / path).read_text()
+    return (_repo_root() / path).read_text(encoding="utf-8")
 
 
 def _versioning_row(version: str) -> list[str]:

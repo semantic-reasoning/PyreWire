@@ -29,7 +29,7 @@ def _repo_root() -> Path:
 def _workflow() -> dict[str, Any]:
     path = _repo_root() / ".github" / "workflows" / "nightly.yml"
     assert path.is_file(), f"missing nightly workflow at {path}"
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def test_nightly_workflow_runs_on_cron():
@@ -88,7 +88,9 @@ def test_failure_script_exists_and_is_executable():
 
 
 def test_failure_script_uses_label_and_creates_or_comments():
-    script = (_repo_root() / "scripts" / "ci" / "open_nightly_failure_issue.sh").read_text()
+    script = (_repo_root() / "scripts" / "ci" / "open_nightly_failure_issue.sh").read_text(
+        encoding="utf-8"
+    )
     assert 'LABEL="nightly-failure"' in script
     assert "gh issue create" in script
     assert "gh issue comment" in script

@@ -13,7 +13,7 @@ yaml = pytest.importorskip("yaml")
 def _workflow_text() -> str:
     path = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "ci.yml"
     assert path.is_file(), f"CI workflow missing: {path}"
-    return path.read_text()
+    return path.read_text(encoding="utf-8")
 
 
 def _workflow() -> dict[str, Any]:
@@ -52,7 +52,7 @@ def test_ci_uses_node24_actions():
 def test_all_workflows_use_node24_core_actions():
     workflow_dir = Path(__file__).resolve().parent.parent / ".github" / "workflows"
     for path in workflow_dir.glob("*.yml"):
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         assert "actions/checkout@v4" not in text, path
         assert "actions/checkout@v5" not in text, path
         assert "actions/setup-python@v5" not in text, path
