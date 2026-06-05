@@ -20,7 +20,7 @@ _MANIFEST = Path(__file__).parent / "data" / "wirelog_abi.txt"
 
 def _expected_symbols() -> list[str]:
     out: list[str] = []
-    for line in _MANIFEST.read_text().splitlines():
+    for line in _MANIFEST.read_text(encoding="utf-8").splitlines():
         s = line.strip()
         if not s or s.startswith("#"):
             continue

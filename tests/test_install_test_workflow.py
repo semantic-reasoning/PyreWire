@@ -14,7 +14,9 @@ def _repo_root() -> Path:
 
 
 def _workflow() -> dict:
-    return yaml.safe_load((_repo_root() / ".github" / "workflows" / "wheels.yml").read_text())
+    return yaml.safe_load(
+        (_repo_root() / ".github" / "workflows" / "wheels.yml").read_text(encoding="utf-8")
+    )
 
 
 def test_install_test_job_exists():

@@ -24,7 +24,7 @@ _VERSION_RE = re.compile(r'^version\s*=\s*"([^"]+)"\s*$', re.MULTILINE)
 
 
 def _project_version() -> str:
-    text = (_repo_root() / "pyproject.toml").read_text()
+    text = (_repo_root() / "pyproject.toml").read_text(encoding="utf-8")
     match = _VERSION_RE.search(text)
     if match is None:
         raise AssertionError('pyproject.toml has no `version = "..."` line')
@@ -68,7 +68,7 @@ def test_topmost_released_section_matches_pyproject():
             f"{project_version} tracks wirelog main/nightly and is not a released changelog section"
         )
 
-    changelog = (_repo_root() / "CHANGELOG.md").read_text()
+    changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     top = _topmost_released_version(changelog)
     assert top is not None, "CHANGELOG must have at least one released section"
     assert top == project_version, (
@@ -78,17 +78,17 @@ def test_topmost_released_section_matches_pyproject():
 
 
 def test_changelog_keep_a_changelog_intro_present():
-    text = (_repo_root() / "CHANGELOG.md").read_text()
+    text = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     assert "Keep a Changelog" in text
 
 
 def test_unreleased_section_is_empty_for_100_release():
-    changelog = (_repo_root() / "CHANGELOG.md").read_text()
+    changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     assert _section(changelog, "Unreleased") == "## [Unreleased]"
 
 
 def test_100_release_notes_include_publishable_contract_facts():
-    changelog = (_repo_root() / "CHANGELOG.md").read_text()
+    changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     section = _section(changelog, "1.0.0")
     rendered_text = re.sub(r"\s+", " ", section)
 
@@ -148,7 +148,7 @@ def test_100_release_notes_include_publishable_contract_facts():
 
 
 def test_changelog_distinguishes_wirelog_runtime_floor_from_validated_ref():
-    changelog = (_repo_root() / "CHANGELOG.md").read_text()
+    changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     release_100 = _section(changelog, "1.0.0")
     release_041 = _section(changelog, "0.41.0")
     rendered_041 = re.sub(r"\s+", " ", release_041)
@@ -164,7 +164,7 @@ def test_changelog_distinguishes_wirelog_runtime_floor_from_validated_ref():
 
 
 def test_100_release_compare_links_are_tag_to_tag():
-    changelog = (_repo_root() / "CHANGELOG.md").read_text()
+    changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
 
     assert (
         "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...HEAD"

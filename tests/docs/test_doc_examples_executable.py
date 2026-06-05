@@ -61,7 +61,7 @@ def _doc_pages() -> list[Path]:
 
 _PARAMS: list[tuple[Path, int, str]] = []
 for _page in _doc_pages():
-    for _idx, _code in enumerate(_extract_blocks(_page.read_text())):
+    for _idx, _code in enumerate(_extract_blocks(_page.read_text(encoding="utf-8"))):
         _PARAMS.append((_page, _idx, _code))
 
 

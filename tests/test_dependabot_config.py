@@ -13,7 +13,7 @@ yaml = pytest.importorskip("yaml")
 def _config() -> dict[str, Any]:
     path = Path(__file__).resolve().parent.parent / ".github" / "dependabot.yml"
     assert path.is_file(), f"Dependabot config missing: {path}"
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def _updates_by_ecosystem() -> dict[str, dict[str, Any]]:
