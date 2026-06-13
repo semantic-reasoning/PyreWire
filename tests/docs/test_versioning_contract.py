@@ -10,7 +10,11 @@ import pytest
 
 yaml = pytest.importorskip("yaml")
 
-PINNED_WIRELOG_SHA = "272edf3a24b25676f12c4b843d55510f5048dd2f"
+# The wirelog ref the current release bundles and validates against.
+PINNED_WIRELOG_SHA = "0c6e0cdaee7db069be5d8d896bb59bdcb15673e9"
+# Historical pins kept frozen in the compatibility table, one per release.
+WIRELOG_SHA_100 = "272edf3a24b25676f12c4b843d55510f5048dd2f"
+WIRELOG_SHA_101 = PINNED_WIRELOG_SHA
 
 
 def _repo_root() -> Path:
@@ -32,8 +36,18 @@ def test_versioning_documents_100_wirelog_pin_and_runtime_floor():
     minimum, validated_ref, notes = _versioning_row("1.0.0")
 
     assert minimum == "`0.44.0`"
-    assert validated_ref == f"`{PINNED_WIRELOG_SHA}`"
+    assert validated_ref == f"`{WIRELOG_SHA_100}`"
     assert "v0.50.0" in notes
+    assert "runtime minimum remains `0.44.0`" in notes
+    assert "peeled tag SHA" in notes
+
+
+def test_versioning_documents_101_wirelog_pin_and_runtime_floor():
+    minimum, validated_ref, notes = _versioning_row("1.0.1")
+
+    assert minimum == "`0.44.0`"
+    assert validated_ref == f"`{WIRELOG_SHA_101}`"
+    assert "v0.51.0" in notes
     assert "runtime minimum remains `0.44.0`" in notes
     assert "peeled tag SHA" in notes
 
@@ -49,7 +63,7 @@ def test_versioning_explains_sdist_and_wheel_wirelog_behavior():
     assert "validated ref" in text
 
 
-def test_wirelog_pins_and_loader_floor_match_100_contract():
+def test_wirelog_pins_and_loader_floor_match_current_contract():
     pyproject = tomllib.loads(_read("pyproject.toml"))
     ci = yaml.safe_load(_read(".github/workflows/ci.yml"))
     loader = _read("src/pyrewire/_ffi/_loader.py")

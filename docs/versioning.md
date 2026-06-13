@@ -55,6 +55,7 @@ release to publish; it is **not** tied to the wirelog change.
 | PyreWire        | Minimum wirelog | Validated wirelog ref                      | Notes                   |
 | --------------- | --------------- | ------------------------------------------ | ----------------------- |
 | `1.0.0`         | `0.44.0`        | `272edf3a24b25676f12c4b843d55510f5048dd2f` | Validated against wirelog `v0.50.0` (peeled tag SHA); runtime minimum remains `0.44.0`. |
+| `1.0.1`         | `0.44.0`        | `0c6e0cdaee7db069be5d8d896bb59bdcb15673e9` | Validated against wirelog `v0.51.0` (peeled tag SHA); runtime minimum remains `0.44.0`. Bundled engine bumped to pick up the wirelog#914 single-body-rule derivation fix (#165). |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).

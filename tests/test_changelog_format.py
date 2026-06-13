@@ -163,11 +163,15 @@ def test_changelog_distinguishes_wirelog_runtime_floor_from_validated_ref():
     )
 
 
-def test_100_release_compare_links_are_tag_to_tag():
+def test_release_compare_links_are_tag_to_tag():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
 
     assert (
-        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...HEAD"
+        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.1...HEAD"
+        in changelog
+    )
+    assert (
+        "[1.0.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...v1.0.1"
         in changelog
     )
     assert (
