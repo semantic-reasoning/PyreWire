@@ -8,6 +8,26 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-13
+
+### Changed
+- The bundled and validated wirelog ref moves from `v0.50.0` to
+  `v0.51.0` at peeled SHA
+  `0c6e0cdaee7db069be5d8d896bb59bdcb15673e9`. This is a wirelog-only
+  rebuild: the PyreWire public API is unchanged and the minimum
+  compatible runtime wirelog version remains `0.44.0`.
+
+### Fixed
+- A rule with a single `relation(...)` body atom now derives its head
+  when the program also contains the recursive `edge`/`path` rules.
+  Previously such one-condition rules (for example `requires_review(...)`
+  and `warning(...)`) were silently missing from `EasySession.step()`
+  results. The root cause was a wirelog evaluation bug — the iteration
+  context was not reset for non-recursive strata — fixed upstream in
+  wirelog#914 and first shipped in wirelog `v0.51.0`. PyreWire performs
+  no rule evaluation of its own, so bumping the bundled engine is the
+  fix (#165).
+
 ## [1.0.0] - 2026-05-27
 
 ### Added
@@ -121,6 +141,7 @@ wirelog floor and a validated wirelog ref (see
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...v1.0.0
 [0.41.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v0.41.0
