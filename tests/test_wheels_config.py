@@ -280,10 +280,12 @@ def test_wheels_workflow_uses_cibuildwheel_action():
     assert any("pypa/cibuildwheel" in s.get("uses", "") for s in steps)
 
 
-def test_wheels_workflow_uses_cibuildwheel_v3_4_1():
-    text = _read(".github/workflows/wheels.yml")
-    assert "pypa/cibuildwheel@v3.4.1" in text
-    assert "pypa/cibuildwheel@v2.21.3" not in text
+def test_wheel_workflows_use_cibuildwheel_v4_0_0():
+    for path in (".github/workflows/wheels.yml", ".github/workflows/release.yml"):
+        text = _read(path)
+        assert "pypa/cibuildwheel@v4.0.0" in text
+        assert "pypa/cibuildwheel@v3.4.1" not in text
+        assert "pypa/cibuildwheel@v2.21.3" not in text
 
 
 def test_cibuildwheel_test_requires_pytest_cov():
