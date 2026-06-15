@@ -907,6 +907,89 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#error-code-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error-code mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error-code mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyrewire-only-errors-not-produced-by-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyreWire-only errors (not produced by check())
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exception-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exception handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyrewire._core.errors.check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyrewire._core.errors.error_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        error_string
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exception-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exception classes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pyrewire._core.errors.WirelogError" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1064,6 +1147,206 @@
 
 
 <h1 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h1>
+<p>Every fallible wirelog C entry point returns a <code>wirelog_error_t</code> integer code.
+The <a class="autorefs autorefs-internal" title="pyrewire._core.errors.check" href="#pyrewire._core.errors.check"><code>check()</code></a> helper maps any non-OK code to the
+matching typed Python exception, so callers can write
+<code>except CompoundBusyError:</code> instead of inspecting raw integers.
+PyreWire adds three loader/session/intern-level errors —
+<a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogVersionError" href="#pyrewire._core.errors.WirelogVersionError"><code>WirelogVersionError</code></a>,
+<a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogModeError" href="#pyrewire._core.errors.WirelogModeError"><code>WirelogModeError</code></a>, and
+<a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogInternError" href="#pyrewire._core.errors.WirelogInternError"><code>WirelogInternError</code></a> —
+that have no C counterpart and are never produced by <code>check()</code>.</p>
+<h2 id="error-code-mapping">Error-code mapping<a class="headerlink" href="#error-code-mapping" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th><code>wirelog_error_t</code></th>
+<th>Code</th>
+<th><code>error_string</code> text</th>
+<th>Exception class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WIRELOG_OK</code></td>
+<td>0</td>
+<td>ok</td>
+<td>— (<code>check()</code> returns <code>None</code>)</td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_PARSE</code></td>
+<td>1</td>
+<td>parse error</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.ParseError" href="#pyrewire._core.errors.ParseError"><code>ParseError</code></a></td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_INVALID_IR</code></td>
+<td>2</td>
+<td>invalid IR</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.InvalidIRError" href="#pyrewire._core.errors.InvalidIRError"><code>InvalidIRError</code></a></td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_EXEC</code></td>
+<td>3</td>
+<td>execution error</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.ExecError" href="#pyrewire._core.errors.ExecError"><code>ExecError</code></a></td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_MEMORY</code></td>
+<td>4</td>
+<td>out of memory</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogMemoryError" href="#pyrewire._core.errors.WirelogMemoryError"><code>WirelogMemoryError</code></a></td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_IO</code></td>
+<td>5</td>
+<td>I/O error</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogIOError" href="#pyrewire._core.errors.WirelogIOError"><code>WirelogIOError</code></a></td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_COMPOUND_SATURATED</code></td>
+<td>6</td>
+<td>compound arena saturated</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.CompoundSaturatedError" href="#pyrewire._core.errors.CompoundSaturatedError"><code>CompoundSaturatedError</code></a></td>
+</tr>
+<tr>
+<td><code>WIRELOG_ERR_COMPOUND_BUSY</code></td>
+<td>7</td>
+<td>compound arena busy</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.CompoundBusyError" href="#pyrewire._core.errors.CompoundBusyError"><code>CompoundBusyError</code></a></td>
+</tr>
+<tr>
+<td>(any other non-zero)</td>
+<td>255</td>
+<td>unknown error</td>
+<td><a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogError" href="#pyrewire._core.errors.WirelogError"><code>WirelogError</code></a> (base)</td>
+</tr>
+</tbody>
+</table>
+<p>Codes with no specific class (including <code>WIRELOG_ERR_UNKNOWN</code>/255) raise the
+base <a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogError" href="#pyrewire._core.errors.WirelogError"><code>WirelogError</code></a> via <code>check()</code>'s
+fallback.</p>
+<h3 id="pyrewire-only-errors-not-produced-by-check">PyreWire-only errors (not produced by <code>check()</code>)<a class="headerlink" href="#pyrewire-only-errors-not-produced-by-check" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogVersionError" href="#pyrewire._core.errors.WirelogVersionError"><code>WirelogVersionError</code></a> — raised
+  when the loaded libwirelog is missing an optional capability or symbol
+  required by a PyreWire API.</li>
+<li><a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogModeError" href="#pyrewire._core.errors.WirelogModeError"><code>WirelogModeError</code></a> — raised by
+  session classes when an operation is attempted in the wrong session mode
+  (step/snapshot/query); the session must be closed and reopened to switch
+  modes.</li>
+<li><a class="autorefs autorefs-internal" title="pyrewire._core.errors.WirelogInternError" href="#pyrewire._core.errors.WirelogInternError"><code>WirelogInternError</code></a> — raised
+  when a symbol-id reverse lookup fails.</li>
+</ul>
+<h2 id="exception-handling">Exception handling<a class="headerlink" href="#exception-handling" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyrewire</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParseError</span><span class="p">,</span> <span class="n">Program</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyrewire</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompoundBusyError</span>  <span class="c1"># see docs/semantics/compounds.md for retry loop</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">prog</span> <span class="o">=</span> <span class="n">Program</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;rules.wl&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">except</span> <span class="n">ParseError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="c1"># line and column are populated for file-based parsing</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">line</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">exc</span><span class="o">.</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">exc</span><span class="o">.</span><span class="n">line</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parse failed at </span><span class="si">{</span><span class="n">loc</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><a class="autorefs autorefs-internal" title="pyrewire._core.errors.CompoundBusyError" href="#pyrewire._core.errors.CompoundBusyError"><code>CompoundBusyError</code></a> is a transient arena-contention error that should be retried with backoff — see the <a href="../../semantics/compounds/#retry-loop-for-compoundbusyerror">retry loop in the Compounds semantics guide</a>.</p>
+<h2 id="api-reference">API reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<p><code>error_string()</code> prefers the live <code>wirelog_error_string</code> symbol when available
+and falls back to a PyreWire-side text table on older builds, so its output may
+differ slightly from the table above (e.g. <code>OK</code> vs <code>ok</code>).</p>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="pyrewire._core.errors.check" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">pyrewire._core.errors.check</span>
+
+
+<a href="#pyrewire._core.errors.check" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">check</span><span class="p">(</span><span class="n">rc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Raise the matching <code>WirelogError</code> subclass if <code>rc != WIRELOG_OK</code>.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-271">271</a></span>
+<span class="normal"><a href="#__codelineno-0-272">272</a></span>
+<span class="normal"><a href="#__codelineno-0-273">273</a></span>
+<span class="normal"><a href="#__codelineno-0-274">274</a></span>
+<span class="normal"><a href="#__codelineno-0-275">275</a></span>
+<span class="normal"><a href="#__codelineno-0-276">276</a></span>
+<span class="normal"><a href="#__codelineno-0-277">277</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-271" name="__codelineno-0-271"></a><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">rc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise the matching `WirelogError` subclass if `rc != WIRELOG_OK`.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a>    <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">OK</span><span class="p">):</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>        <span class="k">return</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>    <span class="bp">cls</span> <span class="o">=</span> <span class="n">_CODE_TO_CLS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">WirelogError</span><span class="p">)</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>    <span class="k">raise</span> <span class="bp">cls</span><span class="p">(</span><span class="n">error_string</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="pyrewire._core.errors.error_string" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">pyrewire._core.errors.error_string</span>
+
+
+<a href="#pyrewire._core.errors.error_string" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">error_string</span><span class="p">(</span><span class="n">rc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Return a human-readable description for <code>rc</code>.</p>
+<p>Prefers <code>LIB.wirelog_error_string(rc)</code> when available; otherwise
+falls back to a fixed PyreWire-side table. Never raises.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-254">254</a></span>
+<span class="normal"><a href="#__codelineno-0-255">255</a></span>
+<span class="normal"><a href="#__codelineno-0-256">256</a></span>
+<span class="normal"><a href="#__codelineno-0-257">257</a></span>
+<span class="normal"><a href="#__codelineno-0-258">258</a></span>
+<span class="normal"><a href="#__codelineno-0-259">259</a></span>
+<span class="normal"><a href="#__codelineno-0-260">260</a></span>
+<span class="normal"><a href="#__codelineno-0-261">261</a></span>
+<span class="normal"><a href="#__codelineno-0-262">262</a></span>
+<span class="normal"><a href="#__codelineno-0-263">263</a></span>
+<span class="normal"><a href="#__codelineno-0-264">264</a></span>
+<span class="normal"><a href="#__codelineno-0-265">265</a></span>
+<span class="normal"><a href="#__codelineno-0-266">266</a></span>
+<span class="normal"><a href="#__codelineno-0-267">267</a></span>
+<span class="normal"><a href="#__codelineno-0-268">268</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="k">def</span><span class="w"> </span><span class="nf">error_string</span><span class="p">(</span><span class="n">rc</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a human-readable description for `rc`.</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256"></a>
+<a id="__codelineno-0-257" name="__codelineno-0-257"></a><span class="sd">    Prefers `LIB.wirelog_error_string(rc)` when available; otherwise</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258"></a><span class="sd">    falls back to a fixed PyreWire-side table. Never raises.</span>
+<a id="__codelineno-0-259" name="__codelineno-0-259"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+<a id="__codelineno-0-261" name="__codelineno-0-261"></a>    <span class="k">if</span> <span class="n">_ERROR_STRING_FN</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-263" name="__codelineno-0-263"></a>            <span class="n">raw</span> <span class="o">=</span> <span class="n">_ERROR_STRING_FN</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+<a id="__codelineno-0-264" name="__codelineno-0-264"></a>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265"></a>            <span class="n">raw</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>        <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>            <span class="k">return</span> <span class="n">raw</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore[no-any-return]</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>    <span class="k">return</span> <span class="n">_FALLBACK_TEXT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;wirelog_error_t=</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div><h2 id="exception-classes">Exception classes<a class="headerlink" href="#exception-classes" title="Permanent link">&para;</a></h2>
 
 
 <div class="doc doc-object doc-class">
@@ -1094,13 +1377,13 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for every wirelog-originated error.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for every wirelog-originated error.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1142,7 +1425,58 @@
 
 
 
-        <p><code>WIRELOG_ERR_PARSE</code>. Carries <code>line</code>/<code>column</code>/<code>source</code> when available.</p>
+        <p>Raised when the wirelog parser rejects a program (<code>WIRELOG_ERR_PARSE</code>, code 1).</p>
+<p>The optional attributes <code>line</code>, <code>column</code>, and <code>source</code> are
+populated on a best-effort basis.  They are usually <code>None</code> unless the
+error was raised from file parsing via <code>Program.from_file</code>; string
+parsing via <code>Program.from_string</code> does not populate them.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="pyrewire._core.errors.ParseError.line">line</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1-based line number where the parse error occurred, or
+<code>None</code> if unavailable.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyrewire._core.errors.ParseError.column">column</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>1-based column number where the parse error occurred, or
+<code>None</code> if unavailable.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyrewire._core.errors.ParseError.source">source</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to the source file being parsed, or <code>None</code> if
+unavailable.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
 
@@ -1153,12 +1487,7 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-41">41</a></span>
 <span class="normal"><a href="#__codelineno-0-42">42</a></span>
 <span class="normal"><a href="#__codelineno-0-43">43</a></span>
 <span class="normal"><a href="#__codelineno-0-44">44</a></span>
@@ -1169,23 +1498,56 @@
 <span class="normal"><a href="#__codelineno-0-49">49</a></span>
 <span class="normal"><a href="#__codelineno-0-50">50</a></span>
 <span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">class</span><span class="w"> </span><span class="nc">ParseError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;`WIRELOG_ERR_PARSE`. Carries `line`/`column`/`source` when available.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">PARSE</span><span class="p">)</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>        <span class="o">*</span><span class="p">,</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="n">line</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>        <span class="n">column</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">line</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">column</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+<span class="normal"><a href="#__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#__codelineno-0-71">71</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="k">class</span><span class="w"> </span><span class="nc">ParseError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the wirelog parser rejects a program (``WIRELOG_ERR_PARSE``, code 1).</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    The optional attributes ``line``, ``column``, and ``source`` are</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    populated on a best-effort basis.  They are usually ``None`` unless the</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    error was raised from file parsing via ``Program.from_file``; string</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    parsing via ``Program.from_string`` does not populate them.</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">    Attributes:</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">        line: 1-based line number where the parse error occurred, or</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">            ``None`` if unavailable.</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        column: 1-based column number where the parse error occurred, or</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">            ``None`` if unavailable.</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">        source: Path to the source file being parsed, or ``None`` if</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">            unavailable.</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">PARSE</span><span class="p">)</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="o">*</span><span class="p">,</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="n">line</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="n">column</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">line</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">column</span> <span class="o">=</span> <span class="n">column</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1227,6 +1589,12 @@
 
 
 
+        <p>Raised when the program's IR fails structural validation (<code>WIRELOG_ERR_INVALID_IR</code>,
+code 2).</p>
+<p>Produced by <code>check()</code> when the C engine rejects a compiled IR before
+execution begins.  Typically indicates a bug in rule compilation or a
+corrupted program handle.</p>
+
 
 
 
@@ -1236,9 +1604,25 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="k">class</span><span class="w"> </span><span class="nc">InvalidIRError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">INVALID_IR</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#__codelineno-0-83">83</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="k">class</span><span class="w"> </span><span class="nc">InvalidIRError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the program&#39;s IR fails structural validation (``WIRELOG_ERR_INVALID_IR``,</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    code 2).</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">    Produced by ``check()`` when the C engine rejects a compiled IR before</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    execution begins.  Typically indicates a bug in rule compilation or a</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="sd">    corrupted program handle.</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">INVALID_IR</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1280,6 +1664,26 @@
 
 
 
+        <p>Catch-all error for runtime failures in the wirelog engine (<code>WIRELOG_ERR_EXEC</code>,
+code 3).</p>
+<p>This is the broadest error class in PyreWire.  Beyond engine execution
+failures it is also raised directly (without going through <code>check()</code>)
+for a variety of precondition violations:</p>
+<ul>
+<li><strong>Invalid arguments</strong> — e.g. an unknown or undeclared relation name
+  (<code>session.py</code>, <code>program.py</code>).</li>
+<li><strong>Closed or null handles</strong> — operations attempted on a closed
+  <code>BatchProgram</code> or <code>Result</code>, or a NULL handle returned by the C
+  library (<code>batch.py</code>, <code>session.py</code>).</li>
+<li><strong>Missing / unknown relations</strong> — schema lookups that find no entry
+  for the requested relation (<code>program.py</code>, <code>session.py</code>).</li>
+<li><strong>Wirelog call failures</strong> — when the C call returns a non-zero code
+  that is not mapped to a more specific subclass.</li>
+</ul>
+<p>When catching engine errors broadly, catch <code>ExecError</code>; for finer
+control catch the more specific subclasses (<code>ParseError</code>,
+<code>InvalidIRError</code>, etc.) first.</p>
+
 
 
 
@@ -1289,9 +1693,53 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExecError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">EXEC</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-86"> 86</a></span>
+<span class="normal"><a href="#__codelineno-0-87"> 87</a></span>
+<span class="normal"><a href="#__codelineno-0-88"> 88</a></span>
+<span class="normal"><a href="#__codelineno-0-89"> 89</a></span>
+<span class="normal"><a href="#__codelineno-0-90"> 90</a></span>
+<span class="normal"><a href="#__codelineno-0-91"> 91</a></span>
+<span class="normal"><a href="#__codelineno-0-92"> 92</a></span>
+<span class="normal"><a href="#__codelineno-0-93"> 93</a></span>
+<span class="normal"><a href="#__codelineno-0-94"> 94</a></span>
+<span class="normal"><a href="#__codelineno-0-95"> 95</a></span>
+<span class="normal"><a href="#__codelineno-0-96"> 96</a></span>
+<span class="normal"><a href="#__codelineno-0-97"> 97</a></span>
+<span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
+<span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
+<span class="normal"><a href="#__codelineno-0-100">100</a></span>
+<span class="normal"><a href="#__codelineno-0-101">101</a></span>
+<span class="normal"><a href="#__codelineno-0-102">102</a></span>
+<span class="normal"><a href="#__codelineno-0-103">103</a></span>
+<span class="normal"><a href="#__codelineno-0-104">104</a></span>
+<span class="normal"><a href="#__codelineno-0-105">105</a></span>
+<span class="normal"><a href="#__codelineno-0-106">106</a></span>
+<span class="normal"><a href="#__codelineno-0-107">107</a></span>
+<span class="normal"><a href="#__codelineno-0-108">108</a></span>
+<span class="normal"><a href="#__codelineno-0-109">109</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExecError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Catch-all error for runtime failures in the wirelog engine (``WIRELOG_ERR_EXEC``,</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">    code 3).</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="sd">    This is the broadest error class in PyreWire.  Beyond engine execution</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">    failures it is also raised directly (without going through ``check()``)</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">    for a variety of precondition violations:</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">    - **Invalid arguments** — e.g. an unknown or undeclared relation name</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a><span class="sd">      (``session.py``, ``program.py``).</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="sd">    - **Closed or null handles** — operations attempted on a closed</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="sd">      ``BatchProgram`` or ``Result``, or a NULL handle returned by the C</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="sd">      library (``batch.py``, ``session.py``).</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="sd">    - **Missing / unknown relations** — schema lookups that find no entry</span>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">      for the requested relation (``program.py``, ``session.py``).</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="sd">    - **Wirelog call failures** — when the C call returns a non-zero code</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">      that is not mapped to a more specific subclass.</span>
+<a id="__codelineno-0-103" name="__codelineno-0-103"></a>
+<a id="__codelineno-0-104" name="__codelineno-0-104"></a><span class="sd">    When catching engine errors broadly, catch ``ExecError``; for finer</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105"></a><span class="sd">    control catch the more specific subclasses (``ParseError``,</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106"></a><span class="sd">    ``InvalidIRError``, etc.) first.</span>
+<a id="__codelineno-0-107" name="__codelineno-0-107"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-108" name="__codelineno-0-108"></a>
+<a id="__codelineno-0-109" name="__codelineno-0-109"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">EXEC</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1333,7 +1781,14 @@
 
 
 
-        <p><code>WIRELOG_ERR_MEMORY</code>. NOT a subclass of built-in <code>MemoryError</code>.</p>
+        <p>Raised when the wirelog engine cannot allocate memory (<code>WIRELOG_ERR_MEMORY</code>,
+code 4).</p>
+<p>This class is intentionally <strong>not</strong> a subclass of the built-in
+<code>MemoryError</code>.  Subclassing <code>MemoryError</code> can interact badly with
+the CPython interpreter's low-memory handling and recursion-limit
+machinery, producing hard-to-diagnose crashes.  Callers that need to
+catch both should list them explicitly:
+<code>except (WirelogMemoryError, MemoryError)</code>.</p>
 
 
 
@@ -1344,13 +1799,31 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogMemoryError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;`WIRELOG_ERR_MEMORY`. NOT a subclass of built-in `MemoryError`.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-112">112</a></span>
+<span class="normal"><a href="#__codelineno-0-113">113</a></span>
+<span class="normal"><a href="#__codelineno-0-114">114</a></span>
+<span class="normal"><a href="#__codelineno-0-115">115</a></span>
+<span class="normal"><a href="#__codelineno-0-116">116</a></span>
+<span class="normal"><a href="#__codelineno-0-117">117</a></span>
+<span class="normal"><a href="#__codelineno-0-118">118</a></span>
+<span class="normal"><a href="#__codelineno-0-119">119</a></span>
+<span class="normal"><a href="#__codelineno-0-120">120</a></span>
+<span class="normal"><a href="#__codelineno-0-121">121</a></span>
+<span class="normal"><a href="#__codelineno-0-122">122</a></span>
+<span class="normal"><a href="#__codelineno-0-123">123</a></span>
+<span class="normal"><a href="#__codelineno-0-124">124</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogMemoryError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the wirelog engine cannot allocate memory (``WIRELOG_ERR_MEMORY``,</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">    code 4).</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115"></a>
+<a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">    This class is intentionally **not** a subclass of the built-in</span>
+<a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">    ``MemoryError``.  Subclassing ``MemoryError`` can interact badly with</span>
+<a id="__codelineno-0-118" name="__codelineno-0-118"></a><span class="sd">    the CPython interpreter&#39;s low-memory handling and recursion-limit</span>
+<a id="__codelineno-0-119" name="__codelineno-0-119"></a><span class="sd">    machinery, producing hard-to-diagnose crashes.  Callers that need to</span>
+<a id="__codelineno-0-120" name="__codelineno-0-120"></a><span class="sd">    catch both should list them explicitly:</span>
+<a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="sd">    ``except (WirelogMemoryError, MemoryError)``.</span>
+<a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-123" name="__codelineno-0-123"></a>
+<a id="__codelineno-0-124" name="__codelineno-0-124"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1392,6 +1865,14 @@
 
 
 
+        <p>Raised when an I/O adapter registry operation fails (<code>WIRELOG_ERR_IO</code>,
+code 5).</p>
+<p>Raised directly (without going through <code>check()</code>) by the I/O adapter
+registry in <code>io_adapter.py</code> when <code>wirelog_io_register_adapter</code> or
+<code>wirelog_io_unregister_adapter</code> returns a non-zero code.  It is also
+reachable via <code>check()</code> if the C engine returns code 5 for other I/O
+failures.</p>
+
 
 
 
@@ -1401,9 +1882,29 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogIOError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">IO</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-127">127</a></span>
+<span class="normal"><a href="#__codelineno-0-128">128</a></span>
+<span class="normal"><a href="#__codelineno-0-129">129</a></span>
+<span class="normal"><a href="#__codelineno-0-130">130</a></span>
+<span class="normal"><a href="#__codelineno-0-131">131</a></span>
+<span class="normal"><a href="#__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#__codelineno-0-134">134</a></span>
+<span class="normal"><a href="#__codelineno-0-135">135</a></span>
+<span class="normal"><a href="#__codelineno-0-136">136</a></span>
+<span class="normal"><a href="#__codelineno-0-137">137</a></span>
+<span class="normal"><a href="#__codelineno-0-138">138</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogIOError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when an I/O adapter registry operation fails (``WIRELOG_ERR_IO``,</span>
+<a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">    code 5).</span>
+<a id="__codelineno-0-130" name="__codelineno-0-130"></a>
+<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    Raised directly (without going through ``check()``) by the I/O adapter</span>
+<a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">    registry in ``io_adapter.py`` when ``wirelog_io_register_adapter`` or</span>
+<a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    ``wirelog_io_unregister_adapter`` returns a non-zero code.  It is also</span>
+<a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">    reachable via ``check()`` if the C engine returns code 5 for other I/O</span>
+<a id="__codelineno-0-135" name="__codelineno-0-135"></a><span class="sd">    failures.</span>
+<a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-137" name="__codelineno-0-137"></a>
+<a id="__codelineno-0-138" name="__codelineno-0-138"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">IO</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1445,6 +1946,14 @@
 
 
 
+        <p>Raised when the compound arena's epoch counter is exhausted
+(<code>WIRELOG_ERR_COMPOUND_SATURATED</code>, code 6).</p>
+<p>Corresponds to an <code>ENOSPC</code>-style condition: the arena has no more
+epoch slots available and cannot accept new compounds.  This error is
+<strong>not retryable</strong> — the session must be closed and reopened to obtain a
+fresh arena.  See <code>docs/semantics/compounds.md</code> for the epoch
+lifetime model.</p>
+
 
 
 
@@ -1454,9 +1963,29 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="k">class</span><span class="w"> </span><span class="nc">CompoundSaturatedError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">COMPOUND_SATURATED</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-141">141</a></span>
+<span class="normal"><a href="#__codelineno-0-142">142</a></span>
+<span class="normal"><a href="#__codelineno-0-143">143</a></span>
+<span class="normal"><a href="#__codelineno-0-144">144</a></span>
+<span class="normal"><a href="#__codelineno-0-145">145</a></span>
+<span class="normal"><a href="#__codelineno-0-146">146</a></span>
+<span class="normal"><a href="#__codelineno-0-147">147</a></span>
+<span class="normal"><a href="#__codelineno-0-148">148</a></span>
+<span class="normal"><a href="#__codelineno-0-149">149</a></span>
+<span class="normal"><a href="#__codelineno-0-150">150</a></span>
+<span class="normal"><a href="#__codelineno-0-151">151</a></span>
+<span class="normal"><a href="#__codelineno-0-152">152</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-141" name="__codelineno-0-141"></a><span class="k">class</span><span class="w"> </span><span class="nc">CompoundSaturatedError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-142" name="__codelineno-0-142"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the compound arena&#39;s epoch counter is exhausted</span>
+<a id="__codelineno-0-143" name="__codelineno-0-143"></a><span class="sd">    (``WIRELOG_ERR_COMPOUND_SATURATED``, code 6).</span>
+<a id="__codelineno-0-144" name="__codelineno-0-144"></a>
+<a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="sd">    Corresponds to an ``ENOSPC``-style condition: the arena has no more</span>
+<a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="sd">    epoch slots available and cannot accept new compounds.  This error is</span>
+<a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="sd">    **not retryable** — the session must be closed and reopened to obtain a</span>
+<a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="sd">    fresh arena.  See ``docs/semantics/compounds.md`` for the epoch</span>
+<a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="sd">    lifetime model.</span>
+<a id="__codelineno-0-150" name="__codelineno-0-150"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-151" name="__codelineno-0-151"></a>
+<a id="__codelineno-0-152" name="__codelineno-0-152"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">COMPOUND_SATURATED</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1498,6 +2027,13 @@
 
 
 
+        <p>Raised when another worker holds the compound arena epoch
+(<code>WIRELOG_ERR_COMPOUND_BUSY</code>, code 7).</p>
+<p>Corresponds to an <code>EBUSY</code>-style condition: the arena epoch is
+currently owned by a concurrent writer.  This error is <strong>transient</strong> —
+callers should retry the operation with an appropriate backoff strategy
+rather than propagating or aborting.</p>
+
 
 
 
@@ -1507,9 +2043,27 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-77">77</a></span>
-<span class="normal"><a href="#__codelineno-0-78">78</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="k">class</span><span class="w"> </span><span class="nc">CompoundBusyError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">COMPOUND_BUSY</span><span class="p">)</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-155">155</a></span>
+<span class="normal"><a href="#__codelineno-0-156">156</a></span>
+<span class="normal"><a href="#__codelineno-0-157">157</a></span>
+<span class="normal"><a href="#__codelineno-0-158">158</a></span>
+<span class="normal"><a href="#__codelineno-0-159">159</a></span>
+<span class="normal"><a href="#__codelineno-0-160">160</a></span>
+<span class="normal"><a href="#__codelineno-0-161">161</a></span>
+<span class="normal"><a href="#__codelineno-0-162">162</a></span>
+<span class="normal"><a href="#__codelineno-0-163">163</a></span>
+<span class="normal"><a href="#__codelineno-0-164">164</a></span>
+<span class="normal"><a href="#__codelineno-0-165">165</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="k">class</span><span class="w"> </span><span class="nc">CompoundBusyError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when another worker holds the compound arena epoch</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">    (``WIRELOG_ERR_COMPOUND_BUSY``, code 7).</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">    Corresponds to an ``EBUSY``-style condition: the arena epoch is</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="sd">    currently owned by a concurrent writer.  This error is **transient** —</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="sd">    callers should retry the operation with an appropriate backoff strategy</span>
+<a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">    rather than propagating or aborting.</span>
+<a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164"></a>
+<a id="__codelineno-0-165" name="__codelineno-0-165"></a>    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ErrorCode</span><span class="o">.</span><span class="n">COMPOUND_BUSY</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1551,7 +2105,18 @@
 
 
 
-        <p>libwirelog reports a version different from <code>pyrewire.__version__</code>.</p>
+        <p>Raised when the loaded libwirelog is missing an optional capability
+required by a PyreWire API.</p>
+<p>This exception has no wirelog C counterpart and is never produced by
+<code>check()</code>.  It acts as a capability/symbol gate: if libwirelog does not
+export a symbol that a PyreWire API requires, that API raises this error
+rather than crashing.  For example, <code>Program.relation_ir</code> requires
+<code>wirelog_program_get_relation_ir</code> (added in wirelog#860, &gt; 0.41.0) and
+raises <code>WirelogVersionError</code> against older libwirelog builds that lack
+it.</p>
+<p>Note: the loader's minimum-version check (<code>_ffi/_loader.py</code>) raises a
+plain <code>Exception</code> subclass (<code>_loader.WirelogVersionError</code>), not this
+class.</p>
 
 
 
@@ -1562,9 +2127,37 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-84">84</a></span>
-<span class="normal"><a href="#__codelineno-0-85">85</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogVersionError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;libwirelog reports a version different from `pyrewire.__version__`.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-171">171</a></span>
+<span class="normal"><a href="#__codelineno-0-172">172</a></span>
+<span class="normal"><a href="#__codelineno-0-173">173</a></span>
+<span class="normal"><a href="#__codelineno-0-174">174</a></span>
+<span class="normal"><a href="#__codelineno-0-175">175</a></span>
+<span class="normal"><a href="#__codelineno-0-176">176</a></span>
+<span class="normal"><a href="#__codelineno-0-177">177</a></span>
+<span class="normal"><a href="#__codelineno-0-178">178</a></span>
+<span class="normal"><a href="#__codelineno-0-179">179</a></span>
+<span class="normal"><a href="#__codelineno-0-180">180</a></span>
+<span class="normal"><a href="#__codelineno-0-181">181</a></span>
+<span class="normal"><a href="#__codelineno-0-182">182</a></span>
+<span class="normal"><a href="#__codelineno-0-183">183</a></span>
+<span class="normal"><a href="#__codelineno-0-184">184</a></span>
+<span class="normal"><a href="#__codelineno-0-185">185</a></span>
+<span class="normal"><a href="#__codelineno-0-186">186</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogVersionError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when the loaded libwirelog is missing an optional capability</span>
+<a id="__codelineno-0-173" name="__codelineno-0-173"></a><span class="sd">    required by a PyreWire API.</span>
+<a id="__codelineno-0-174" name="__codelineno-0-174"></a>
+<a id="__codelineno-0-175" name="__codelineno-0-175"></a><span class="sd">    This exception has no wirelog C counterpart and is never produced by</span>
+<a id="__codelineno-0-176" name="__codelineno-0-176"></a><span class="sd">    ``check()``.  It acts as a capability/symbol gate: if libwirelog does not</span>
+<a id="__codelineno-0-177" name="__codelineno-0-177"></a><span class="sd">    export a symbol that a PyreWire API requires, that API raises this error</span>
+<a id="__codelineno-0-178" name="__codelineno-0-178"></a><span class="sd">    rather than crashing.  For example, ``Program.relation_ir`` requires</span>
+<a id="__codelineno-0-179" name="__codelineno-0-179"></a><span class="sd">    ``wirelog_program_get_relation_ir`` (added in wirelog#860, &gt; 0.41.0) and</span>
+<a id="__codelineno-0-180" name="__codelineno-0-180"></a><span class="sd">    raises ``WirelogVersionError`` against older libwirelog builds that lack</span>
+<a id="__codelineno-0-181" name="__codelineno-0-181"></a><span class="sd">    it.</span>
+<a id="__codelineno-0-182" name="__codelineno-0-182"></a>
+<a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="sd">    Note: the loader&#39;s minimum-version check (``_ffi/_loader.py``) raises a</span>
+<a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="sd">    plain ``Exception`` subclass (``_loader.WirelogVersionError``), not this</span>
+<a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="sd">    class.</span>
+<a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1606,7 +2199,13 @@
 
 
 
-        <p>A session call violates the <code>step()</code> / <code>snapshot()</code> exclusivity rule.</p>
+        <p>Raised by session classes when an operation is rejected due to session
+mode exclusivity.</p>
+<p>This exception has no wirelog C counterpart and is never produced by
+<code>check()</code>.  A session commits to a single mode (step, snapshot, or
+query) on its first mode-specific operation.  Any subsequent call that
+requires a different mode raises this error.  To switch modes, close the
+current session and open a new one.</p>
 
 
 
@@ -1617,9 +2216,25 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-88">88</a></span>
-<span class="normal"><a href="#__codelineno-0-89">89</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogModeError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A session call violates the `step()` / `snapshot()` exclusivity rule.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-189">189</a></span>
+<span class="normal"><a href="#__codelineno-0-190">190</a></span>
+<span class="normal"><a href="#__codelineno-0-191">191</a></span>
+<span class="normal"><a href="#__codelineno-0-192">192</a></span>
+<span class="normal"><a href="#__codelineno-0-193">193</a></span>
+<span class="normal"><a href="#__codelineno-0-194">194</a></span>
+<span class="normal"><a href="#__codelineno-0-195">195</a></span>
+<span class="normal"><a href="#__codelineno-0-196">196</a></span>
+<span class="normal"><a href="#__codelineno-0-197">197</a></span>
+<span class="normal"><a href="#__codelineno-0-198">198</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogModeError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised by session classes when an operation is rejected due to session</span>
+<a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="sd">    mode exclusivity.</span>
+<a id="__codelineno-0-192" name="__codelineno-0-192"></a>
+<a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">    This exception has no wirelog C counterpart and is never produced by</span>
+<a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">    ``check()``.  A session commits to a single mode (step, snapshot, or</span>
+<a id="__codelineno-0-195" name="__codelineno-0-195"></a><span class="sd">    query) on its first mode-specific operation.  Any subsequent call that</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="sd">    requires a different mode raises this error.  To switch modes, close the</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197"></a><span class="sd">    current session and open a new one.</span>
+<a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1661,7 +2276,11 @@
 
 
 
-        <p>A symbol id could not be reverse-mapped to its string value.</p>
+        <p>Raised when a symbol id cannot be reverse-mapped to its string value.</p>
+<p>This exception has no wirelog C counterpart and is never produced by
+<code>check()</code>.  It is raised by the intern table when a numeric symbol id
+is looked up but has no corresponding string entry, indicating an
+internal consistency error.</p>
 
 
 
@@ -1672,9 +2291,21 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/pyrewire/_core/errors.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-92">92</a></span>
-<span class="normal"><a href="#__codelineno-0-93">93</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogInternError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A symbol id could not be reverse-mapped to its string value.&quot;&quot;&quot;</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-201">201</a></span>
+<span class="normal"><a href="#__codelineno-0-202">202</a></span>
+<span class="normal"><a href="#__codelineno-0-203">203</a></span>
+<span class="normal"><a href="#__codelineno-0-204">204</a></span>
+<span class="normal"><a href="#__codelineno-0-205">205</a></span>
+<span class="normal"><a href="#__codelineno-0-206">206</a></span>
+<span class="normal"><a href="#__codelineno-0-207">207</a></span>
+<span class="normal"><a href="#__codelineno-0-208">208</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="k">class</span><span class="w"> </span><span class="nc">WirelogInternError</span><span class="p">(</span><span class="n">WirelogError</span><span class="p">):</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a symbol id cannot be reverse-mapped to its string value.</span>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">    This exception has no wirelog C counterpart and is never produced by</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">    ``check()``.  It is raised by the intern table when a numeric symbol id</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">    is looked up but has no corresponding string entry, indicating an</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">    internal consistency error.</span>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
