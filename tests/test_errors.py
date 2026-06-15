@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import inspect
+
 import pytest
 
+import pyrewire._core.errors as _errors_module
 from pyrewire._core.errors import (
     _FALLBACK_TEXT,
     CompoundBusyError,
@@ -103,3 +106,33 @@ def test_check_uses_error_string_text():
         check(int(ErrorCode.PARSE))
     except ParseError as exc:
         assert str(exc) == error_string(int(ErrorCode.PARSE))
+
+
+def _public_wirelog_error_classes() -> list[type]:
+    """Return every WirelogError subclass defined in the errors module."""
+    results = []
+    for _name, obj in inspect.getmembers(_errors_module, inspect.isclass):
+        if issubclass(obj, WirelogError) and obj.__module__ == _errors_module.__name__:
+            results.append(obj)
+    return results
+
+
+@pytest.mark.parametrize("cls", _public_wirelog_error_classes())
+def test_exception_class_has_nontrivial_docstring(cls: type) -> None:
+    """Every WirelogError subclass defined in the errors module must have its
+    own non-trivial docstring (stripped length >= 30 chars).
+
+    The test is self-discovering: it enumerates classes whose
+    ``__module__`` matches the errors module, so future additions are
+    covered automatically without updating this test.  The threshold of
+    30 characters is chosen to reject placeholder stubs (e.g. ``"..."`` or
+    a bare one-liner like ``"An error."``) while accepting any real
+    sentence.
+    """
+    _MIN_DOC_LEN = 30
+    doc = cls.__dict__.get("__doc__")
+    assert doc is not None, f"{cls.__name__} is missing its own docstring"
+    assert len(doc.strip()) >= _MIN_DOC_LEN, (
+        f"{cls.__name__} docstring is too short "
+        f"({len(doc.strip())} < {_MIN_DOC_LEN} chars): {doc!r}"
+    )
