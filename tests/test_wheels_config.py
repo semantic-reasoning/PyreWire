@@ -120,8 +120,9 @@ def test_wheels_workflow_uses_node24_actions():
     text = _read(".github/workflows/wheels.yml")
     assert "actions/checkout@v4" not in text
     assert "actions/checkout@v5" not in text
+    assert "actions/checkout@v6" not in text
     assert "actions/setup-python@v5" not in text
-    assert "actions/checkout@v6" in text
+    assert "actions/checkout@v7" in text
     assert "actions/setup-python@v6" in text
 
 

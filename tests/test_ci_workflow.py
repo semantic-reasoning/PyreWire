@@ -41,10 +41,11 @@ def test_ci_uses_node24_actions():
     text = _workflow_text()
     assert "actions/checkout@v4" not in text
     assert "actions/checkout@v5" not in text
+    assert "actions/checkout@v6" not in text
     assert "actions/setup-python@v5" not in text
     assert "actions/cache@v4" not in text
     assert "ilammy/msvc-dev-cmd" not in text
-    assert "actions/checkout@v6" in text
+    assert "actions/checkout@v7" in text
     assert "actions/setup-python@v6" in text
     assert "actions/cache@v5" in text
 
@@ -55,6 +56,7 @@ def test_all_workflows_use_node24_core_actions():
         text = path.read_text(encoding="utf-8")
         assert "actions/checkout@v4" not in text, path
         assert "actions/checkout@v5" not in text, path
+        assert "actions/checkout@v6" not in text, path
         assert "actions/setup-python@v5" not in text, path
         assert "actions/cache@v4" not in text, path
         assert "actions/upload-artifact@v4" not in text, path
