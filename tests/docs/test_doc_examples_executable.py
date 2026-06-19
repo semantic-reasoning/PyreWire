@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: every Python code block in `README.md` and
 `docs/quickstart.md` must run cleanly (#122).
 

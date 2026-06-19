@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Monkey-patched tests for `EasySession.step` / `snapshot` /
 `set_delta_callback` (#10 + #11).
 

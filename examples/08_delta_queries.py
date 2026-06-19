@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/08-delta-queries` to PyreWire.
 
 Demonstrates wirelog's delta-callback pipeline through `EasySession.step`.

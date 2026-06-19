@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Lazy, platform-aware libc `malloc`/`free` helper.
 
 Several FFI consumers (parser fact extraction, IR string accessor, IO

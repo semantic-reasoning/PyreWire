@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Internal FFI layer for PyreWire.
 
 This package is private to PyreWire (note the leading underscore). User code

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `pyrewire.ir.IRNode` (#25).
 
 The acceptance criterion calls for walking a real IR tree, but no public

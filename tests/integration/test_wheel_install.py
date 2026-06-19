@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Integration test against an installed PyreWire wheel (#33).
 
 Runs in the `install_test` job of `.github/workflows/wheels.yml`

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `Session.insert_batch` / `remove_batch` (#22)."""
 
 from __future__ import annotations

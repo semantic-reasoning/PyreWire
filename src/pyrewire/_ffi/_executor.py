@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Raw ctypes bindings for wirelog's batch-executor surface (#16).
 
 Covers:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: `.github/workflows/release.yml` keeps the required steps (#37).
 
 A release pipeline must:

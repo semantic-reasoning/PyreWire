@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `EasySession` lifecycle, intern, insert, remove (#9)."""
 
 from __future__ import annotations

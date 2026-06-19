@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression tests for PyreWire release metadata (#121)."""
 
 from __future__ import annotations

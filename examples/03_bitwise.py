@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/03-bitwise-operations` to PyreWire.
 
 Demonstrates wirelog's built-in bitwise functors: `band` / `bor` /

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: cibuildwheel matrix and supporting scripts stay wired (#30 + #31).
 
 The wheel build is what makes `pip install pyrewire` work without a

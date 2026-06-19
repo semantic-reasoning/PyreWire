@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Wrappers for wirelog utility entry points (version, error_string,
 config probes, enum-to-string converters).
 

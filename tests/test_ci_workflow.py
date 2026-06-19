@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression coverage for the main CI workflow."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """ABI smoke test: every public wirelog symbol must resolve at runtime.
 
 The canonical manifest lives at `tests/data/wirelog_abi.txt`. When wirelog

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: the `install_test` job in wheels.yml stays wired (#33)."""
 
 from __future__ import annotations

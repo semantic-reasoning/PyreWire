@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: PyreWire sdist must never ship a wirelog binary.
 
 The dual-license boundary requires that the wirelog shared library is

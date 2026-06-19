@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/09-retraction-basics` to PyreWire.
 
 Demonstrates z-set retraction semantics through `EasySession.step`:

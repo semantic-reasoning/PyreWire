@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Typed exception hierarchy for wirelog error codes.
 
 Every wirelog C entry point that can fail returns `wirelog_error_t`

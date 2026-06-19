@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Session-local compound handles (#23).
 
 `wirelog_session_make_compound` and `wirelog_easy_make_compound` return

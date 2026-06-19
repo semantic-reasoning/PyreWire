@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `pyrewire._core.stdcapture.capture_c_stdout` (#19)."""
 
 from __future__ import annotations

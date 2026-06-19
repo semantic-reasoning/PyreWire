@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """High-level wrapper around a parsed wirelog program.
 
 `Program` owns a `wirelog_program_t*` and exposes typed introspection:

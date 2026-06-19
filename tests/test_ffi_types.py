@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `pyrewire._ffi._enums` and `pyrewire._ffi._types`.
 
 Per project convention, tests should consume the public API only. These

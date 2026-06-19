@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """libwirelog discovery, loading, and runtime version verification.
 
 PyreWire and wirelog version independently. PyreWire declares the oldest

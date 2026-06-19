@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Self-contained `.input` example backed by a Python IO adapter.
 
 The upstream wirelog examples often load EDB relations from CSV files.

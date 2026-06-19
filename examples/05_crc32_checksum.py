@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/05-crc32-checksum` to PyreWire.
 
 Demonstrates wirelog's `crc32_ethernet()` built-in by validating frame

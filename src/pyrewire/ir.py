@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Lazy Python wrapper around a `wirelog_ir_node_t *` (#25).
 
 `IRNode` does not own the C pointer — the IR tree lives inside the

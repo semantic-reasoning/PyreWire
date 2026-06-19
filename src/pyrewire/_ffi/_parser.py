@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Raw ctypes bindings for wirelog's parser, program introspection, and
 optimizer / fact-loading entry points.
 

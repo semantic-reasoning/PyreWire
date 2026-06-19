@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """High-level batch pipeline: Program → optimize → evaluate → Result (#17 / #18).
 
 `BatchProgram` is the simplest way to compute the full IDB closure of a

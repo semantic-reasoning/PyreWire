@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `preview_inline_facts` and `insert_with_dedupe` (#47)."""
 
 from __future__ import annotations

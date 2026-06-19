@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """User-facing helpers that mirror or replace unsafe wirelog C utilities.
 
 This module is **process-safe**: every helper degrades gracefully on

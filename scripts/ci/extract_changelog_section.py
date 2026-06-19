@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Extract one released changelog section into a standalone notes file."""
 
 from __future__ import annotations
