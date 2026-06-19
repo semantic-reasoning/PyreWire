@@ -8,6 +8,27 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-06-19
+
+### Changed
+- Bumped the pinned `actions/checkout` GitHub Action from v6 to v7 and
+  `pypa/cibuildwheel` from v4.0.0 to v4.1.0 across the CI, wheels, and
+  release workflows (#171, #172).
+
+### Added
+- Every Python source file now carries an
+  `SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later` header, making
+  PyreWire's dual license machine-discoverable for REUSE/SPDX tooling and
+  downstream redistribution. A contract test enforces the header on all
+  source files (#173).
+- Expanded the Errors reference documentation: an overview, an error-code
+  mapping table, and a usage example for the exception hierarchy.
+
+This is a PyreWire-only maintenance release. The public API is unchanged,
+and the bundled and validated wirelog ref remains `v0.51.0` at peeled SHA
+`0c6e0cdaee7db069be5d8d896bb59bdcb15673e9` with the minimum compatible
+runtime wirelog version remaining `0.44.0`.
+
 ## [1.0.1] - 2026-06-13
 
 ### Changed
@@ -141,7 +162,8 @@ wirelog floor and a validated wirelog ref (see
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...v1.0.0
 [0.41.0]: https://github.com/semantic-reasoning/PyreWire/releases/tag/v0.41.0
