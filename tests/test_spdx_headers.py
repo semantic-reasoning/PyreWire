@@ -52,6 +52,5 @@ def test_file_has_spdx_identifier(path: Path):
     # not buried somewhere in the body.
     head = path.read_text(encoding="utf-8").splitlines()[:5]
     assert any(SPDX_TAG in line for line in head), (
-        f"{path.relative_to(_REPO_ROOT)} is missing the SPDX header "
-        f"'# {SPDX_TAG}'"
+        f"{path.relative_to(_REPO_ROOT)} is missing the SPDX header " f"'# {SPDX_TAG}'"
     )
