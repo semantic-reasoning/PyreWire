@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """ctypes structures and callback function-pointer types mirroring
 wirelog's public C ABI.
 

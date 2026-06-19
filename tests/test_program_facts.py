@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `Program.facts_raw` / `Program.facts` (issue #15)."""
 
 from __future__ import annotations

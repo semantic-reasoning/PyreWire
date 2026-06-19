@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Wheel-bundled shared libraries live in this package."""
 
 from __future__ import annotations

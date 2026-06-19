@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Process-wide registry of callback trampolines.
 
 wirelog invokes user callbacks from its own worker threads. Two

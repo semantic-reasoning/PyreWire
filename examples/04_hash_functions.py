@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/04-hash-functions` to PyreWire.
 
 Demonstrates wirelog's built-in `hash()` functor for the three tasks

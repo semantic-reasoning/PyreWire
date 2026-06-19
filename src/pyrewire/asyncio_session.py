@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Asyncio-friendly proxies around the synchronous wirelog session APIs (#29).
 
 wirelog sessions are not thread-safe; running every call from one

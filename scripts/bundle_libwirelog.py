@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Copy the built wirelog library into `src/pyrewire/_lib` before wheel build."""
 
 from __future__ import annotations

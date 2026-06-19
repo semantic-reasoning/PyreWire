@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `Program.relation_ir` (#49 / wirelog#860).
 
 `wirelog_program_get_relation_ir` is a post-wirelog#860 accessor.

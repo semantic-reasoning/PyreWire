@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `pyrewire._ffi._ir` bindings (#24)."""
 
 from __future__ import annotations

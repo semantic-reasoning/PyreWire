@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression tests for the PEP 561 typing marker shipped in distributions."""
 
 from __future__ import annotations

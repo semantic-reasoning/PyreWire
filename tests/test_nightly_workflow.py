@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: `.github/workflows/nightly.yml` keeps required pieces (#52).
 
 The nightly job is the early-warning system for wirelog ABI drift, so

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `Session.snapshot_arrays` (#28).
 
 `EasySession.snapshot_array` adds the same shape on the easy session

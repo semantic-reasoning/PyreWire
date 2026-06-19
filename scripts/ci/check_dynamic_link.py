@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Verify every PyreWire wheel ships libwirelog *dynamically* (#32).
 
 Run after the wheel build matrix from #30; takes wheel paths on the

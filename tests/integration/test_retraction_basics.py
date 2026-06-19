@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Integration test mirroring wirelog `examples/09-retraction-basics` (#12).
 
 Drives `EasySession.step()` through the three retraction phases:

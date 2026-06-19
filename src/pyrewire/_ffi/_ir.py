@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Raw ctypes bindings for wirelog's IR-inspection entry points.
 
 Six functions from `wirelog/wirelog-ir.h`:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: every Python code block in `docs/semantics/*.md` must run.
 
 Pages annotated with `# expected: <exception>` are allowed to raise

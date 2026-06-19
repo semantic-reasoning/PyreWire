@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """High-level session wrappers over wirelog's facade APIs.
 
 `EasySession` (#9) wraps `wirelog_easy_*`. `Session` (#21) wraps the

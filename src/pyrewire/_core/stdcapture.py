@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Capture C-level stdout (file descriptor 1) into a Python `BytesIO`.
 
 Several wirelog entry points (`wirelog_optimizer_debug`,

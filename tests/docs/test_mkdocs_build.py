@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: `mkdocs build --strict` must succeed (#34).
 
 Strict mode fails on stale cross-references caused by renamed or

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/10-recursive-under-update` to PyreWire.
 
 Demonstrates that wirelog correctly maintains a RECURSIVE rule under

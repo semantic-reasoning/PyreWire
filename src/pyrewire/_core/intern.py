@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Bidirectional `str` ↔ wirelog intern-id cache.
 
 wirelog represents every `STRING` column value as an `int64` id assigned

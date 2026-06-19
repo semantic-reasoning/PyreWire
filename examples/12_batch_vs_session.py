@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """PyreWire-flavoured port of the spirit of wirelog
 `examples/12-snapshot-vs-delta`.
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """`@register_adapter` decorator for wirelog IO adapters (#27).
 
 Lets Python classes serve as the source for `.input Rel(IO="scheme", …)`

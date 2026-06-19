@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Smoke tests for `pyrewire._ffi._easy` bindings.
 
 Verifies that the easy facade's 14 entry points are reachable and that

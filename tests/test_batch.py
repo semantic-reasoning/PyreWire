@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `pyrewire.batch.BatchProgram` and `Result` (#17 + #18)."""
 
 from __future__ import annotations

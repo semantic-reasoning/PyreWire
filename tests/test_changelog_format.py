@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Regression: `CHANGELOG.md` must stay in sync with the project version (#37).
 
 A release is "ready" when the topmost dated section in `CHANGELOG.md`

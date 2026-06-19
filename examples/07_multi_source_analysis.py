@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/07-multi-source-analysis` to PyreWire.
 
 Two CRM sources (`src_a`, `src_b`) supply customer records. The

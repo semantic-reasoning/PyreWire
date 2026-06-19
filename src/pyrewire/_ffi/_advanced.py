@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Raw ctypes bindings for the wirelog advanced session API (#20).
 
 Covers 8 entry points from `wirelog/wirelog-advanced.h`:

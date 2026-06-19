@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Run every ported example and assert the result is well-formed (#35).
 
 We don't pin specific row contents because some examples include

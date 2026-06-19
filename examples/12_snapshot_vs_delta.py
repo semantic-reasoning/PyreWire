@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/12-snapshot-vs-delta` to PyreWire.
 
 Compares the two read paths exposed by `EasySession`:

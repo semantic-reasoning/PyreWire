@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Additional EasySession delta tests (originally from PR #71).
 
 PR #97 shipped `EasySession.step / snapshot / set_delta_callback` on a

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for the libwirelog loader.
 
 This test module is one of the two files allowed (by project convention) to

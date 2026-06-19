@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Tests for `BatchProgram.load_all_facts` / `load_input_files` /
 `optimizer_debug` (#19)."""
 

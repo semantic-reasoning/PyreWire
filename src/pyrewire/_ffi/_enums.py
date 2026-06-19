@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Enums mirroring wirelog public C enums.
 
 Values match `wirelog/wirelog.h` and `wirelog/wirelog-types.h` byte-for-byte.

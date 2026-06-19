@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Port of wirelog `examples/06-timestamp-lww` to PyreWire.
 
 Last-Writer-Wins via the `max()` aggregate: for each key, keep the

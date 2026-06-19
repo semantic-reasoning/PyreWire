@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """Raw ctypes bindings for `wirelog_easy_*` (the easy facade).
 
 This module mirrors `wirelog/wirelog-easy.h` 1:1 — every function's
