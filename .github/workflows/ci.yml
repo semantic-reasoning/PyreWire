@@ -21,7 +21,13 @@ jobs:
         # pytest is needed so mypy can find its stubs when type-checking tests/.
         # numpy is an optional runtime dependency (#22 zero-copy path) but
         # mypy still needs its types when type-checking src/pyrewire/session.py.
-        run: pip install black isort flake8 mypy pytest numpy
+        # numpy is pinned <2.5 here: numpy 2.5.0 ships .pyi stubs that use the
+        # PEP 695 `type` statement, which mypy rejects under our `python_version
+        # = "3.11"` target (requires-python is >=3.11) with "Type statement is
+        # only supported in Python 3.12 and greater". This only affects the
+        # stub-checking env; runtime numpy stays unpinned (>=1.24). Drop the cap
+        # once mypy parses PEP 695 stubs independently of the target version.
+        run: pip install black isort flake8 mypy pytest "numpy<2.5"
       - name: black --check
         run: black --check .
       - name: isort --check
