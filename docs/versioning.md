@@ -57,6 +57,7 @@ release to publish; it is **not** tied to the wirelog change.
 | `1.0.0`         | `0.44.0`        | `272edf3a24b25676f12c4b843d55510f5048dd2f` | Validated against wirelog `v0.50.0` (peeled tag SHA); runtime minimum remains `0.44.0`. |
 | `1.0.1`         | `0.44.0`        | `0c6e0cdaee7db069be5d8d896bb59bdcb15673e9` | Validated against wirelog `v0.51.0` (peeled tag SHA); runtime minimum remains `0.44.0`. Bundled engine bumped to pick up the wirelog#914 single-body-rule derivation fix (#165). |
 | `1.0.2`         | `0.44.0`        | `0c6e0cdaee7db069be5d8d896bb59bdcb15673e9` | Validated against wirelog `v0.51.0` (peeled tag SHA); runtime minimum remains `0.44.0`. PyreWire-only maintenance release (CI action bumps, SPDX headers, docs); no engine change. |
+| `1.0.3`         | `0.52.0`        | `da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba` | Validated against wirelog `v0.52.0` (peeled tag SHA); runtime minimum raised to `0.52.0`. Bundled engine bumped to v0.52.0 and the loader floor moved up to match. |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).

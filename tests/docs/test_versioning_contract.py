@@ -12,10 +12,12 @@ import pytest
 yaml = pytest.importorskip("yaml")
 
 # The wirelog ref the current release bundles and validates against.
-PINNED_WIRELOG_SHA = "0c6e0cdaee7db069be5d8d896bb59bdcb15673e9"
+PINNED_WIRELOG_SHA = "da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba"
 # Historical pins kept frozen in the compatibility table, one per release.
 WIRELOG_SHA_100 = "272edf3a24b25676f12c4b843d55510f5048dd2f"
-WIRELOG_SHA_101 = PINNED_WIRELOG_SHA
+WIRELOG_SHA_101 = "0c6e0cdaee7db069be5d8d896bb59bdcb15673e9"
+WIRELOG_SHA_102 = WIRELOG_SHA_101
+WIRELOG_SHA_103 = PINNED_WIRELOG_SHA
 
 
 def _repo_root() -> Path:
@@ -53,6 +55,16 @@ def test_versioning_documents_101_wirelog_pin_and_runtime_floor():
     assert "peeled tag SHA" in notes
 
 
+def test_versioning_documents_103_wirelog_pin_and_runtime_floor():
+    minimum, validated_ref, notes = _versioning_row("1.0.3")
+
+    assert minimum == "`0.52.0`"
+    assert validated_ref == f"`{WIRELOG_SHA_103}`"
+    assert "v0.52.0" in notes
+    assert "runtime minimum raised to `0.52.0`" in notes
+    assert "peeled tag SHA" in notes
+
+
 def test_versioning_explains_sdist_and_wheel_wirelog_behavior():
     text = _read("docs/versioning.md")
 
@@ -81,7 +93,7 @@ def test_wirelog_pins_and_loader_floor_match_current_contract():
     assert cibw["windows"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
 
     assert re.search(
-        r"^MINIMUM_WIRELOG_VERSION:\s*tuple\[int, int, int\]\s*=\s*\(0,\s*44,\s*0\)",
+        r"^MINIMUM_WIRELOG_VERSION:\s*tuple\[int, int, int\]\s*=\s*\(0,\s*52,\s*0\)",
         loader,
         re.MULTILINE,
     )

@@ -8,6 +8,18 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-06-28
+
+### Changed
+- The bundled and validated wirelog ref moves from `v0.51.0` to
+  `v0.52.0` at peeled SHA
+  `da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba`.
+- The minimum compatible runtime wirelog version is raised from `0.44.0`
+  to `0.52.0`. `MINIMUM_WIRELOG_VERSION` in the loader now rejects any
+  libwirelog older than `0.52.0`, so source installs must provide a
+  system `libwirelog` of `0.52.0` or newer. The PyreWire public API is
+  unchanged.
+
 ## [1.0.2] - 2026-06-19
 
 ### Changed
@@ -162,7 +174,8 @@ runtime wirelog version remaining `0.44.0`.
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/semantic-reasoning/PyreWire/compare/v0.41.0...v1.0.0
