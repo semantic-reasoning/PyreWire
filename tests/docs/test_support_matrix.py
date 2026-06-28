@@ -12,7 +12,7 @@ import pytest
 
 yaml = pytest.importorskip("yaml")
 
-PINNED_WIRELOG_SHA = "0c6e0cdaee7db069be5d8d896bb59bdcb15673e9"
+PINNED_WIRELOG_SHA = "da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba"
 SUPPORTED_PYTHONS = ["3.11", "3.12", "3.13", "3.14"]
 SUPPORTED_CP_TAGS = ["cp311", "cp312", "cp313", "cp314"]
 SUPPORTED_RUNNERS = ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
@@ -122,7 +122,7 @@ def test_support_wirelog_bundle_contract_matches_config_and_versioning():
     assert cibw["macos"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
     assert cibw["windows"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
 
-    assert "wirelog v0.51.0" in support
+    assert "wirelog v0.52.0" in support
     assert PINNED_WIRELOG_SHA in support
     assert "peeled SHA" in support
     assert "Wheels bundle" in versioning
@@ -135,11 +135,11 @@ def test_support_documents_sdist_system_libwirelog_behavior():
 
     assert "Source distributions do not bundle `libwirelog`" in support
     assert "compatible system `libwirelog`" in support
-    assert "minimum compatible wirelog version is >= 0.44.0" in support
+    assert "minimum compatible wirelog version is >= 0.52.0" in support
     assert "`WIRELOG_LIB`" in support
     assert "explicit path" in support
     assert re.search(
-        r"^MINIMUM_WIRELOG_VERSION:\s*tuple\[int, int, int\]\s*=\s*\(0,\s*44,\s*0\)",
+        r"^MINIMUM_WIRELOG_VERSION:\s*tuple\[int, int, int\]\s*=\s*\(0,\s*52,\s*0\)",
         loader,
         re.MULTILINE,
     )

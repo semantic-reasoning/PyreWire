@@ -19,14 +19,14 @@ not need to install wirelog separately.
 | macOS | `arm64` | `macos-15` | Apple Silicon only for v1.0; no macOS Intel or universal2 wheel is produced. |
 | Windows | `win_amd64` / `AMD64` | `windows-2025-vs2026` | Built with MSVC and repaired with delvewheel. |
 
-The bundled library is built from wirelog v0.51.0, using peeled SHA
-`0c6e0cdaee7db069be5d8d896bb59bdcb15673e9`.
+The bundled library is built from wirelog v0.52.0, using peeled SHA
+`da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba`.
 
 ## Source Distributions
 
 Source distributions do not bundle `libwirelog`. A source install needs
 a compatible system `libwirelog` that PyreWire can discover at runtime.
-The minimum compatible wirelog version is >= 0.44.0.
+The minimum compatible wirelog version is >= 0.52.0.
 
 PyreWire searches for `libwirelog` through its normal loader order,
 including the system dynamic linker and `pkg-config`. Set `WIRELOG_LIB`

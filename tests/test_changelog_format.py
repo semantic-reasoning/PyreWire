@@ -168,7 +168,11 @@ def test_release_compare_links_are_tag_to_tag():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
 
     assert (
-        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...HEAD"
+        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.3...HEAD"
+        in changelog
+    )
+    assert (
+        "[1.0.3]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...v1.0.3"
         in changelog
     )
     assert (

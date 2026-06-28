@@ -28,7 +28,7 @@ from pathlib import Path
 _SENTINEL_SYMBOL = "wirelog_easy_open"
 
 
-MINIMUM_WIRELOG_VERSION: tuple[int, int, int] = (0, 44, 0)
+MINIMUM_WIRELOG_VERSION: tuple[int, int, int] = (0, 52, 0)
 """Oldest libwirelog version this PyreWire build supports.
 
 PyreWire CI builds against a pinned wirelog release commit, so the loader

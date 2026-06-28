@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
 """PyreWire - Python wrapper for wirelog declarative dataflow analysis."""
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __author__ = "PyreWire Contributors"
 __license__ = "Apache-2.0 OR GPL-3.0-or-later"
 

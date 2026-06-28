@@ -54,10 +54,10 @@ jobs:
         python: ["3.11", "3.12", "3.13", "3.14"]
     env:
       # WIRELOG_VERSION here is the exact wirelog ref CI builds against.
-      # The default is pinned to the wirelog v0.51.0 release commit;
+      # The default is pinned to the wirelog v0.52.0 release commit;
       # override the repository variable to test another ref before
       # updating this fallback.
-      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || '0c6e0cdaee7db069be5d8d896bb59bdcb15673e9' }}
+      WIRELOG_VERSION: ${{ vars.WIRELOG_VERSION || 'da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba' }}
       # `runner.temp` is NOT available in job-level `env:` (only in
       # step-level contexts) — using it here caused the whole workflow
       # to fail at startup (#114). `github.workspace` IS resolvable at
