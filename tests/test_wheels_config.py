@@ -124,7 +124,7 @@ def test_wheels_workflow_uses_node24_actions():
     assert "actions/checkout@v6" not in text
     assert "actions/setup-python@v5" not in text
     assert "actions/checkout@v7" in text
-    assert "actions/setup-python@v6" in text
+    assert "actions/setup-python@v7" in text
 
 
 def test_each_platform_has_repair_wheel_command():

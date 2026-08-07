@@ -47,7 +47,7 @@ def test_ci_uses_node24_actions():
     assert "actions/cache@v4" not in text
     assert "ilammy/msvc-dev-cmd" not in text
     assert "actions/checkout@v7" in text
-    assert "actions/setup-python@v6" in text
+    assert "actions/setup-python@v7" in text
     assert "actions/cache@v6" in text
 
 
