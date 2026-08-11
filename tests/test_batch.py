@@ -9,6 +9,8 @@ from pathlib import Path
 import pytest
 
 from pyrewire._core.errors import ExecError
+from pyrewire._ffi._loader import _parse_version, _pep440_base
+from pyrewire._ffi._util import wirelog_version
 from pyrewire.batch import BatchProgram, Result
 
 # ----------------------------------------------------------------------
@@ -59,6 +61,62 @@ def test_evaluate_without_optimize_is_allowed():
     with BatchProgram.from_string(".decl x(a: int32)\nx(1).\n") as bp:
         res = bp.evaluate()
         res.close()
+
+
+# A rule with four or more body atoms lets SIP insert a semijoin with
+# something resolved above it. Before wirelog#955 the semijoin widened the
+# reported output layout by the right relation's arity, shifting every
+# column resolved above it; the out-of-range lookup then fell back to
+# column 0, so the last head variable silently came back as 0 (#180).
+#
+# The corruption is silent — `evaluate()` succeeds and returns the right
+# row count and arity — so this compares the optimized result against the
+# unoptimized one instead of just asserting evaluation worked.
+_SEMIJOIN_LAYOUT_SRC = """
+.decl typ(s: int32, c: int32)
+.decl mand(c: int32)
+.decl ord(s: int32, o: int32)
+.decl rsn(s: int32, r: int32)
+.decl out(o: int32, s: int32, r: int32)
+
+out(O, S, R) :- mand(C), typ(S, C), ord(S, O), rsn(S, R).
+
+typ(1, 5).
+mand(5).
+ord(1, 10).
+rsn(1, 7).
+"""
+
+
+def _semijoin_layout_rows(optimize: bool) -> list[tuple[int, ...]]:
+    with BatchProgram.from_string(_SEMIJOIN_LAYOUT_SRC) as bp:
+        if optimize:
+            bp.optimize()
+        bp.load_all_facts()
+        res = bp.evaluate()
+        try:
+            return sorted({tuple(int(v) for v in row) for row in res.relation("out")})
+        finally:
+            res.close()
+
+
+def _wirelog_older_than(minimum: tuple[int, int, int]) -> bool:
+    return _parse_version(_pep440_base(wirelog_version())) < minimum
+
+
+@pytest.mark.skipif(
+    _wirelog_older_than((0, 54, 0)),
+    reason=(
+        "wirelog#955 (the #180 fix) first ships in wirelog 0.54.0; the "
+        "loader floor still admits 0.52.0, where this corrupts silently."
+    ),
+)
+def test_optimize_preserves_head_bindings_with_four_body_atoms():
+    """`optimize()` must not change the answer (#180, wirelog#955)."""
+    optimized = _semijoin_layout_rows(optimize=True)
+
+    assert optimized == _semijoin_layout_rows(optimize=False)
+    assert optimized == [(10, 1, 7)]
 
 
 # ----------------------------------------------------------------------

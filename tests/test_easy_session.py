@@ -8,6 +8,9 @@ import threading
 import pytest
 
 from pyrewire import EasySession, ParseError
+from pyrewire._core.errors import WirelogError
+from pyrewire._ffi._loader import _parse_version, _pep440_base
+from pyrewire._ffi._util import wirelog_version
 
 _FRIENDSHIP = """
 .decl friend(a: symbol, b: symbol)
@@ -16,6 +19,10 @@ mutual(A, B) :- friend(A, B), friend(B, A).
 """
 
 _EDGE_INT = ".decl edge(x: int32, y: int32)\n"
+
+
+def _wirelog_older_than(minimum: tuple[int, int, int]) -> bool:
+    return _parse_version(_pep440_base(wirelog_version())) < minimum
 
 
 def test_open_and_close_via_context_manager():
@@ -69,13 +76,24 @@ def test_remove_after_insert():
         s.remove("friend", ["alice", "bob"])
 
 
-def test_insert_arity_mismatch_does_not_immediately_error():
-    """wirelog_easy_insert does not validate arity at insert time; the
-    error surfaces later (at step/snapshot). Just verify the call
-    completes without crashing — the strict validation is the
-    responsibility of higher-level helpers."""
+@pytest.mark.skipif(
+    _wirelog_older_than((0, 54, 0)),
+    reason=(
+        "wirelog#1038 checks the insert width against the `.decl` on the "
+        "first insert from 0.54.0 on; older builds silently dropped the "
+        "surplus value, and the loader floor still admits 0.52.0."
+    ),
+)
+def test_insert_arity_mismatch_raises():
+    """A row wider than the `.decl` is rejected (wirelog#1038).
+
+    Before wirelog 0.54.0 the relation's width was set lazily from
+    whatever the first producer supplied and nothing compared it against
+    the declaration, so this insert silently dropped the third value.
+    """
     with EasySession(_EDGE_INT) as s:
-        s.insert("edge", [1, 2, 3])  # too many values; accepted at this layer
+        with pytest.raises(WirelogError):
+            s.insert("edge", [1, 2, 3])  # `edge` declares two columns
 
 
 def test_unsupported_row_value_type_raises():

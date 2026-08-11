@@ -81,17 +81,29 @@ def test_hash_functions_example_validates_stored_checksums() -> None:
     assert set(out["corrupted_record"]) == {(5, "dave", 1234567890123456789, -8213464378072455284)}
 
 
-def test_crc32_checksum_example_reports_current_main_head_behavior() -> None:
+def test_crc32_checksum_example_partitions_frames_by_stored_checksum() -> None:
+    """`crc32_ethernet()` agrees with the stored CRCs from wirelog 0.54.0 on.
+
+    Through wirelog 0.53.0 the built-in computed a checksum that matched no
+    stored value, so every frame landed in `corrupt_frame` and this test
+    pinned that as "current main head behavior". The expectations below are
+    wirelog's own golden output for `examples/05-crc32-checksum`, which
+    became a checked example in 0.54.0.
+    """
+    if _wirelog_ver() < (0, 54, 0):
+        pytest.skip("crc32_ethernet() matches its stored checksums from wirelog 0.54.0 on")
+
     mod = _import_example("05_crc32_checksum")
     out = mod.run()
-    assert out["valid_frame"] == []
+    assert set(out["valid_frame"]) == {
+        ("F001", "DEADBEEF0102030405060708", 3838819244),
+        ("F002", "CAFEBABE0A0B0C0D0E0F1011", 250819451),
+        ("F003", "AABBCCDD1213141516171819", 1661565857),
+        ("F005", "FFEEDDCCBBAA998877665544", 2259087609),
+    }
     assert set(out["corrupt_frame"]) == {
-        ("F001", 3838819244, 2844319735),
-        ("F002", 250819451, 3954038922),
-        ("F003", 1661565857, 767742221),
-        ("F004", 9999999999, 1877464688),
-        ("F005", 2259087609, 2054014018),
-        ("F006", 1234567890, 944292671),
+        ("F004", 9999999999, 2056678491),
+        ("F006", 1234567890, 1992588221),
     }
 
 

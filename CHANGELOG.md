@@ -8,6 +8,49 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-08-11
+
+### Fixed
+- `BatchProgram.optimize()` no longer corrupts head bindings for a rule
+  with four or more body atoms (#180). The engine's SIP-inserted semijoin
+  widened the reported output layout by the right relation's arity, which
+  shifted every column resolved above it; the out-of-range lookup fell
+  back to column 0, so the last head variable came back as `0` while the
+  row count and arity stayed correct. Fixed upstream in wirelog#955 and
+  delivered here by the engine bump below. There was nothing to fix in
+  PyreWire — `optimize()` is a faithful passthrough — so a source install
+  resolving an older system `libwirelog` is still affected.
+- `crc32_ethernet()` now agrees with externally computed CRCs. Through
+  wirelog 0.53.0 it returned a checksum that matched no stored value, so
+  `examples/05_crc32_checksum` classified every frame as corrupt.
+
+### Changed
+- The bundled and validated wirelog ref moves from `v0.53.0` to
+  `v0.54.0` at peeled SHA
+  `9f80877c82564cb92ea45bd6fffc2d681b0e13de`.
+- The minimum compatible runtime wirelog version remains `0.52.0`.
+  wirelog 0.54.0's public C header change is additive — one appended
+  `wirelog_str_fn_t` member and documentation — and the library SONAME is
+  unchanged, so no PyreWire code stops supporting `0.52.0`. The PyreWire
+  public API is unchanged. Tests covering behavior that only wirelog
+  `0.54.0` provides are skipped on older runtimes.
+- `EasySession.insert()` now raises when the row is wider or narrower
+  than the relation's `.decl`, on the first insert as well as later ones
+  (wirelog#1038). Previously a relation's width was whatever its first
+  producer supplied: too narrow fabricated a zero column, too wide
+  dropped the surplus, both silently.
+- Programs that are heavy on joins may evaluate more slowly. wirelog#955
+  removes an under-derivation that the previous speed depended on, so
+  correct answers cost more than the wrong ones did — upstream measured
+  DOOP W=1 at ~94 s before and ~1,414 s after.
+- `wirelog_program_get_facts`, `wirelog_io_ctx_num_cols`, and
+  `wirelog_io_ctx_col_type` report the *physical* row stride rather than
+  the declared column count. The two differ only for a relation declaring
+  an `inline` compound column. PyreWire passes all three through
+  unchanged, so its own contract is unaffected; an embedder that
+  reconstructed the stride from a schema of its own should read wirelog's
+  release notes.
+
 ## [1.0.4] - 2026-07-31
 
 ### Changed
@@ -184,7 +227,8 @@ runtime wirelog version remaining `0.44.0`.
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.1...v1.0.2
