@@ -12,14 +12,15 @@ import pytest
 yaml = pytest.importorskip("yaml")
 
 # The wirelog ref the current release bundles and validates against.
-PINNED_WIRELOG_SHA = "9f80877c82564cb92ea45bd6fffc2d681b0e13de"
+PINNED_WIRELOG_SHA = "300f3e5150095c85331b561f1f42d99c27b4746f"
 # Historical pins kept frozen in the compatibility table, one per release.
 WIRELOG_SHA_100 = "272edf3a24b25676f12c4b843d55510f5048dd2f"
 WIRELOG_SHA_101 = "0c6e0cdaee7db069be5d8d896bb59bdcb15673e9"
 WIRELOG_SHA_102 = WIRELOG_SHA_101
 WIRELOG_SHA_103 = "da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba"
 WIRELOG_SHA_104 = "668f82ad69c2bbfc8e8111839302adf1360f55da"
-WIRELOG_SHA_105 = PINNED_WIRELOG_SHA
+WIRELOG_SHA_105 = "9f80877c82564cb92ea45bd6fffc2d681b0e13de"
+WIRELOG_SHA_106 = PINNED_WIRELOG_SHA
 
 
 def _repo_root() -> Path:
@@ -83,6 +84,16 @@ def test_versioning_documents_105_wirelog_pin_and_runtime_floor():
     assert minimum == "`0.52.0`"
     assert validated_ref == f"`{WIRELOG_SHA_105}`"
     assert "v0.54.0" in notes
+    assert "runtime minimum remains `0.52.0`" in notes
+    assert "peeled tag SHA" in notes
+
+
+def test_versioning_documents_106_wirelog_pin_and_runtime_floor():
+    minimum, validated_ref, notes = _versioning_row("1.0.6")
+
+    assert minimum == "`0.52.0`"
+    assert validated_ref == f"`{WIRELOG_SHA_106}`"
+    assert "v0.60.0" in notes
     assert "runtime minimum remains `0.52.0`" in notes
     assert "peeled tag SHA" in notes
 

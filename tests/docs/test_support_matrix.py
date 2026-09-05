@@ -12,7 +12,7 @@ import pytest
 
 yaml = pytest.importorskip("yaml")
 
-PINNED_WIRELOG_SHA = "9f80877c82564cb92ea45bd6fffc2d681b0e13de"
+PINNED_WIRELOG_SHA = "300f3e5150095c85331b561f1f42d99c27b4746f"
 SUPPORTED_PYTHONS = ["3.11", "3.12", "3.13", "3.14"]
 SUPPORTED_CP_TAGS = ["cp311", "cp312", "cp313", "cp314"]
 SUPPORTED_RUNNERS = ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
@@ -122,7 +122,7 @@ def test_support_wirelog_bundle_contract_matches_config_and_versioning():
     assert cibw["macos"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
     assert cibw["windows"]["environment"]["WIRELOG_VERSION"] == PINNED_WIRELOG_SHA
 
-    assert "wirelog v0.54.0" in support
+    assert "wirelog v0.60.0" in support
     assert PINNED_WIRELOG_SHA in support
     assert "peeled SHA" in support
     assert "Wheels bundle" in versioning

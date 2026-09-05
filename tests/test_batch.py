@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from pyrewire._core.errors import ExecError
+from pyrewire._core.errors import ExecError, InvalidIRError
 from pyrewire._ffi._loader import _parse_version, _pep440_base
 from pyrewire._ffi._util import wirelog_version
 from pyrewire.batch import BatchProgram, Result
@@ -117,6 +117,42 @@ def test_optimize_preserves_head_bindings_with_four_body_atoms():
 
     assert optimized == _semijoin_layout_rows(optimize=False)
     assert optimized == [(10, 1, 7)]
+
+
+_RECURSIVE_AGG_IN_SCC = """
+.decl Edge(a: int32, b: int32)
+.decl Label(x: int32, l: int32)
+.decl Big(x: int32)
+Edge(1,2). Edge(2,3). Edge(3,4).
+Label(x, min(x)) :- Edge(x, y).
+Label(y, min(y)) :- Edge(x, y).
+Label(x, min(l)) :- Label(y, l), Edge(y, x).
+Big(x)           :- Label(x, l), l > 2.
+Label(x, min(9)) :- Big(x).
+"""
+
+
+@pytest.mark.skipif(
+    _wirelog_older_than((0, 60, 0)),
+    reason=(
+        "wirelog#1021 refuses this shape from 0.60.0 on; through 0.54.0 the "
+        "same program evaluates to a configuration-dependent answer."
+    ),
+)
+def test_recursive_aggregate_sharing_an_scc_is_refused():
+    """A recursive `min()`/`max()` in an SCC with another relation is
+    refused at plan generation from wirelog 0.60.0 on (wirelog#1021).
+
+    Through 0.54.0 this program returned `Label` all-1 while still
+    reporting `Big(3)` and `Big(4)` -- two nodes said to carry a label
+    above 2 when no surviving label exceeds 1. The refusal reaches
+    PyreWire as `InvalidIRError` from `evaluate()`; `optimize()` still
+    succeeds, because the rejection happens in plan generation.
+    """
+    with BatchProgram.from_string(_RECURSIVE_AGG_IN_SCC) as bp:
+        bp.optimize()
+        with pytest.raises(InvalidIRError):
+            bp.evaluate()
 
 
 # ----------------------------------------------------------------------
