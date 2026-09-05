@@ -58,6 +58,29 @@ wirelog floor and a validated wirelog ref (see
   order-dependence may need its body order revisited.
 
 ### Added
+- **Float columns, float literals and the `average()` aggregate now
+  work**, delivered by the engine bump. A `.decl` may declare a `float`
+  column, a fact may carry a float literal, and `average()` over a
+  `float` operand returns a float. PyreWire needed no change to carry
+  them: a `float` column decodes as a Python `float` through the
+  existing result path. `-0.0` and `+0.0` canonicalize to the same
+  `+0.0` value on ingress, so they collapse to one row.
+
+  Float values reach a program through its **source text** only.
+  `EasySession.insert()` still carries `int64` lanes and raises
+  `ExecError` on a Python `float`; wirelog 0.60.0 adds
+  `wirelog_session_insert_typed()` for typed ingress, and PyreWire does
+  not wrap it yet.
+- **Arithmetic expressions in a rule head** (`A + B`, `A - B`, `A * B`,
+  `A / B`, `A % B`) and multi-line `.decl` continuations, also from the
+  bump. Arithmetic parses left-associatively: `A + B * C` means
+  `(A + B) * C`, not the conventional multiplication-first grouping.
+  Division truncates toward zero and the remainder keeps the dividend's
+  sign.
+- `examples/14_arithmetic_operations.py`, a port of wirelog
+  `examples/14-arithmetic-operations`, covering both of the above
+  against wirelog's own golden output. It is skipped on engines older
+  than 0.60.0, where the whole program is a parse error.
 - wirelog 0.60.0 exposes `wirelog_program_relation_has_input()`, which
   reports whether a relation carries a parsed `.input` directive without
   opening its source (wirelog#1070). PyreWire does not wrap it yet.

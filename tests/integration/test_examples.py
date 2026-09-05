@@ -11,6 +11,7 @@ loose enough to survive cosmetic upstream changes.
 from __future__ import annotations
 
 import importlib
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -105,6 +106,37 @@ def test_crc32_checksum_example_partitions_frames_by_stored_checksum() -> None:
         ("F004", 9999999999, 2056678491),
         ("F006", 1234567890, 1992588221),
     }
+
+
+def test_arithmetic_operations_example_matches_wirelog_golden_output() -> None:
+    """Golden output for wirelog `examples/14-arithmetic-operations`.
+
+    Arithmetic in a rule head and the `float` column `average()` needs
+    both arrived in wirelog 0.60.0; the whole program is a parse error
+    on 0.54.0 and older, so the example is skipped there rather than
+    partially run.
+    """
+    if _wirelog_ver() < (0, 60, 0):
+        pytest.skip("arithmetic heads and float columns need wirelog 0.60.0 or newer")
+
+    mod = _import_example("14_arithmetic_operations")
+    out = mod.run()
+
+    assert out["result"] == [
+        ("negative", -12, -22, -85, -3, -2, -24),
+        ("positive", 22, 12, 85, 3, 2, 44),
+        ("precedence", 11, 5, 24, 2, 2, 22),
+    ]
+    assert out["minimum"] == [(-17,)]
+    assert out["maximum"] == [(17,)]
+    assert out["average_value"] == [(2.5,)]
+    assert out["sample_count"] == [(3,)]
+
+    # `-0.0` and `+0.0` canonicalize to one row carrying `+0.0`.
+    assert len(out["zero_observed"]) == 1
+    (zero,) = out["zero_observed"][0]
+    assert zero == 0.0
+    assert math.copysign(1.0, zero) > 0
 
 
 def _wirelog_ver() -> tuple[int, ...]:

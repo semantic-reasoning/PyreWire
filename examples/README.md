@@ -19,5 +19,6 @@ test under `tests/integration/test_examples.py`.
 | `11_time_evolution.py` | wirelog 11 | Per-epoch delta isolation: each `step()` is a discrete time slice |
 | `12_batch_vs_session.py` | wirelog 12 (in spirit) | Compares the batch closure path with the session's EDB preview |
 | `12_snapshot_vs_delta.py` | wirelog 12 | Side-by-side comparison of `snapshot()` vs `step()` deliveries |
+| `14_arithmetic_operations.py` | wirelog 14 | Arithmetic expressions in a rule head, and the `min` / `max` / `average` / `count` aggregates over a `float` column (needs wirelog >= 0.60.0) |
 | `csv_adapter_reachability.py` | PyreWire IO adapter | Supplies `.input` facts through `register_adapter` and `load_input_files()` |
 | `retraction_basics.py` | wirelog 09 | Symmetric retraction through `step()` |
