@@ -8,6 +8,69 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-09-05
+
+### Changed
+- The bundled and validated wirelog ref moves from `v0.54.0` to
+  `v0.60.0` at peeled SHA
+  `300f3e5150095c85331b561f1f42d99c27b4746f`.
+- The minimum compatible runtime wirelog version remains `0.52.0`.
+  wirelog 0.60.0 adds 19 exported symbols and removes none, and the
+  library SONAME is unchanged, so no PyreWire code stops supporting
+  `0.52.0`. The PyreWire public API is unchanged; none of the new
+  symbols is wrapped yet.
+- **A recursive `min()`/`max()` aggregate that shares an SCC with any
+  other relation is now refused** (wirelog#1021). This is an
+  engine-level compatibility break that reaches every PyreWire entry
+  point: `optimize()` still succeeds, and `evaluate()` raises
+  `InvalidIRError`. Programs that ran on 0.54.0 can stop running here.
+
+  The refusal is deliberate. Such a consumer reads the aggregate's
+  *per-iteration* content -- each round's per-rule output, before that
+  round's cross-rule domination -- so what it observes is decided by the
+  engine's evaluation strategy rather than by the program. The shape
+
+      Label(x, min(x)) :- Edge(x, y).
+      Label(y, min(y)) :- Edge(x, y).
+      Label(x, min(l)) :- Label(y, l), Edge(y, x).
+      Big(x)           :- Label(x, l), l > 2.
+      Label(x, min(9)) :- Big(x).
+
+  over `Edge(1,2) (2,3) (3,4)` returned `Label` all-1 on 0.54.0 while
+  still reporting `Big(3)` and `Big(4)` -- two nodes said to carry a
+  label above 2 when no surviving label exceeds 1.
+
+  The rule is coarse, and upstream says so: programs that answer
+  correctly today are refused too. The workaround is to break the
+  feedback edge so the consumer lands in a later stratum -- dropping
+  `Label(x, min(9)) :- Big(x).` above yields `Label` all-1 with an empty
+  `Big`. Narrowing the rule is tracked as wirelog#1135.
+
+  wirelog's own rejection is silent at the default log level, and
+  `wl_plan_from_program()` has no error channel (wirelog#1137), so
+  PyreWire can only surface the generic `InvalidIRError`; it has no
+  message naming the relations involved. Set `WL_LOG=EVAL:1` in the
+  environment to get the engine's diagnostic on stderr.
+- **Positive `side` compound patterns now work in any body-atom
+  position** (wirelog#994). Their generated side-relation joins are
+  spliced onto the left-deep body chain, so conjunction order no longer
+  changes the result. A program that compensated for the old
+  order-dependence may need its body order revisited.
+
+### Added
+- wirelog 0.60.0 exposes `wirelog_program_relation_has_input()`, which
+  reports whether a relation carries a parsed `.input` directive without
+  opening its source (wirelog#1070). PyreWire does not wrap it yet.
+
+### Fixed
+- Engine fixes picked up by the bump, none of them reachable through
+  PyreWire's surface: a partial NULL guard in the columnar evaluator's
+  post-eval skip (wirelog#1075, unreachable without editing library
+  code), out-of-range dependency-graph edges corrupting SCC detection
+  (wirelog#1083, reachable only by an embedder building the graph by
+  hand), and arrangement row counts overflowing their hash-table sizes
+  (wirelog#1074, needs more than 2^30 rows in one arrangement).
+
 ## [1.0.5] - 2026-08-11
 
 ### Fixed
@@ -227,7 +290,8 @@ runtime wirelog version remaining `0.44.0`.
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.2...v1.0.3
