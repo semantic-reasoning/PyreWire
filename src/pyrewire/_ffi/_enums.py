@@ -37,6 +37,19 @@ class ColumnType(IntEnum):
     BOOL = 6
 
 
+class TypedErrorCode(IntEnum):
+    """Mirrors `wirelog_typed_error_code_t`.
+
+    Reported through `wirelog_typed_error_v1_t.code` by the typed
+    insert / remove entry points.
+    """
+
+    NONE = 0
+    DESCRIPTOR = 1  # the row descriptor itself is malformed
+    SCHEMA = 2  # descriptor is well-formed but disagrees with the relation
+    VALUE = 3  # a lane holds a value the column cannot represent
+
+
 class CompoundKind(IntEnum):
     """Mirrors `wirelog_compound_kind_t`."""
 
@@ -135,6 +148,7 @@ class IRNodeType(IntEnum):
 
 __all__ = [
     "ErrorCode",
+    "TypedErrorCode",
     "ColumnType",
     "CompoundKind",
     "CmpOp",

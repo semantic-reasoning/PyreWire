@@ -86,6 +86,71 @@ class CompoundArgStruct(ctypes.Structure):
     ]
 
 
+# --- wirelog_typed_row_v1_t -------------------------------------------------
+#
+# The versioned typed-row descriptor from wirelog-types.h. `struct_size`
+# and `abi_version` are the forward-compatibility handshake: the C side
+# rejects a descriptor whose `struct_size` it does not recognise, so both
+# fields MUST be filled from the constants below rather than left zero.
+#
+# A row carries two schemas. The LOGICAL one (`types`, `logical_ncols`) is
+# the relation's declared columns. The PHYSICAL one (`physical_types`,
+# `physical_nlanes`, `physical_stride`) is the lane layout, which differs
+# from the logical one only for a relation declaring an `inline` compound
+# column. `lane_offsets[c]` maps logical column `c` to its first lane.
+#
+# FLOAT lanes hold host-order IEEE-754 binary64 bits, not a C double, so
+# every float crosses this boundary through an explicit bit reinterpret.
+
+
+class TypedRowStruct(ctypes.Structure):
+    """Mirrors `wirelog_typed_row_v1_t` from wirelog-types.h."""
+
+    _fields_ = [
+        ("struct_size", ctypes.c_uint32),
+        ("abi_version", ctypes.c_uint16),
+        ("reserved", ctypes.c_uint16),
+        ("logical_ncols", ctypes.c_uint32),
+        ("physical_nlanes", ctypes.c_uint32),
+        ("physical_stride", ctypes.c_uint32),
+        ("types", ctypes.POINTER(ctypes.c_uint32)),
+        ("lane_offsets", ctypes.POINTER(ctypes.c_uint32)),
+        ("physical_types", ctypes.POINTER(ctypes.c_uint32)),
+        ("lanes", ctypes.POINTER(ctypes.c_uint64)),
+    ]
+
+
+class TypedErrorStruct(ctypes.Structure):
+    """Mirrors `wirelog_typed_error_v1_t`.
+
+    `message` is a CALLER-owned buffer; wirelog writes into it only when
+    `message_capacity` is non-zero. Pass `POINTER(c_char)` rather than
+    `c_char_p` so ctypes hands the C side a writeable pointer instead of
+    an immutable `bytes`.
+    """
+
+    _fields_ = [
+        ("struct_size", ctypes.c_uint32),
+        ("code", ctypes.c_uint32),
+        ("row_index", ctypes.c_uint32),
+        ("logical_col", ctypes.c_uint32),
+        ("message", ctypes.POINTER(ctypes.c_char)),
+        ("message_capacity", ctypes.c_uint32),
+    ]
+
+
+TYPED_ROW_STRUCT_SIZE = ctypes.sizeof(TypedRowStruct)
+TYPED_ERROR_STRUCT_SIZE = ctypes.sizeof(TypedErrorStruct)
+TYPED_ROW_ABI_VERSION = 1
+
+# wirelog reports "not applicable" for the row / column fields of a typed
+# error as UINT32_MAX rather than 0, which is a valid index.
+TYPED_ERROR_NO_INDEX = 0xFFFFFFFF
+
+# Bytes reserved for the engine's bounded diagnostic message.
+TYPED_ERROR_MESSAGE_CAPACITY = 256
+
+
 # --- wirelog_easy_open_opts_t -----------------------------------------------
 class EasyOpenOptsStruct(ctypes.Structure):
     """Mirrors `wirelog_easy_open_opts_t`. `size` MUST be set to
@@ -123,6 +188,17 @@ OnDeltaFn = ctypes.CFUNCTYPE(
     ctypes.c_uint32,
     ctypes.c_int32,  # int32_t diff (+1 / -1)
     ctypes.c_void_p,
+)
+
+# `wirelog_on_typed_tuple_fn`. The descriptor and its lane storage are
+# owned by the library only for the duration of the call, so a trampoline
+# must copy out anything it wants to keep.
+OnTypedTupleFn = ctypes.CFUNCTYPE(
+    None,
+    ctypes.c_char_p,  # const char *relation
+    ctypes.POINTER(TypedRowStruct),  # const wirelog_typed_row_v1_t *row
+    ctypes.c_int32,  # int32_t diff (+1 / -1)
+    ctypes.c_void_p,  # void *user_data
 )
 
 
@@ -187,12 +263,20 @@ __all__ = [
     "SchemaStruct",
     "StratumStruct",
     "CompoundArgStruct",
+    "TypedRowStruct",
+    "TypedErrorStruct",
     "EasyOpenOptsStruct",
     "IOAdapterStruct",
     # Constants
     "EASY_OPEN_OPTS_SIZE",
+    "TYPED_ROW_STRUCT_SIZE",
+    "TYPED_ERROR_STRUCT_SIZE",
+    "TYPED_ROW_ABI_VERSION",
+    "TYPED_ERROR_NO_INDEX",
+    "TYPED_ERROR_MESSAGE_CAPACITY",
     "WIRELOG_IO_ABI_VERSION",
     # Callback types
     "OnTupleFn",
     "OnDeltaFn",
+    "OnTypedTupleFn",
 ]

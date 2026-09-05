@@ -21,19 +21,36 @@ from enum import Enum
 from typing import Any
 
 from ._core.callbacks import CallbackHandle
-from ._core.errors import ExecError, WirelogInternError, WirelogModeError, check
+from ._core.errors import (
+    ExecError,
+    TypedRowError,
+    WirelogInternError,
+    WirelogModeError,
+    WirelogVersionError,
+    check,
+)
 from ._core.intern import InternTable
+from ._core.lanes import LaneInput, LaneValue, encode_lane
 from ._ffi import LIB
 from ._ffi import _advanced as _advanced_ffi  # noqa: F401  -- registers argtypes
 from ._ffi import _easy as _easy_ffi  # noqa: F401  -- registers argtypes
-from ._ffi._enums import BackendKind, ColumnType
+from ._ffi._advanced import has_typed_row_api
+from ._ffi._enums import BackendKind, ColumnType, CompoundKind, TypedErrorCode
 from ._ffi._types import (
     EASY_OPEN_OPTS_SIZE,
+    TYPED_ERROR_MESSAGE_CAPACITY,
+    TYPED_ERROR_NO_INDEX,
+    TYPED_ERROR_STRUCT_SIZE,
+    TYPED_ROW_ABI_VERSION,
+    TYPED_ROW_STRUCT_SIZE,
     CompoundArgStruct,
     EasyOpenOptsStruct,
     EasySessionHandle,
     OnDeltaFn,
+    OnTypedTupleFn,
     SessionHandle,
+    TypedErrorStruct,
+    TypedRowStruct,
 )
 from .compound import Compound, CompoundArg
 from .program import Program, Schema
@@ -45,6 +62,14 @@ except ImportError:  # pragma: no cover - exercised via monkeypatch
 
 Value = int | str | bool | float
 Row = Sequence[Value]
+
+# The typed path's own vocabulary. `Row` admits `str` because
+# `EasySession.insert` auto-interns it; the typed path has no
+# forward-intern entry point and rejects `str` by design, while accepting
+# anything integer-like or float-like that `Row` does not name. Declaring
+# `Row` there would let mypy wave through the one input that always
+# raises and reject the NumPy scalars that work.
+TypedRow = Sequence[LaneInput]
 
 
 class _Mode(Enum):
@@ -680,6 +705,289 @@ class Session(AbstractContextManager["Session"]):
             )
         check(rc)
 
+    # --- typed rows: the FLOAT-capable path --------------------------------
+    #
+    # `insert` / `remove` above carry `int64_t` lanes. What happens to a
+    # Python float there is NOT a bit reinterpret: `_flatten` calls
+    # `int(v)`, so on an integer relation 2.9 is stored truncated as 2.
+    # On a relation that declares a FLOAT column the engine does not get
+    # that far: `wirelog_session_insert` and `wirelog_session_remove`
+    # refuse that relation, while `set_delta_cb` and the untyped snapshot
+    # refuse whenever the program carries a float anywhere - including in
+    # a compound slot, not only as a declared column. So `insert()` into
+    # such a relation, and `step()` / `snapshot()` on such a program, all
+    # raise `ExecError`.
+    # The typed entry points carry an explicit per-column type alongside
+    # the bits, which is what makes a FLOAT column usable from a session
+    # at all. Requires wirelog >= 0.60.0.
+
+    @staticmethod
+    def _require_typed_row_api(method: str) -> None:
+        if not has_typed_row_api():
+            raise WirelogVersionError(
+                f"Session.{method} requires libwirelog with the typed row entry "
+                f"points (wirelog >= 0.60.0); the loaded engine does not export "
+                f"them. The loader floor still admits 0.52.0, so a source install "
+                f"against an older system libwirelog reaches this."
+            )
+
+    def _column_types(self, relation: str) -> tuple[ColumnType, ...]:
+        """Logical column types for `relation`, read from the program schema.
+
+        Raises `ExecError` if the relation is undeclared, or if it declares
+        an `inline` compound column - those spread one logical column over
+        several physical lanes, and this wrapper only builds the flat
+        one-lane-per-column descriptor.
+        """
+        schema = self._program.schema(relation)
+        if schema is None:
+            raise ExecError(f"no schema for relation: {relation!r}")
+        for index, column in enumerate(schema.columns):
+            if column.compound_kind == CompoundKind.INLINE:
+                raise ExecError(
+                    f"relation {relation!r} column {index} ({column.name!r}) is an "
+                    "inline compound; typed insert/remove supports only relations "
+                    "whose logical columns map one-to-one onto physical lanes"
+                )
+        return tuple(column.type for column in schema.columns)
+
+    def _build_typed_rows(
+        self, rows: Sequence[TypedRow], types: tuple[ColumnType, ...]
+    ) -> tuple[Any, int, list[Any]]:
+        """Build the `TypedRowStruct` array and everything it points at.
+
+        ctypes does retain the backing arrays: assigning the struct into
+        an array element bumps their refcount through `_objects`, which
+        is observable as `sys.getrefcount` going 1 -> 2. They are also
+        returned in an explicit keep-alive list so the guarantee rests on
+        a reference this code holds rather than on that implementation
+        detail of ctypes.
+        """
+        ncols = len(types)
+        type_codes = (ctypes.c_uint32 * ncols)(*(int(t) for t in types))
+        lane_offsets = (ctypes.c_uint32 * ncols)(*range(ncols))
+        keepalive: list[Any] = [type_codes, lane_offsets]
+
+        # Materialize once. A `Sequence` whose `__len__` disagrees between
+        # the sizing here and the count handed to C - a hostile `__len__`,
+        # or a list another thread appends to mid-call - would make wirelog
+        # read past the end of this array.
+        materialized = list(rows)
+        array = (TypedRowStruct * len(materialized))()
+        for i, row in enumerate(materialized):
+            if len(row) != ncols:
+                raise ValueError(
+                    f"row {i} has {len(row)} cols, expected {ncols} from the " f"relation schema"
+                )
+            lanes = (ctypes.c_uint64 * ncols)()
+            for j, value in enumerate(row):
+                lanes[j] = encode_lane(value, types[j])
+            keepalive.append(lanes)
+            array[i] = TypedRowStruct(
+                struct_size=TYPED_ROW_STRUCT_SIZE,
+                abi_version=TYPED_ROW_ABI_VERSION,
+                reserved=0,
+                logical_ncols=ncols,
+                physical_nlanes=ncols,
+                physical_stride=ncols,
+                types=type_codes,
+                lane_offsets=lane_offsets,
+                physical_types=type_codes,
+                lanes=lanes,
+            )
+        return array, len(materialized), keepalive
+
+    @staticmethod
+    def _raise_typed_error(relation: str, err: TypedErrorStruct, buf: Any) -> None:
+        engine_message = buf.value.decode("utf-8", "replace") if buf.value else None
+        row_index = None if err.row_index == TYPED_ERROR_NO_INDEX else int(err.row_index)
+        column = None if err.logical_col == TYPED_ERROR_NO_INDEX else int(err.logical_col)
+        try:
+            code_name = TypedErrorCode(err.code).name
+        except ValueError:  # a code this build of PyreWire does not know
+            code_name = f"UNKNOWN({err.code})"
+
+        where = f"relation {relation!r}"
+        if row_index is not None:
+            where += f", row {row_index}"
+        if column is not None:
+            where += f", column {column}"
+        detail = f": {engine_message}" if engine_message else ""
+        raise TypedRowError(
+            f"typed row rejected ({code_name}) - {where}{detail}",
+            typed_code=int(err.code),
+            row_index=row_index,
+            column=column,
+            engine_message=engine_message,
+        )
+
+    def _typed_iud(self, relation: str, rows: Sequence[TypedRow], fn: Any) -> None:
+        if not rows:
+            return
+        types = self._column_types(relation)
+        # `nrows` comes from what was actually built, never from a second
+        # `len(rows)`: the two can disagree, and C would read the gap.
+        array, nrows, keepalive = self._build_typed_rows(rows, types)
+        if not nrows:
+            return
+        buf = ctypes.create_string_buffer(TYPED_ERROR_MESSAGE_CAPACITY)
+        err = TypedErrorStruct(
+            struct_size=TYPED_ERROR_STRUCT_SIZE,
+            code=int(TypedErrorCode.NONE),
+            row_index=TYPED_ERROR_NO_INDEX,
+            logical_col=TYPED_ERROR_NO_INDEX,
+            message=ctypes.cast(buf, ctypes.POINTER(ctypes.c_char)),
+            message_capacity=TYPED_ERROR_MESSAGE_CAPACITY,
+        )
+        with self._serialize():
+            rc = fn(
+                self._handle,
+                relation.encode("utf-8"),
+                array,
+                ctypes.c_uint32(nrows),
+                ctypes.byref(err),
+            )
+        del keepalive  # the arrays had to stay referenced across the call above
+        if rc != 0:
+            if err.code != int(TypedErrorCode.NONE):
+                self._raise_typed_error(relation, err, buf)
+            check(rc)
+
+    def insert_typed(self, relation: str, rows: Sequence[TypedRow]) -> None:
+        """Batched insert that preserves FLOAT columns.
+
+        Column types come from the relation's declaration in the borrowed
+        program, so rows are plain Python values in declaration order:
+
+            session.insert_typed("sample", [(1, 2.5), (2, 3.5)])
+
+        `-0.0` and `+0.0` canonicalize to the same `+0.0` on ingress, so
+        rows differing only in a float's sign of zero collapse to one.
+        NaN and the infinities are rejected by the engine, not stored:
+        they raise `TypedRowError` with code `VALUE` and the message
+        `non-finite float`. The batch is validated as a whole before any
+        of it is applied, so a rejected row leaves nothing behind.
+
+        Raises:
+            TypedRowError: wirelog rejected a row; the exception names the
+                row and column.
+            ExecError: the relation is undeclared, or declares an `inline`
+                compound column.
+            ValueError: a row's width disagrees with the schema, or a
+                non-integral float was given for an integer column.
+            TypeError: a `str`, or a value that is neither integer-like
+                nor float-like, appeared in a row.
+            OverflowError: a value is too large to convert to a float.
+        """
+        self._require_typed_row_api("insert_typed()")
+        self._require_mode(_Mode.INCREMENTAL)
+        self._typed_iud(relation, rows, LIB.wirelog_session_insert_typed)
+
+    def remove_typed(self, relation: str, rows: Sequence[TypedRow]) -> None:
+        """Like `insert_typed` but emits z-set decrements.
+
+        A float retracts the row it was inserted with only if it encodes to
+        the same lane bits, which is why `insert_typed`'s zero
+        canonicalization matters here: removing `-0.0` retracts a row
+        inserted as `+0.0`.
+        """
+        self._require_typed_row_api("remove_typed()")
+        self._require_mode(_Mode.INCREMENTAL)
+        self._typed_iud(relation, rows, LIB.wirelog_session_remove_typed)
+
+    def snapshot_typed(self) -> list[tuple[str, tuple[LaneValue, ...]]]:
+        """Materialize every derived relation with FLOAT columns decoded.
+
+        On a program that declares a FLOAT column the untyped `snapshot()`
+        does not return a distorted value - it raises `ExecError`, because
+        the engine refuses to install an untyped tuple callback there at
+        all. This decodes each column by its reported type: FLOAT to
+        `float`, BOOL to `bool`, UINT32 / UINT64 unsigned, everything else
+        signed.
+
+        Commits the session to QUERY mode, exactly as `snapshot()` does.
+        """
+        self._require_typed_row_api("snapshot_typed()")
+        self._require_mode(_Mode.QUERY)
+        # Through `CallbackHandle`, not a bare closure: a decode that
+        # raises inside a raw ctypes callback is swallowed at the C
+        # boundary, and this method would then return a short row set with
+        # a WIRELOG_OK return code. The handle stashes the exception and
+        # `drain()` re-raises it, which is the contract `_core.callbacks`
+        # documents and the untyped `snapshot()` already follows.
+        cb = CallbackHandle("typed_delta")
+        try:
+            with self._serialize():
+                rc = LIB.wirelog_session_snapshot_typed(self._handle, cb.fn, cb.user_data)
+            check(rc)
+            events = cb.drain()
+        finally:
+            cb.close()
+        return [(rel, vals) for _kind, rel, vals, _diff in events]
+
+    def set_typed_delta_callback(
+        self, fn: Callable[[str, tuple[LaneValue, ...], int], None] | None
+    ) -> None:
+        """Register a delta callback that decodes columns by type.
+
+        wirelog REFUSES to install the untyped delta callback on a program
+        whose schema carries a FLOAT column - `wirelog_session_set_delta_cb`
+        returns `WIRELOG_ERR_EXEC` - so `set_delta_callback()` and `step()`
+        are unusable there. This is the path such a session must take.
+
+        `fn` is NOT invoked per row. Registering it arms the typed
+        trampoline, and the events it buffers are returned by
+        `step_typed()`; `fn` itself is only stored. That mirrors the
+        untyped `set_delta_callback`, which does not dispatch to its
+        callable either - `EasySession.step` is the one place a
+        user callable is called per event. Read the return value of
+        `step_typed()` rather than expecting `fn` to fire.
+
+        Passing `None` clears the callback.
+        """
+        self._require_typed_row_api("set_typed_delta_callback()")
+        self._require_mode(_Mode.INCREMENTAL)
+        if fn is None:
+            if self._delta_cb is not None:
+                self._clear_delta_cb()
+            return
+        if self._delta_cb is None or self._delta_cb.kind != "typed_delta":
+            if self._delta_cb is not None:
+                self._clear_delta_cb()
+            self._delta_cb = CallbackHandle("typed_delta")
+        self._delta_cb._state.user_fn = fn
+        with self._serialize():
+            rc = LIB.wirelog_session_set_typed_delta_cb(
+                self._handle, self._delta_cb.fn, self._delta_cb.user_data
+            )
+        check(rc)
+
+    def step_typed(self) -> list[tuple[str, tuple[LaneValue, ...], int]]:
+        """Drive one fixpoint step with typed delta decoding.
+
+        The typed counterpart of `step()`: same `(relation, row, diff)`
+        events, with FLOAT columns decoded as `float`. On a program that
+        declares a FLOAT column this is the only one of the two that
+        works - `step()` raises `ExecError`, because wirelog refuses to
+        install the untyped delta callback there.
+        """
+        self._require_typed_row_api("step_typed()")
+        self._require_mode(_Mode.INCREMENTAL)
+        if self._delta_cb is None or self._delta_cb.kind != "typed_delta":
+            if self._delta_cb is not None:
+                self._clear_delta_cb()
+            self._delta_cb = CallbackHandle("typed_delta")
+            with self._serialize():
+                rc = LIB.wirelog_session_set_typed_delta_cb(
+                    self._handle, self._delta_cb.fn, self._delta_cb.user_data
+                )
+            check(rc)
+        with self._serialize():
+            rc = LIB.wirelog_session_step(self._handle)
+        check(rc)
+        events = self._delta_cb.drain()
+        return [(rel, vals, diff) for _kind, rel, vals, diff in events]
+
     # --- zero-copy NumPy path (#22) ----------------------------------------
 
     def insert_batch(self, relation: str, rows: Any) -> None:
@@ -739,19 +1047,48 @@ class Session(AbstractContextManager["Session"]):
 
     # --- step / snapshot / callbacks --------------------------------------
 
+    def _clear_delta_cb(self) -> None:
+        """Clear wirelog's pointer for whichever callback kind is armed.
+
+        Either entry point would in fact disarm both: 0.60.0's
+        `wirelog_session_set_delta_cb` nulls `typed_delta_cb`
+        unconditionally, and its FLOAT-relation refusal is gated on a
+        non-NULL callback, so a NULL clear is never rejected. Dispatching
+        on the armed kind does not fix a live bug; it keeps this side from
+        depending on that, since nothing in the public C contract promises
+        one setter will keep clearing the other's slot.
+        """
+        cb = self._delta_cb
+        if cb is None:
+            return
+        try:
+            with self._serialize():
+                if cb.kind == "typed_delta":
+                    rc = LIB.wirelog_session_set_typed_delta_cb(
+                        self._handle, OnTypedTupleFn(), None
+                    )
+                else:
+                    rc = LIB.wirelog_session_set_delta_cb(self._handle, OnDeltaFn(), None)
+            check(rc)
+        finally:
+            cb.close()
+            self._delta_cb = None
+
     def set_delta_callback(self, fn: Callable[[str, tuple[int, ...], int], None] | None) -> None:
         """Register or clear the delta callback. The session enters
         INCREMENTAL mode on the first call."""
         self._require_mode(_Mode.INCREMENTAL)
         if fn is None:
             if self._delta_cb is not None:
-                with self._serialize():
-                    rc = LIB.wirelog_session_set_delta_cb(self._handle, OnDeltaFn(), None)
-                check(rc)
-                self._delta_cb.close()
-                self._delta_cb = None
+                self._clear_delta_cb()
             return
-        if self._delta_cb is None:
+        # `kind` matters since the typed path landed: reusing a
+        # "typed_delta" handle here would hand `OnTypedTupleFn` to
+        # `wirelog_session_set_delta_cb`, which ctypes rejects with an
+        # opaque ArgumentError after `user_fn` has already been clobbered.
+        if self._delta_cb is None or self._delta_cb.kind != "delta":
+            if self._delta_cb is not None:
+                self._clear_delta_cb()
             self._delta_cb = CallbackHandle("delta")
         self._delta_cb._state.user_fn = fn
         with self._serialize():
@@ -764,7 +1101,9 @@ class Session(AbstractContextManager["Session"]):
         """Drive one fixpoint step. Returns `(relation, row, diff)` events
         that wirelog emitted for the delta callback during this step."""
         self._require_mode(_Mode.INCREMENTAL)
-        if self._delta_cb is None:
+        if self._delta_cb is None or self._delta_cb.kind != "delta":
+            if self._delta_cb is not None:
+                self._clear_delta_cb()
             self._delta_cb = CallbackHandle("delta")
             with self._serialize():
                 rc = LIB.wirelog_session_set_delta_cb(
@@ -858,13 +1197,16 @@ class Session(AbstractContextManager["Session"]):
                 c.invalidate()
             self._compounds.clear()
             if self._delta_cb is not None:
-                # Clear wirelog's pointer before tearing the slot down.
+                # Clear wirelog's pointer before tearing the slot down,
+                # through the entry point matching the armed kind. See
+                # `_clear_delta_cb` for why that is insurance rather than
+                # a fix.
                 try:
-                    LIB.wirelog_session_set_delta_cb(self._handle, OnDeltaFn(), None)
+                    self._clear_delta_cb()
                 except Exception:
-                    pass
-                self._delta_cb.close()
-                self._delta_cb = None
+                    if self._delta_cb is not None:
+                        self._delta_cb.close()
+                        self._delta_cb = None
             if self._handle.value:
                 LIB.wirelog_session_destroy(self._handle)
                 self._handle = SessionHandle()
