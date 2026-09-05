@@ -1090,6 +1090,12 @@ release to publish; it is <strong>not</strong> tied to the wirelog change.</p>
 <td><code>9f80877c82564cb92ea45bd6fffc2d681b0e13de</code></td>
 <td>Validated against wirelog <code>v0.54.0</code> (peeled tag SHA); runtime minimum remains <code>0.52.0</code>. Bundled engine bumped to v0.54.0 to pick up the wirelog#955 semijoin layout fix (#180); the public C header change is additive and the SONAME is unchanged.</td>
 </tr>
+<tr>
+<td><code>1.0.6</code></td>
+<td><code>0.52.0</code></td>
+<td><code>300f3e5150095c85331b561f1f42d99c27b4746f</code></td>
+<td>Validated against wirelog <code>v0.60.0</code> (peeled tag SHA); runtime minimum remains <code>0.52.0</code>. Bundled engine bumped to v0.60.0; the exported ABI is additive (19 new symbols, none removed) and the SONAME is unchanged. wirelog#1021 refuses a recursive <code>min()</code>/<code>max()</code> that shares an SCC with another relation - an engine-level compatibility break that reaches any program PyreWire runs.</td>
+</tr>
 </tbody>
 </table>
 <p>The table grows with every release; the source of truth is the
