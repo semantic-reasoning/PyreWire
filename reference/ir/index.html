@@ -1087,13 +1087,13 @@
 <span class="normal"><a href="#__codelineno-0-82">82</a></span>
 <span class="normal"><a href="#__codelineno-0-83">83</a></span>
 <span class="normal"><a href="#__codelineno-0-84">84</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">class</span><span class="w"> </span><span class="nc">IRNode</span><span class="p">:</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Lazy wrapper over `wirelog_ir_node_t`. Does not own the pointer.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">"""Lazy wrapper over `wirelog_ir_node_t`. Does not own the pointer."""</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_handle&quot;</span><span class="p">,)</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_handle"</span><span class="p">,)</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">:</span> <span class="n">IRNodeHandle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">handle</span><span class="p">:</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;null IR node handle&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"null IR node handle"</span><span class="p">)</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="n">handle</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="nd">@property</span>
@@ -1104,8 +1104,8 @@
 <a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">relation_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="n">s</span> <span class="o">=</span> <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_ir_node_get_relation_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
 <a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>            <span class="k">return</span> <span class="s2">""</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
 <a id="__codelineno-0-41" name="__codelineno-0-41"></a>
 <a id="__codelineno-0-42" name="__codelineno-0-42"></a>    <span class="nd">@property</span>
 <a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">child_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1124,32 +1124,32 @@
 <a id="__codelineno-0-56" name="__codelineno-0-56"></a>                <span class="k">yield</span> <span class="n">c</span>
 <a id="__codelineno-0-57" name="__codelineno-0-57"></a>
 <a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">IRNode</span><span class="p">]:</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-order traversal: yields self, then each child&#39;s `walk()`.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">        </span><span class="sd">"""Pre-order traversal: yields self, then each child's `walk()`."""</span>
 <a id="__codelineno-0-60" name="__codelineno-0-60"></a>        <span class="k">yield</span> <span class="bp">self</span>
 <a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
 <a id="__codelineno-0-62" name="__codelineno-0-62"></a>            <span class="k">yield from</span> <span class="n">c</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
 <a id="__codelineno-0-63" name="__codelineno-0-63"></a>
 <a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Render this node via `wirelog_ir_node_to_string`.</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="w">        </span><span class="sd">"""Render this node via `wirelog_ir_node_to_string`.</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66"></a>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">        The heap buffer is always freed — including on decode errors —</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">        because `string_at` copies into a Python `bytes` before the</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">        `finally` block runs.</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">        """</span>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="n">ptr</span> <span class="o">=</span> <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_ir_node_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
 <a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">ptr</span><span class="p">:</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="k">return</span> <span class="s2">""</span>
 <a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">string_at</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">string_at</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
 <a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="k">finally</span><span class="p">:</span>
 <a id="__codelineno-0-77" name="__codelineno-0-77"></a>            <span class="n">libc_free</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
 <a id="__codelineno-0-78" name="__codelineno-0-78"></a>
 <a id="__codelineno-0-79" name="__codelineno-0-79"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Call `wirelog_ir_node_print` (writes to stdout). Debug aid.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="w">        </span><span class="sd">"""Call `wirelog_ir_node_print` (writes to stdout). Debug aid."""</span>
 <a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_ir_node_print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">(</span><span class="n">indent</span><span class="p">))</span>
 <a id="__codelineno-0-82" name="__codelineno-0-82"></a>
 <a id="__codelineno-0-83" name="__codelineno-0-83"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;IRNode(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, relation=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">relation_name</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">"IRNode(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, relation=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">relation_name</span><span class="si">!r}</span><span class="s2">)"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1189,7 +1189,7 @@
 <span class="normal"><a href="#__codelineno-0-60">60</a></span>
 <span class="normal"><a href="#__codelineno-0-61">61</a></span>
 <span class="normal"><a href="#__codelineno-0-62">62</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">IRNode</span><span class="p">]:</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Pre-order traversal: yields self, then each child&#39;s `walk()`.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="sd">"""Pre-order traversal: yields self, then each child's `walk()`."""</span>
 <a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="k">yield</span> <span class="bp">self</span>
 <a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
 <a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="k">yield from</span> <span class="n">c</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
@@ -1234,17 +1234,17 @@ because <code>string_at</code> copies into a Python <code>bytes</code> before th
 <span class="normal"><a href="#__codelineno-0-75">75</a></span>
 <span class="normal"><a href="#__codelineno-0-76">76</a></span>
 <span class="normal"><a href="#__codelineno-0-77">77</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="k">def</span><span class="w"> </span><span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Render this node via `wirelog_ir_node_to_string`.</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="w">    </span><span class="sd">"""Render this node via `wirelog_ir_node_to_string`.</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66"></a>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">    The heap buffer is always freed — including on decode errors —</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">    because `string_at` copies into a Python `bytes` before the</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">    `finally` block runs.</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">    """</span>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a>    <span class="n">ptr</span> <span class="o">=</span> <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_ir_node_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">)</span>
 <a id="__codelineno-0-72" name="__codelineno-0-72"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">ptr</span><span class="p">:</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>        <span class="k">return</span> <span class="s2">""</span>
 <a id="__codelineno-0-74" name="__codelineno-0-74"></a>    <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>        <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">string_at</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>        <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">string_at</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
 <a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="k">finally</span><span class="p">:</span>
 <a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="n">libc_free</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1274,7 +1274,7 @@ because <code>string_at</code> copies into a Python <code>bytes</code> before th
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-79">79</a></span>
 <span class="normal"><a href="#__codelineno-0-80">80</a></span>
 <span class="normal"><a href="#__codelineno-0-81">81</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="k">def</span><span class="w"> </span><span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Call `wirelog_ir_node_print` (writes to stdout). Debug aid.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="w">    </span><span class="sd">"""Call `wirelog_ir_node_print` (writes to stdout). Debug aid."""</span>
 <a id="__codelineno-0-81" name="__codelineno-0-81"></a>    <span class="n">LIB</span><span class="o">.</span><span class="n">wirelog_ir_node_print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">(</span><span class="n">indent</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
