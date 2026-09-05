@@ -110,6 +110,40 @@ class ExecError(WirelogError):
     code = int(ErrorCode.EXEC)
 
 
+class TypedRowError(ExecError):
+    """Raised when `wirelog_session_insert_typed` / `remove_typed` rejects a row.
+
+    A subclass of `ExecError` so existing `except ExecError` handlers keep
+    working, but it carries what the generic path throws away: which row
+    and column the engine objected to, and its own bounded diagnostic.
+
+    Attributes:
+        typed_code: The `TypedErrorCode` wirelog reported - `DESCRIPTOR`
+            (the descriptor is malformed), `SCHEMA` (it disagrees with the
+            relation) or `VALUE` (a lane holds an unrepresentable value).
+        row_index: Index of the offending row within the batch, or `None`
+            when the engine reported no specific row.
+        column: Logical column index within that row, or `None` when the
+            engine reported no specific column.
+        engine_message: wirelog's own message, or `None` if it supplied none.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        typed_code: int,
+        row_index: int | None = None,
+        column: int | None = None,
+        engine_message: str | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.typed_code = typed_code
+        self.row_index = row_index
+        self.column = column
+        self.engine_message = engine_message
+
+
 class WirelogMemoryError(WirelogError):
     """Raised when the wirelog engine cannot allocate memory (``WIRELOG_ERR_MEMORY``,
     code 4).
@@ -282,6 +316,7 @@ __all__ = [
     "WirelogError",
     "ParseError",
     "InvalidIRError",
+    "TypedRowError",
     "ExecError",
     "WirelogMemoryError",
     "WirelogIOError",

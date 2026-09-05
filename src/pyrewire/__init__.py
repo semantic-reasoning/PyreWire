@@ -11,6 +11,7 @@ from pyrewire._core.errors import (
     ExecError,
     InvalidIRError,
     ParseError,
+    TypedRowError,
     WirelogError,
     WirelogInternError,
     WirelogIOError,
@@ -28,6 +29,7 @@ from pyrewire._ffi._enums import (
     ErrorCode,
     IRNodeType,
     StrFn,
+    TypedErrorCode,
 )
 from pyrewire._ffi._util import (
     agg_fn_name,
@@ -93,6 +95,8 @@ __all__ = [
     "WirelogError",
     "ParseError",
     "InvalidIRError",
+    "TypedRowError",
+    "TypedErrorCode",
     "ExecError",
     "WirelogMemoryError",
     "WirelogIOError",

@@ -17,8 +17,8 @@ hard requirements that this module enforces:
    the registry slot. `CallbackHandle.drain()` then re-raises after
    wirelog has returned control to Python.
 
-The two trampolines (`_delta_trampoline`, `_tuple_trampoline`) are
-module-level singletons. Per-session instances would multiply ctypes
+The three trampolines (`_delta_trampoline`, `_tuple_trampoline`,
+`_typed_delta_trampoline`) are module-level singletons. Per-session instances would multiply ctypes
 overhead and complicate lifetime management.
 """
 
@@ -31,12 +31,15 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from .._ffi._types import OnDeltaFn, OnTupleFn
+from .._ffi._types import OnDeltaFn, OnTupleFn, OnTypedTupleFn
+from .lanes import decode_typed_row
 
-# Event payloads buffered by the trampolines. The first element ("delta"
-# or "tuple") is the trampoline kind; the rest is the decoded payload.
+# Event payloads buffered by the trampolines. The first element is the
+# trampoline kind; the rest is the decoded payload.
 DeltaEvent = tuple[str, str, tuple[int, ...], int]  # ("delta", rel, row_ids, diff)
 TupleEvent = tuple[str, str, tuple[int, ...]]  # ("tuple", rel, row_ids)
+# ("typed_delta", rel, decoded_values, diff) - values are typed, not ids
+TypedDeltaEvent = tuple[str, str, tuple[object, ...], int]
 Event = Any  # union of the above
 
 
@@ -62,7 +65,7 @@ def _next_token() -> int:
 
 # --- module-level trampolines ----------------------------------------------
 #
-# Both trampolines defensively swallow every exception. They store the
+# Every trampoline defensively swallows all exceptions. They store the
 # exception on the registry slot (best effort) so `drain()` can re-raise
 # it. Never let one propagate into wirelog's C call.
 
@@ -114,6 +117,34 @@ def _tuple_trampoline(
             state.last_error = exc
 
 
+@OnTypedTupleFn  # type: ignore[untyped-decorator]
+def _typed_delta_trampoline(
+    relation: bytes,
+    row: Any,
+    diff: int,
+    user_data: Any,
+) -> None:
+    """Typed counterpart of `_delta_trampoline`.
+
+    wirelog refuses to install the UNTYPED delta callback on a program
+    whose schema carries a FLOAT column, so this is the only delta path
+    available to such a session. The descriptor is borrowed for this call
+    only; `decode_typed_row` copies every value out before returning.
+    """
+    state: _TrampolineState | None = None
+    try:
+        raw = ctypes.cast(user_data, ctypes.c_void_p).value
+        token = int(raw) if raw else 0
+        state = _REGISTRY.get(token)
+        if state is None or not row:
+            return
+        rel = relation.decode() if relation else ""
+        state.queue.append(("typed_delta", rel, decode_typed_row(row[0]), int(diff)))
+    except BaseException as exc:  # never propagate to C
+        if state is not None:
+            state.last_error = exc
+
+
 # --- public API ------------------------------------------------------------
 
 
@@ -125,7 +156,7 @@ class CallbackHandle:
     __slots__ = ("kind", "token", "_state", "__weakref__")
 
     def __init__(self, kind: str, user_fn: Callable[..., Any] | None = None) -> None:
-        if kind not in ("delta", "tuple"):
+        if kind not in ("delta", "tuple", "typed_delta"):
             raise ValueError(f"unknown callback kind: {kind!r}")
         self.kind: str = kind
         self.token: int = _next_token()
@@ -140,7 +171,11 @@ class CallbackHandle:
     @property
     def fn(self) -> Any:
         """The module-level CFUNCTYPE instance matching `kind`."""
-        return _delta_trampoline if self.kind == "delta" else _tuple_trampoline
+        if self.kind == "delta":
+            return _delta_trampoline
+        if self.kind == "typed_delta":
+            return _typed_delta_trampoline
+        return _tuple_trampoline
 
     def drain(self) -> list[Event]:
         """Pop and return all queued events. If a callback raised, the
@@ -165,4 +200,4 @@ class CallbackHandle:
             pass
 
 
-__all__ = ["CallbackHandle", "DeltaEvent", "TupleEvent", "Event"]
+__all__ = ["CallbackHandle", "DeltaEvent", "TupleEvent", "TypedDeltaEvent", "Event"]

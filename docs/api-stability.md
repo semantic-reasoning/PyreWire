@@ -66,6 +66,8 @@ The v1 stable public API includes these exported names:
 - `ParseError`
 - `InvalidIRError`
 - `ExecError`
+- `TypedRowError`
+- `TypedErrorCode`
 - `WirelogMemoryError`
 - `WirelogIOError`
 - `CompoundSaturatedError`
