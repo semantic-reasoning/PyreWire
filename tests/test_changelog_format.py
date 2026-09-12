@@ -83,9 +83,13 @@ def test_changelog_keep_a_changelog_intro_present():
     assert "Keep a Changelog" in text
 
 
-def test_unreleased_section_is_empty_for_100_release():
+def test_unreleased_section_documents_pending_changes():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert _section(changelog, "Unreleased") == "## [Unreleased]"
+    section = _section(changelog, "Unreleased")
+
+    assert "wirelog" in section
+    assert "v0.62.0" in section
+    assert "39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c" in section
 
 
 def test_100_release_notes_include_publishable_contract_facts():

@@ -122,11 +122,18 @@ def test_arithmetic_operations_example_matches_wirelog_golden_output() -> None:
     mod = _import_example("14_arithmetic_operations")
     out = mod.run()
 
-    assert out["result"] == [
-        ("negative", -12, -22, -85, -3, -2, -24),
-        ("positive", 22, 12, 85, 3, 2, 44),
-        ("precedence", 11, 5, 24, 2, 2, 22),
-    ]
+    if _wirelog_ver() >= (0, 61, 0):
+        assert out["result"] == [
+            ("negative", -12, -22, -85, -3, -2, -7),
+            ("positive", 22, 12, 85, 3, 2, 27),
+            ("precedence", 11, 5, 24, 2, 2, 14),
+        ]
+    else:
+        assert out["result"] == [
+            ("negative", -12, -22, -85, -3, -2, -24),
+            ("positive", 22, 12, 85, 3, 2, 44),
+            ("precedence", 11, 5, 24, 2, 2, 22),
+        ]
     assert out["minimum"] == [(-17,)]
     assert out["maximum"] == [(17,)]
     assert out["average_value"] == [(2.5,)]

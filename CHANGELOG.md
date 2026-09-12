@@ -8,6 +8,15 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+### Changed
+- The current development pin for bundled and validated wirelog builds
+  moves from `v0.60.0` to `v0.62.0` at peeled SHA
+  `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c`.
+- The minimum compatible runtime wirelog version remains `0.52.0`.
+  wirelog 0.62.0 adds `wirelog_program_get_plan_error` relative to
+  0.60.0, and the library SONAME is unchanged, so no PyreWire code
+  stops supporting `0.52.0`.
+
 ## [1.0.6] - 2026-09-05
 
 ### Changed
