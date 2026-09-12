@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#v100-release-candidate-checklist" class="md-skip">
+        <a href="#v111-release-candidate-checklist" class="md-skip">
           Skip to content
         </a>
       
@@ -907,12 +907,12 @@
   
 
 
-<h1 id="v100-release-candidate-checklist">v1.0.0 release candidate checklist<a class="headerlink" href="#v100-release-candidate-checklist" title="Permanent link">&para;</a></h1>
-<p>The v1.0.0 tag must not be cut until every gate below passes on the exact release commit.
+<h1 id="v111-release-candidate-checklist">v1.1.1 release candidate checklist<a class="headerlink" href="#v111-release-candidate-checklist" title="Permanent link">&para;</a></h1>
+<p>The v1.1.1 tag must not be cut until every gate below passes on the exact release commit.
 Freeze the release commit first:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>rev-parse<span class="w"> </span>HEAD
 </code></pre></div>
-<p>Record that SHA in the release issue or release PR. The <code>v1.0.0</code> tag must point to that exact SHA before any publication step. If any gate fails, do not tag or publish; open or link a GitHub issue, PR, or follow-up task that captures the failure before retrying.</p>
+<p>Record that SHA in the release issue or release PR. The <code>v1.1.1</code> tag must point to that exact SHA before any publication step. If any gate fails, do not tag or publish; open or link a GitHub issue, PR, or follow-up task that captures the failure before retrying.</p>
 <table>
 <thead>
 <tr>
@@ -927,8 +927,8 @@ Freeze the release commit first:</p>
 <tr>
 <td>Release commit freeze</td>
 <td>Release manager</td>
-<td>Command: <code>git rev-parse HEAD</code>; manual verification that <code>v1.0.0</code> will be created at that SHA.</td>
-<td>Recorded release commit SHA and confirmation that the <code>v1.0.0</code> tag points to the same SHA.</td>
+<td>Command: <code>git rev-parse HEAD</code>; manual verification that <code>v1.1.1</code> will be created at that SHA.</td>
+<td>Recorded release commit SHA and confirmation that the <code>v1.1.1</code> tag points to the same SHA.</td>
 <td>Link a GitHub issue, PR, or follow-up task and restart the checklist from the corrected commit.</td>
 </tr>
 <tr>
@@ -1018,8 +1018,8 @@ Freeze the release commit first:</p>
 <tr>
 <td>Artifact attestation verification</td>
 <td>Release manager</td>
-<td>Workflow: <code>.github/workflows/release.yml</code> publish jobs generate release artifact attestations using <code>actions/attest@v4</code>. For tagged release artifacts, command: <code>gh attestation verify &lt;artifact&gt; -R semantic-reasoning/PyreWire --signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml --source-ref refs/tags/v1.0.0</code> for every release wheel (<code>dist/pyrewire-*.whl</code>) and the sdist (<code>dist/pyrewire-*.tar.gz</code>). For RC/frozen-commit validation before the final tag exists, also verify with <code>--source-digest &lt;frozen-sha&gt;</code>. Repo-only <code>-R</code> verification alone is not sufficient for this gate.</td>
-<td>Successful <code>release.yml</code> run URL, release tag or frozen RC commit SHA, artifact filenames, SHA256 hashes for each wheel/sdist, and successful <code>gh attestation verify</code> output showing enforced signer workflow and source identity (<code>--source-ref refs/tags/v1.0.0</code> or <code>--source-digest &lt;frozen-sha&gt;</code>) for each verified artifact.</td>
+<td>Workflow: <code>.github/workflows/release.yml</code> publish jobs generate release artifact attestations using <code>actions/attest@v4</code>. For tagged release artifacts, command: <code>gh attestation verify &lt;artifact&gt; -R semantic-reasoning/PyreWire --signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml --source-ref refs/tags/v1.1.1</code> for every release wheel (<code>dist/pyrewire-*.whl</code>) and the sdist (<code>dist/pyrewire-*.tar.gz</code>). For RC/frozen-commit validation before the final tag exists, also verify with <code>--source-digest &lt;frozen-sha&gt;</code>. Repo-only <code>-R</code> verification alone is not sufficient for this gate.</td>
+<td>Successful <code>release.yml</code> run URL, release tag or frozen RC commit SHA, artifact filenames, SHA256 hashes for each wheel/sdist, and successful <code>gh attestation verify</code> output showing enforced signer workflow and source identity (<code>--source-ref refs/tags/v1.1.1</code> or <code>--source-digest &lt;frozen-sha&gt;</code>) for each verified artifact.</td>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
@@ -1039,21 +1039,21 @@ Freeze the release commit first:</p>
 <tr>
 <td>Release notes and changelog</td>
 <td>Release manager</td>
-<td>Manual verification that the v1.0.0 changelog section is extractable and matches the GitHub Release body generated from <code>CHANGELOG.md</code>.</td>
+<td>Manual verification that the v1.1.1 changelog section is extractable and matches the GitHub Release body generated from <code>CHANGELOG.md</code>.</td>
 <td>Extracted release notes artifact or command log plus reviewer confirmation.</td>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 <tr>
 <td>Metadata, API, support, and security consistency</td>
 <td>Release manager</td>
-<td>Manual verification that package metadata, public API stability, support matrix, and security policy all describe the same v1.0.0 contract.</td>
+<td>Manual verification that package metadata, public API stability, support matrix, and security policy all describe the same v1.1.1 contract.</td>
 <td>Linked review note covering <code>pyproject.toml</code>, API stability docs, support docs, and <code>SECURITY.md</code>.</td>
 <td>Link a GitHub issue, PR, or follow-up task before retrying or tagging.</td>
 </tr>
 </tbody>
 </table>
 <p>Attestation verification for this gate requires signer workflow and source identity constraints; repo-only verification is not treated as sufficient provenance evidence for PyreWire release artifacts.
-This does not independently attest upstream wirelog builds. For bundled wirelog traceability, rely on the pinned wirelog v0.50.0 SHA <code>272edf3a24b25676f12c4b843d55510f5048dd2f</code> in release configuration and docs, plus the wheel dynamic-link and clean-install gates above.
+This does not independently attest upstream wirelog builds. For bundled wirelog traceability, rely on the pinned wirelog v0.62.0 SHA <code>39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c</code> in release configuration and docs, plus the wheel dynamic-link and clean-install gates above.
 External blocker for the TestPyPI dry run gate: TestPyPI trusted publishing must be configured for the <code>.github/workflows/release.yml</code> workflow identity with GitHub environment <code>testpypi</code> before dry-run uploads can pass.</p>
 
 

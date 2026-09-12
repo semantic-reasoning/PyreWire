@@ -1111,6 +1111,12 @@ The minimum compatible runtime wirelog version remains <code>0.52.0</code>.</p>
 <td><code>300f3e5150095c85331b561f1f42d99c27b4746f</code></td>
 <td>Validated against wirelog <code>v0.60.0</code> (peeled tag SHA); runtime minimum remains <code>0.52.0</code>. Bundled engine bumped to v0.60.0; the exported ABI is additive (19 new symbols, none removed) and the SONAME is unchanged. wirelog#1021 refuses a recursive <code>min()</code>/<code>max()</code> that shares an SCC with another relation - an engine-level compatibility break that reaches any program PyreWire runs.</td>
 </tr>
+<tr>
+<td><code>1.1.1</code></td>
+<td><code>0.52.0</code></td>
+<td><code>39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c</code></td>
+<td>Validated against wirelog <code>v0.62.0</code> (peeled tag SHA); runtime minimum remains <code>0.52.0</code>. Typed Session methods require <code>0.60.0</code> or newer. Includes the arithmetic precedence change from wirelog <code>0.61.0</code>; expressions may produce different results (see changelog).</td>
+</tr>
 </tbody>
 </table>
 <p>The table grows with every release; the source of truth is the
