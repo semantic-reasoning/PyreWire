@@ -54,6 +54,7 @@ release to publish; it is **not** tied to the wirelog change.
 
 | PyreWire        | Minimum wirelog | Validated wirelog ref                      | Notes                   |
 | --------------- | --------------- | ------------------------------------------ | ----------------------- |
+| `current-development` | `0.52.0`        | `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c` | Validated against wirelog `v0.62.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Wheels built from this branch bundle v0.62.0. wirelog 0.61.0 changed arithmetic from 0.60.x left associativity to conventional precedence, which can change results such as `A + B * C`. PyreWire's public API is unchanged; the new plan-error C accessor is recorded in the ABI smoke manifest but is not wrapped yet. |
 | `1.0.0`         | `0.44.0`        | `272edf3a24b25676f12c4b843d55510f5048dd2f` | Validated against wirelog `v0.50.0` (peeled tag SHA); runtime minimum remains `0.44.0`. |
 | `1.0.1`         | `0.44.0`        | `0c6e0cdaee7db069be5d8d896bb59bdcb15673e9` | Validated against wirelog `v0.51.0` (peeled tag SHA); runtime minimum remains `0.44.0`. Bundled engine bumped to pick up the wirelog#914 single-body-rule derivation fix (#165). |
 | `1.0.2`         | `0.44.0`        | `0c6e0cdaee7db069be5d8d896bb59bdcb15673e9` | Validated against wirelog `v0.51.0` (peeled tag SHA); runtime minimum remains `0.44.0`. PyreWire-only maintenance release (CI action bumps, SPDX headers, docs); no engine change. |

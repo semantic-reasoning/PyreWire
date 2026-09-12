@@ -19,10 +19,10 @@ example uses `BatchProgram` with inline facts rather than a session.
 
 Two behaviors are easy to misread and are demonstrated deliberately:
 
-- Arithmetic parses left-associatively. `A + B * C` means `(A + B) * C`,
-  not the conventional multiplication-first grouping, so the
-  `precedence` row derives `22` rather than `14`. Use explicit
-  intermediate relations when conventional grouping is needed.
+- Wirelog 0.60.x evaluates arithmetic chains left-to-right, so
+  `A + B * C` means `(A + B) * C` and the `precedence` row derives `22`.
+  Starting with wirelog 0.61.0, conventional precedence applies:
+  `A + B * C` means `A + (B * C)` and the row derives `14`.
 - The typed float ingress canonicalizes `-0.0` and `+0.0` to the same
   `+0.0` value, so the two `zero_input` facts collapse to one row.
 

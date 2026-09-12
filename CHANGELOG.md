@@ -8,6 +8,27 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+### Changed
+- The bundled and validated wirelog ref moves from `v0.60.0` to
+  `v0.62.0` at peeled SHA
+  `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c`.
+- The minimum compatible runtime wirelog version remains `0.52.0`.
+  PyreWire's public API is unchanged. wirelog 0.62.0 exposes
+  `wirelog_program_get_plan_error()`, which PyreWire records in its ABI
+  smoke manifest but does not wrap yet.
+- Wheels now bundle the wirelog 0.62.0 engine. The bump picks up
+  wirelog's session memory-budget admission, bounded CSV staging,
+  resumable keyed-join sub-batches, memory-ledger coverage, and fixes
+  for incomplete unfused recursive SCC results, early-exit join filter
+  cleanup, intern-table governor rebinding, memory-governor overflow
+  reporting, arithmetic precedence, and Darwin threading namespace
+  collisions.
+- wirelog 0.61.0 changed arithmetic precedence from left-associative
+  evaluation in 0.60.x to conventional operator precedence. This can
+  change results for expressions such as `A + B * C`; PyreWire's
+  arithmetic example and integration expectations now document and
+  account for both behaviors.
+
 ## [1.0.6] - 2026-09-05
 
 ### Changed
