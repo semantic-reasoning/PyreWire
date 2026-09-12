@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
-"""Regression coverage for the documented v1.0 support matrix."""
+"""Regression coverage for the documented v1 support matrix."""
 
 from __future__ import annotations
 
@@ -147,6 +147,7 @@ def test_support_documents_sdist_system_libwirelog_behavior():
 
 def test_security_supported_versions_match_v1_contract():
     security = _read("SECURITY.md")
+    assert "| v1.1.x  | ✓ |" in security
     assert "| v1.0.x  | \u2713 |" in security
     assert "| < v1.0  | \u2717 |" in security
     assert "alpha" not in security.lower()

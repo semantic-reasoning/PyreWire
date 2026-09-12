@@ -31,7 +31,7 @@ The wheel bundles `libwirelog`; no system install required.
 - [Quickstart](quickstart.md) — a six-line example you can paste.
 - [Versioning](versioning.md) — PyreWire and wirelog version
   independently.
-- [API stability](api-stability.md) — the v1.0 public API boundary and
+- [API stability](api-stability.md) — the v1 public API boundary and
   deprecation policy.
 - [Reference](reference/sessions.md) — auto-generated from the
   public-API docstrings.

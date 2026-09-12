@@ -83,13 +83,32 @@ def test_changelog_keep_a_changelog_intro_present():
     assert "Keep a Changelog" in text
 
 
-def test_unreleased_section_documents_pending_changes():
+def test_111_release_notes_include_engine_and_typed_api_changes():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
-    section = _section(changelog, "Unreleased")
+    section = _section(changelog, "1.1.1")
+    assert _section(changelog, "Unreleased") == "## [Unreleased]"
+    assert "## [1.1.1] - 2026-09-12" in section
 
     assert "wirelog" in section
     assert "v0.62.0" in section
     assert "39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c" in section
+    for expected in (
+        "`Session`",
+        "`insert_typed`",
+        "`remove_typed`",
+        "`snapshot_typed`",
+        "`step_typed`",
+        "`set_typed_delta_callback`",
+        "`TypedRowError`",
+        "`TypedErrorCode`",
+        "`WirelogVersionError`",
+        "`0.60.0`",
+        "`0.52.0`",
+        "`0.61.0`",
+        "`A + (B * C)`",
+        "`14` instead of `22`",
+    ):
+        assert expected in section
 
 
 def test_100_release_notes_include_publishable_contract_facts():
@@ -172,7 +191,11 @@ def test_release_compare_links_are_tag_to_tag():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
 
     assert (
-        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...HEAD"
+        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.1...HEAD"
+        in changelog
+    )
+    assert (
+        "[1.1.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...v1.1.1"
         in changelog
     )
     assert (

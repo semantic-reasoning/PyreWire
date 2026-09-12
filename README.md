@@ -20,10 +20,10 @@ pip install pyrewire
 
 **Requirements:** CPython 3.11, 3.12, 3.13, or 3.14.
 
-See the [support matrix](docs/support.md) for v1.0 wheel targets and
+See the [support matrix](docs/support.md) for v1 wheel targets and
 source-install requirements, including supported OS/architecture
 combinations and `libwirelog` handling. The
-[API stability policy](docs/api-stability.md) defines the v1.0 stable
+[API stability policy](docs/api-stability.md) defines the v1 stable
 public import boundary and deprecation policy.
 
 ## Quick Start
