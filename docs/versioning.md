@@ -50,6 +50,12 @@ When PyreWire is rebuilt and re-validated against a new wirelog ref:
 PyreWire's own `__version__` is bumped only when there is a PyreWire
 release to publish; it is **not** tied to the wirelog change.
 
+## Current development pin
+
+The current development branch builds and validates against wirelog
+`v0.62.0` at peeled SHA `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c`.
+The minimum compatible runtime wirelog version remains `0.52.0`.
+
 ## Compatibility table
 
 | PyreWire        | Minimum wirelog | Validated wirelog ref                      | Notes                   |
