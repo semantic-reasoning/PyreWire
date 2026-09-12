@@ -1,6 +1,6 @@
 # API stability
 
-PyreWire v1.0 treats `pyrewire.__all__` as the stable public import boundary.
+PyreWire v1 treats `pyrewire.__all__` as the stable public import boundary.
 Names listed there are the supported surface for
 `from pyrewire import ...` imports and are covered by the v1 API
 compatibility and deprecation policy.
@@ -118,4 +118,4 @@ and the affected API.
 Minor releases may add compatible public API surface, including new APIs,
 optional parameters, enum members, and exception subclasses. Code
 that handles PyreWire enums or exception hierarchies should therefore
-avoid assuming that the v1.0 set is permanently exhaustive.
+avoid assuming that the v1 set is permanently exhaustive.

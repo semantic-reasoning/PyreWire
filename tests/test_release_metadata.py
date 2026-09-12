@@ -28,9 +28,9 @@ def _runtime_version_literal() -> str:
     return match.group(1)
 
 
-def test_project_and_runtime_versions_are_106():
-    assert _pyproject()["project"]["version"] == "1.0.6"
-    assert _runtime_version_literal() == "1.0.6"
+def test_project_and_runtime_versions_are_111():
+    assert _pyproject()["project"]["version"] == "1.1.1"
+    assert _runtime_version_literal() == "1.1.1"
 
 
 def test_project_classifiers_mark_stable_python_311_through_314():
@@ -46,6 +46,7 @@ def test_project_classifiers_mark_stable_python_311_through_314():
 def test_security_policy_tracks_v1_stable_support_only():
     security = _read("SECURITY.md")
 
+    assert "| v1.1.x  | ✓ |" in security
     assert "| v1.0.x  | ✓ |" in security
     assert "alpha" not in security.lower()
     assert "v0.1.x" not in security

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
-"""Regression coverage for the documented v1.0 public API policy."""
+"""Regression coverage for the documented v1 public API policy."""
 
 from __future__ import annotations
 

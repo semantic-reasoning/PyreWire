@@ -98,6 +98,17 @@ def test_versioning_documents_106_wirelog_pin_and_runtime_floor():
     assert "peeled tag SHA" in notes
 
 
+def test_versioning_documents_111_wirelog_pin_and_runtime_floor():
+    minimum, validated_ref, notes = _versioning_row("1.1.1")
+
+    assert minimum == "`0.52.0`"
+    assert validated_ref == f"`{PINNED_WIRELOG_SHA}`"
+    assert "v0.62.0" in notes
+    assert "runtime minimum remains `0.52.0`" in notes
+    assert "Typed Session methods require `0.60.0` or newer" in notes
+    assert "arithmetic precedence" in notes
+
+
 def test_versioning_documents_current_development_wirelog_pin():
     text = _read("docs/versioning.md")
 

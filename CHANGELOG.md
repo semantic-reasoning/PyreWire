@@ -8,14 +8,30 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-09-12
+
+### Added
+- Typed rows on `Session`: `insert_typed`, `remove_typed`,
+  `snapshot_typed`, `step_typed`, and `set_typed_delta_callback`
+  preserve FLOAT values across the Python/C boundary. `TypedRowError`
+  and `TypedErrorCode` expose engine validation diagnostics.
+  These methods require wirelog >= `0.60.0`; on older supported engines
+  (including `0.52.0`) they raise `WirelogVersionError` while the
+  existing APIs remain available.
+
 ### Changed
-- The current development pin for bundled and validated wirelog builds
+- The pin for bundled and validated wirelog builds
   moves from `v0.60.0` to `v0.62.0` at peeled SHA
   `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c`.
 - The minimum compatible runtime wirelog version remains `0.52.0`.
   wirelog 0.62.0 adds `wirelog_program_get_plan_error` relative to
   0.60.0, and the library SONAME is unchanged, so no PyreWire code
   stops supporting `0.52.0`.
+- **Arithmetic precedence changes with wirelog `0.61.0` and newer**:
+  `A + B * C` now means `A + (B * C)`, so `2 + 3 * 4` produces
+  `14` instead of `22`. The bundled `0.62.0` engine includes this change;
+  existing programs may produce different results. Add explicit
+  parentheses to preserve an intended evaluation order.
 
 ## [1.0.6] - 2026-09-05
 
@@ -322,7 +338,8 @@ runtime wirelog version remaining `0.44.0`.
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...v1.1.1
 [1.0.6]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.3...v1.0.4
