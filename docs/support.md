@@ -19,8 +19,8 @@ not need to install wirelog separately.
 | macOS | `arm64` | `macos-15` | Apple Silicon only for v1; no macOS Intel or universal2 wheel is produced. |
 | Windows | `win_amd64` / `AMD64` | `windows-2025-vs2026` | Built with MSVC and repaired with delvewheel. |
 
-The bundled library is built from wirelog v0.62.0, using peeled SHA
-`39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c`.
+The bundled library is built from wirelog v0.70.0, using peeled SHA
+`c353350232c35356b34085abf5780a2fcb81e80f`.
 
 ## Source Distributions
 

@@ -53,7 +53,7 @@ release to publish; it is **not** tied to the wirelog change.
 ## Current development pin
 
 The current development branch builds and validates against wirelog
-`v0.62.0` at peeled SHA `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c`.
+`v0.70.0` at peeled SHA `c353350232c35356b34085abf5780a2fcb81e80f`.
 The minimum compatible runtime wirelog version remains `0.52.0`.
 
 ## Compatibility table
@@ -68,6 +68,7 @@ The minimum compatible runtime wirelog version remains `0.52.0`.
 | `1.0.5`         | `0.52.0`        | `9f80877c82564cb92ea45bd6fffc2d681b0e13de` | Validated against wirelog `v0.54.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Bundled engine bumped to v0.54.0 to pick up the wirelog#955 semijoin layout fix (#180); the public C header change is additive and the SONAME is unchanged. |
 | `1.0.6`         | `0.52.0`        | `300f3e5150095c85331b561f1f42d99c27b4746f` | Validated against wirelog `v0.60.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Bundled engine bumped to v0.60.0; the exported ABI is additive (19 new symbols, none removed) and the SONAME is unchanged. wirelog#1021 refuses a recursive `min()`/`max()` that shares an SCC with another relation - an engine-level compatibility break that reaches any program PyreWire runs. |
 | `1.1.1`         | `0.52.0`        | `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c` | Validated against wirelog `v0.62.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Typed Session methods require `0.60.0` or newer. Includes the arithmetic precedence change from wirelog `0.61.0`; expressions may produce different results (see changelog). |
+| `1.1.2`         | `0.52.0`        | `c353350232c35356b34085abf5780a2fcb81e80f` | Validated against wirelog `v0.70.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Bundled-engine refresh; the PyreWire public API is unchanged. |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).
