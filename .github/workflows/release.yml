@@ -138,7 +138,7 @@ jobs:
         shell: bash
         run: python scripts/ci/check_dynamic_link.py wheelhouse/*.whl
 
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
@@ -231,7 +231,7 @@ jobs:
       - name: build sdist
         run: python -m build --sdist --outdir dist
 
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: sdist
           path: dist/*.tar.gz
