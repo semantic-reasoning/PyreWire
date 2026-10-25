@@ -731,7 +731,8 @@ def test_index_returning_a_non_int_is_a_clean_type_error():
         def __index__(self):
             return "not an int"
 
-    with pytest.raises(TypeError, match="__index__ returned non-int"):
+    # Python 3.15 reworded operator.index's protocol error.
+    with pytest.raises(TypeError, match=r"__index__(?: returned non-int|\(\) must return an int)"):
         encode_lane(Liar(), ColumnType.INT64)
 
 
