@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later
-"""Regression coverage for the v1.1.2 release candidate checklist."""
+"""Regression coverage for the v1.1.3 release candidate checklist."""
 
 from __future__ import annotations
 
@@ -74,7 +74,7 @@ def test_release_commit_freeze_and_tag_gating_are_explicit():
     text = _checklist()
 
     assert "git rev-parse HEAD" in text
-    assert "The `v1.1.2` tag must point to that exact SHA" in text
+    assert "The `v1.1.3` tag must point to that exact SHA" in text
     assert "must not be cut until every gate below passes on the exact release commit" in text
     assert "do not tag or publish" in text
 
@@ -166,7 +166,7 @@ def test_testpypi_dry_run_gate_and_evidence_requirements_are_documented():
 def test_release_notes_and_consistency_checks_are_documented():
     text = _checklist()
     for required in (
-        "v1.1.2 changelog section",
+        "v1.1.3 changelog section",
         "GitHub Release body",
         "CHANGELOG.md",
         "package metadata",
@@ -186,7 +186,7 @@ def test_release_security_baseline_and_provenance_scope_are_documented():
         "Dependabot is configured for both `github-actions` and `pip` at `/` on a regular schedule",
         "gh attestation verify <artifact> -R semantic-reasoning/PyreWire",
         "--signer-workflow semantic-reasoning/PyreWire/.github/workflows/release.yml",
-        "--source-ref refs/tags/v1.1.2",
+        "--source-ref refs/tags/v1.1.3",
         "--source-digest <frozen-sha>",
         "Repo-only `-R` verification alone is not sufficient for this gate",
         "release.yml` run URL",
