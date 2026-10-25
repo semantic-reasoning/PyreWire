@@ -149,7 +149,7 @@ def test_publish_step_uses_pypa_action():
 def test_download_wheels_uses_node24_artifact_action():
     for job_name in ("publish_testpypi", "publish_pypi"):
         uses = [s.get("uses", "") for s in _publish_steps(job_name)]
-        assert "actions/download-artifact@v8.0.1" in uses
+        assert "actions/download-artifact@v8.0.2" in uses
         assert "actions/download-artifact@v4" not in uses
 
 
@@ -196,7 +196,7 @@ def test_release_install_test_gates_publish_and_uses_supported_matrix():
 
 def test_release_install_test_downloads_matching_wheels_and_runs_integration_tests():
     steps = _workflow()["jobs"]["install_test"]["steps"]
-    download_steps = [s for s in steps if s.get("uses") == "actions/download-artifact@v8.0.1"]
+    download_steps = [s for s in steps if s.get("uses") == "actions/download-artifact@v8.0.2"]
     assert download_steps
     assert download_steps[0]["with"]["name"] == "wheels-${{ matrix.os }}"
     assert download_steps[0]["with"]["path"] == "dist"
@@ -217,7 +217,7 @@ def test_pypi_publish_downloads_wheels_and_checks_artifacts_before_publish_and_r
     wheel_downloads = [
         (i, s)
         for i, s in enumerate(steps)
-        if s.get("uses") == "actions/download-artifact@v8.0.1"
+        if s.get("uses") == "actions/download-artifact@v8.0.2"
         and s.get("with", {}).get("pattern") == "wheels-*"
     ]
     assert wheel_downloads
@@ -295,7 +295,7 @@ def test_testpypi_publish_downloads_wheels_and_runs_after_verify_and_attest_step
     wheel_download_idx = next(
         i
         for i, step in enumerate(steps)
-        if step.get("uses") == "actions/download-artifact@v8.0.1"
+        if step.get("uses") == "actions/download-artifact@v8.0.2"
         and step.get("with", {}).get("pattern") == "wheels-*"
     )
 
