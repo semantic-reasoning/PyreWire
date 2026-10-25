@@ -172,7 +172,7 @@ def test_release_build_wheels_runs_dynamic_link_check_before_upload():
         i for i, step in enumerate(steps) if "check_dynamic_link.py" in step.get("run", "")
     )
     upload_idx = next(
-        i for i, step in enumerate(steps) if step.get("uses") == "actions/upload-artifact@v7.0.1"
+        i for i, step in enumerate(steps) if step.get("uses") == "actions/upload-artifact@v7.0.2"
     )
     upload_with = steps[upload_idx]["with"]
 
