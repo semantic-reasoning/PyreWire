@@ -8,9 +8,22 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-10-25
+
 ### Added
 - CPython 3.15 wheels for Linux, macOS, and Windows, with CI and wheel
   installation coverage and required artifact checks before publishing.
+
+### Changed
+- Update release actions to `actions/upload-artifact@v7.0.2`,
+  `actions/download-artifact@v8.0.2`, and `pypa/cibuildwheel@v4.3.1`.
+- Bundled wirelog remains `v0.70.0` at peeled SHA
+  `c353350232c35356b34085abf5780a2fcb81e80f`; the minimum compatible
+  runtime remains `0.52.0`.
+
+### Fixed
+- Accept Python 3.15's updated `__index__` protocol error wording in
+  typed-row regression tests.
 
 ## [1.1.2] - 2026-09-22
 
@@ -351,7 +364,8 @@ runtime wirelog version remaining `0.44.0`.
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...v1.1.1
 [1.0.6]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.5...v1.0.6
