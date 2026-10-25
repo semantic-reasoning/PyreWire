@@ -203,7 +203,7 @@ def test_wheels_workflow_uploads_artifacts():
     steps = wf["jobs"]["build_wheels"]["steps"]
     uses = [s.get("uses", "") for s in steps]
     assert (
-        "actions/upload-artifact@v7.0.1" in uses
+        "actions/upload-artifact@v7.0.2" in uses
     ), "wheels workflow must upload built wheels with the Node24 artifact action"
     assert "actions/upload-artifact@v4" not in uses
 
