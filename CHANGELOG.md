@@ -8,6 +8,10 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+### Added
+- CPython 3.15 wheels for Linux, macOS, and Windows, with CI and wheel
+  installation coverage and required artifact checks before publishing.
+
 ## [1.1.2] - 2026-09-22
 
 ### Changed

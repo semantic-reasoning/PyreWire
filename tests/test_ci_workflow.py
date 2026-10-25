@@ -30,7 +30,7 @@ def test_ci_default_wirelog_version_is_exact_sha():
 def test_ci_matrix_drops_python_310():
     matrix = _workflow()["jobs"]["test"]["strategy"]["matrix"]
     pythons = matrix["python"]
-    assert pythons == ["3.11", "3.12", "3.13", "3.14"]
+    assert pythons == ["3.11", "3.12", "3.13", "3.14", "3.15"]
 
 
 def test_ci_matrix_uses_current_hosted_runners():

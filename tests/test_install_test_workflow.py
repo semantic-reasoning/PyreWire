@@ -42,7 +42,8 @@ def test_install_test_matrix_covers_supported_pythons():
         "3.12",
         "3.13",
         "3.14",
-    }, f"install_test matrix must cover py3.11-3.14, got {pythons}"
+        "3.15",
+    }, f"install_test matrix must cover py3.11-3.15, got {pythons}"
     assert "3.10" not in pythons
 
 

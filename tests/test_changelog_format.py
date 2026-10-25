@@ -86,7 +86,6 @@ def test_changelog_keep_a_changelog_intro_present():
 def test_112_release_notes_include_engine_refresh():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     section = _section(changelog, "1.1.2")
-    assert _section(changelog, "Unreleased") == "## [Unreleased]"
     assert "## [1.1.2] - 2026-09-22" in section
 
     assert "wirelog" in section
