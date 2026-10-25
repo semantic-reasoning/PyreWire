@@ -71,7 +71,7 @@ def _step_index(
 def _write_complete_release_artifacts(dist: Path) -> None:
     dist.mkdir()
     (dist / "pyrewire-1.0.0.tar.gz").touch()
-    for py_tag in ("cp311", "cp312", "cp313", "cp314"):
+    for py_tag in ("cp311", "cp312", "cp313", "cp314", "cp315"):
         (
             dist
             / (
@@ -191,7 +191,7 @@ def test_release_install_test_gates_publish_and_uses_supported_matrix():
     assert jobs["publish_pypi"]["needs"] == ["install_test", "build_sdist"]
     assert install_test["needs"] == "build_wheels"
     assert matrix["os"] == ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
-    assert matrix["python"] == ["3.11", "3.12", "3.13", "3.14"]
+    assert matrix["python"] == ["3.11", "3.12", "3.13", "3.14", "3.15"]
 
 
 def test_release_install_test_downloads_matching_wheels_and_runs_integration_tests():
@@ -232,7 +232,7 @@ def test_pypi_publish_downloads_wheels_and_checks_artifacts_before_publish_and_r
     assert "manylinux_2_28_x86_64" in check_run
     assert "macosx_*_arm64" in check_run
     assert "win_amd64" in check_run
-    for py_tag in ("cp311", "cp312", "cp313", "cp314"):
+    for py_tag in ("cp311", "cp312", "cp313", "cp314", "cp315"):
         assert py_tag in check_run
 
 

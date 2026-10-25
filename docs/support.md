@@ -6,7 +6,7 @@ from source.
 
 ## Python
 
-PyreWire v1 supports CPython 3.11, 3.12, 3.13, and 3.14.
+PyreWire v1 supports CPython 3.11, 3.12, 3.13, 3.14, and 3.15.
 
 ## Wheels
 

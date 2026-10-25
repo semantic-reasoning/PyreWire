@@ -152,7 +152,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-15, windows-2025-vs2026]
-        python: ["3.11", "3.12", "3.13", "3.14"]
+        python: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
       - uses: actions/checkout@v7
 
@@ -271,7 +271,7 @@ jobs:
           fi
 
           expected=()
-          for py_tag in cp311 cp312 cp313 cp314; do
+          for py_tag in cp311 cp312 cp313 cp314 cp315; do
             expected+=("pyrewire-*-${py_tag}-${py_tag}-*manylinux_2_28_x86_64.whl")
             expected+=("pyrewire-*-${py_tag}-${py_tag}-macosx_*_arm64.whl")
             expected+=("pyrewire-*-${py_tag}-${py_tag}-win_amd64.whl")
@@ -347,7 +347,7 @@ jobs:
           fi
 
           expected=()
-          for py_tag in cp311 cp312 cp313 cp314; do
+          for py_tag in cp311 cp312 cp313 cp314 cp315; do
             expected+=("pyrewire-*-${py_tag}-${py_tag}-*manylinux_2_28_x86_64.whl")
             expected+=("pyrewire-*-${py_tag}-${py_tag}-macosx_*_arm64.whl")
             expected+=("pyrewire-*-${py_tag}-${py_tag}-win_amd64.whl")

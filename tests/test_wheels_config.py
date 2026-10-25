@@ -43,13 +43,14 @@ def test_pyproject_declares_python_311_plus():
     assert "Programming Language :: Python :: 3.11" in project["classifiers"]
     assert "Programming Language :: Python :: 3.13" in project["classifiers"]
     assert "Programming Language :: Python :: 3.14" in project["classifiers"]
+    assert "Programming Language :: Python :: 3.15" in project["classifiers"]
 
 
 def test_cibuildwheel_drops_cp310():
     pyproject = tomllib.loads(_read("pyproject.toml"))
     build = pyproject["tool"]["cibuildwheel"]["build"]
     assert "cp310" not in build
-    assert build == "cp311-* cp312-* cp313-* cp314-*"
+    assert build == "cp311-* cp312-* cp313-* cp314-* cp315-*"
 
 
 def test_build_system_requires_packaging_24_2_minimum():

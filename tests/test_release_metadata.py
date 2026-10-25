@@ -33,13 +33,13 @@ def test_project_and_runtime_versions_are_112():
     assert _runtime_version_literal() == "1.1.2"
 
 
-def test_project_classifiers_mark_stable_python_311_through_314():
+def test_project_classifiers_mark_stable_python_311_through_315():
     classifiers = _pyproject()["project"]["classifiers"]
 
     assert "Development Status :: 5 - Production/Stable" in classifiers
     assert "Development Status :: 3 - Alpha" not in classifiers
 
-    for version in ("3.11", "3.12", "3.13", "3.14"):
+    for version in ("3.11", "3.12", "3.13", "3.14", "3.15"):
         assert f"Programming Language :: Python :: {version}" in classifiers
 
 

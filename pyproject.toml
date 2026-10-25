@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Software Development :: Libraries",
     "Topic :: Scientific/Engineering",
 ]
@@ -64,7 +65,7 @@ package-dir = {"" = "src"}
 # Match the project's supported Pythons. PyPy / musllinux are skipped
 # because PyreWire's ctypes path has only been validated on CPython
 # glibc + macOS + Windows MSVC.
-build = "cp311-* cp312-* cp313-* cp314-*"
+build = "cp311-* cp312-* cp313-* cp314-* cp315-*"
 dependency-versions = "latest"
 skip = "*-musllinux_* pp* *_i686 *_ppc64le *_s390x"
 test-command = "pytest -q -o addopts= {project}/tests/integration"

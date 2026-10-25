@@ -13,8 +13,8 @@ import pytest
 yaml = pytest.importorskip("yaml")
 
 PINNED_WIRELOG_SHA = "c353350232c35356b34085abf5780a2fcb81e80f"
-SUPPORTED_PYTHONS = ["3.11", "3.12", "3.13", "3.14"]
-SUPPORTED_CP_TAGS = ["cp311", "cp312", "cp313", "cp314"]
+SUPPORTED_PYTHONS = ["3.11", "3.12", "3.13", "3.14", "3.15"]
+SUPPORTED_CP_TAGS = ["cp311", "cp312", "cp313", "cp314", "cp315"]
 SUPPORTED_RUNNERS = ["ubuntu-24.04", "macos-15", "windows-2025-vs2026"]
 
 
@@ -46,7 +46,7 @@ def test_support_page_is_linked_from_mkdocs_nav():
 def test_readme_installation_links_support_matrix_and_python_contract():
     readme = _read("README.md")
     assert "[support matrix](docs/support.md)" in readme
-    assert "CPython 3.11, 3.12, 3.13, or 3.14" in readme
+    assert "CPython 3.11, 3.12, 3.13, 3.14, or 3.15" in readme
     assert "3.10" not in readme
 
 
@@ -62,7 +62,7 @@ def test_support_python_matrix_matches_pyproject_and_workflows():
     readme = _read("README.md")
 
     assert pyproject["project"]["requires-python"] == ">=3.11"
-    assert cibw_build == "cp311-* cp312-* cp313-* cp314-*"
+    assert cibw_build == "cp311-* cp312-* cp313-* cp314-* cp315-*"
     assert ci_matrix["python"] == SUPPORTED_PYTHONS
     assert install_matrix["python"] == SUPPORTED_PYTHONS
 
