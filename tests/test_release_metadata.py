@@ -28,9 +28,9 @@ def _runtime_version_literal() -> str:
     return match.group(1)
 
 
-def test_project_and_runtime_versions_are_113():
-    assert _pyproject()["project"]["version"] == "1.1.3"
-    assert _runtime_version_literal() == "1.1.3"
+def test_project_and_runtime_versions_are_114():
+    assert _pyproject()["project"]["version"] == "1.1.4"
+    assert _runtime_version_literal() == "1.1.4"
 
 
 def test_project_classifiers_mark_stable_python_311_through_315():

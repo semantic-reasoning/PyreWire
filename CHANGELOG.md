@@ -8,6 +8,16 @@ wirelog floor and a validated wirelog ref (see
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-11-25
+
+### Changed
+- The pin for bundled and validated wirelog builds
+  moves from `v0.70.0` to `v0.72.0` at peeled SHA
+  `a782f54cdc13fa36dafb98ec4c80901cf240d3fe`.
+- The minimum compatible runtime wirelog version remains `0.52.0`.
+  This is a bundled-engine refresh; the PyreWire public API is unchanged.
+- Update wheel and release workflows to `pypa/cibuildwheel@v4.3.5`.
+
 ## [1.1.3] - 2026-10-25
 
 ### Added
@@ -364,7 +374,8 @@ runtime wirelog version remaining `0.44.0`.
   wirelog#852. They are available in the later [1.0.0] line, whose
   validated wirelog ref is v0.50.0. Tracked in wirelog#859.
 
-[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/semantic-reasoning/PyreWire/compare/v1.0.6...v1.1.1

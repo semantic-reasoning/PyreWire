@@ -12,7 +12,7 @@ import pytest
 yaml = pytest.importorskip("yaml")
 
 # The wirelog ref the current development branch bundles and validates against.
-PINNED_WIRELOG_SHA = "c353350232c35356b34085abf5780a2fcb81e80f"
+PINNED_WIRELOG_SHA = "a782f54cdc13fa36dafb98ec4c80901cf240d3fe"
 # Historical pins kept frozen in the compatibility table, one per release.
 WIRELOG_SHA_100 = "272edf3a24b25676f12c4b843d55510f5048dd2f"
 WIRELOG_SHA_101 = "0c6e0cdaee7db069be5d8d896bb59bdcb15673e9"
@@ -21,6 +21,7 @@ WIRELOG_SHA_103 = "da82a14a7e1472e33aa6ed753b3bc3dfe28a68ba"
 WIRELOG_SHA_104 = "668f82ad69c2bbfc8e8111839302adf1360f55da"
 WIRELOG_SHA_105 = "9f80877c82564cb92ea45bd6fffc2d681b0e13de"
 WIRELOG_SHA_106 = "300f3e5150095c85331b561f1f42d99c27b4746f"
+WIRELOG_SHA_112 = "c353350232c35356b34085abf5780a2fcb81e80f"
 
 
 def _repo_root() -> Path:
@@ -113,8 +114,18 @@ def test_versioning_documents_112_wirelog_pin_and_runtime_floor():
     minimum, validated_ref, notes = _versioning_row("1.1.2")
 
     assert minimum == "`0.52.0`"
-    assert validated_ref == f"`{PINNED_WIRELOG_SHA}`"
+    assert validated_ref == f"`{WIRELOG_SHA_112}`"
     assert "v0.70.0" in notes
+    assert "runtime minimum remains `0.52.0`" in notes
+    assert "PyreWire public API is unchanged" in notes
+
+
+def test_versioning_documents_114_wirelog_pin_and_runtime_floor():
+    minimum, validated_ref, notes = _versioning_row("1.1.4")
+
+    assert minimum == "`0.52.0`"
+    assert validated_ref == f"`{PINNED_WIRELOG_SHA}`"
+    assert "v0.72.0" in notes
     assert "runtime minimum remains `0.52.0`" in notes
     assert "PyreWire public API is unchanged" in notes
 
@@ -123,7 +134,7 @@ def test_versioning_documents_current_development_wirelog_pin():
     text = _read("docs/versioning.md")
 
     assert "current development branch" in text
-    assert "v0.70.0" in text
+    assert "v0.72.0" in text
     assert PINNED_WIRELOG_SHA in text
     assert "minimum compatible runtime wirelog version remains `0.52.0`" in text
 
