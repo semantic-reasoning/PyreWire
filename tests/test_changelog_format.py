@@ -83,6 +83,20 @@ def test_changelog_keep_a_changelog_intro_present():
     assert "Keep a Changelog" in text
 
 
+def test_114_release_notes_include_engine_refresh():
+    changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
+    section = _section(changelog, "1.1.4")
+    assert _section(changelog, "Unreleased") == "## [Unreleased]"
+    assert "## [1.1.4] - 2026-11-25" in section
+
+    assert "wirelog" in section
+    assert "v0.72.0" in section
+    assert "a782f54cdc13fa36dafb98ec4c80901cf240d3fe" in section
+    assert "minimum compatible runtime wirelog version remains `0.52.0`" in section
+    assert "PyreWire public API is unchanged" in section
+    assert "pypa/cibuildwheel@v4.3.5" in section
+
+
 def test_112_release_notes_include_engine_refresh():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
     section = _section(changelog, "1.1.2")
@@ -202,7 +216,11 @@ def test_release_compare_links_are_tag_to_tag():
     changelog = (_repo_root() / "CHANGELOG.md").read_text(encoding="utf-8")
 
     assert (
-        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.3...HEAD"
+        "[Unreleased]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.4...HEAD"
+        in changelog
+    )
+    assert (
+        "[1.1.4]: https://github.com/semantic-reasoning/PyreWire/compare/v1.1.3...v1.1.4"
         in changelog
     )
     assert (

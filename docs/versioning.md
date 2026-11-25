@@ -53,7 +53,7 @@ release to publish; it is **not** tied to the wirelog change.
 ## Current development pin
 
 The current development branch builds and validates against wirelog
-`v0.70.0` at peeled SHA `c353350232c35356b34085abf5780a2fcb81e80f`.
+`v0.72.0` at peeled SHA `a782f54cdc13fa36dafb98ec4c80901cf240d3fe`.
 The minimum compatible runtime wirelog version remains `0.52.0`.
 
 ## Compatibility table
@@ -70,6 +70,7 @@ The minimum compatible runtime wirelog version remains `0.52.0`.
 | `1.1.1`         | `0.52.0`        | `39a57cf3c4cdf02f97df0e951fe8ecea7a831e2c` | Validated against wirelog `v0.62.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Typed Session methods require `0.60.0` or newer. Includes the arithmetic precedence change from wirelog `0.61.0`; expressions may produce different results (see changelog). |
 | `1.1.2`         | `0.52.0`        | `c353350232c35356b34085abf5780a2fcb81e80f` | Validated against wirelog `v0.70.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Bundled-engine refresh; the PyreWire public API is unchanged. |
 | `1.1.3`         | `0.52.0`        | `c353350232c35356b34085abf5780a2fcb81e80f` | Adds CPython 3.15 wheels and CI coverage. Bundled wirelog remains `v0.70.0`; the runtime minimum and public API are unchanged. |
+| `1.1.4`         | `0.52.0`        | `a782f54cdc13fa36dafb98ec4c80901cf240d3fe` | Validated against wirelog `v0.72.0` (peeled tag SHA); runtime minimum remains `0.52.0`. Bundled-engine refresh; the PyreWire public API is unchanged. |
 
 The table grows with every release; the source of truth is the
 [CHANGELOG](https://github.com/semantic-reasoning/PyreWire/blob/main/CHANGELOG.md).
